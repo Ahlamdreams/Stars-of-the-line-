@@ -1,0 +1,2549 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الطابور المدرسي</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        /* خلفية حية متحركة */
+        .live-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #ff6b9d, #ffa726, #ab47bc, #42a5f5);
+            background-size: 400% 400%;
+            animation: modernGradientFlow 15s ease infinite;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 107, 157, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(171, 71, 188, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(66, 165, 245, 0.3) 0%, transparent 50%);
+            animation: modernBackgroundPulse 8s ease-in-out infinite;
+        }
+
+        /* النمط الزجاجي */
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        /* الترويسة */
+        .header {
+            padding: 2rem;
+            margin: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6b9d, #ffa726);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 0 30px rgba(255, 107, 157, 0.5);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        .main-title {
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ff6b9d, #ffa726, #ab47bc, #42a5f5);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: animatedTitle 5s ease infinite;
+            margin: 1rem 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            padding: 1rem 2rem;
+            text-align: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        .stars-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .star-card {
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .star-card:nth-child(1) { background: linear-gradient(135deg, #ff6b9d, #ff8a80); }
+        .star-card:nth-child(2) { background: linear-gradient(135deg, #ffa726, #ffcc02); }
+        .star-card:nth-child(3) { background: linear-gradient(135deg, #ab47bc, #e1bee7); }
+        .star-card:nth-child(4) { background: linear-gradient(135deg, #42a5f5, #81d4fa); }
+
+        /* شريط التنقل */
+        .navigation {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin: 0 1rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #ff6b9d, #ffa726);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(45deg, #42a5f5, #ab47bc);
+            box-shadow: 0 10px 25px rgba(66, 165, 245, 0.4);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* إحصائيات الحضور */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* بطاقات المعلمات */
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .teacher-card {
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        /* ألوان البطاقات حسب حالة الحضور */
+        .teacher-card.present {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(129, 199, 132, 0.3)) !important;
+            border: 2px solid rgba(76, 175, 80, 0.7);
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
+            transform: scale(1.02);
+        }
+
+        .teacher-card.absent {
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.4), rgba(229, 115, 115, 0.3)) !important;
+            border: 2px solid rgba(244, 67, 54, 0.7);
+            box-shadow: 0 0 25px rgba(244, 67, 54, 0.4);
+        }
+
+        .teacher-card.late {
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.4), rgba(255, 183, 77, 0.3)) !important;
+            border: 2px solid rgba(255, 152, 0, 0.7);
+            box-shadow: 0 0 25px rgba(255, 152, 0, 0.4);
+        }
+
+        .teacher-card.excused {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.4), rgba(100, 181, 246, 0.3)) !important;
+            border: 2px solid rgba(33, 150, 243, 0.7);
+            box-shadow: 0 0 25px rgba(33, 150, 243, 0.4);
+        }
+
+        .teacher-card.not-recorded {
+            background: linear-gradient(135deg, rgba(158, 158, 158, 0.4), rgba(189, 189, 189, 0.3)) !important;
+            border: 2px solid rgba(158, 158, 158, 0.7);
+            box-shadow: 0 0 25px rgba(158, 158, 158, 0.3);
+        }
+
+        .teacher-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b9d, #ffa726);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 1rem;
+        }
+
+        .teacher-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .teacher-class {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1rem;
+        }
+
+        .attendance-status {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .status-btn.present { background: #4caf50; }
+        .status-btn.absent { background: #f44336; }
+        .status-btn.late { background: #ff9800; }
+        .status-btn.excused { background: #2196f3; }
+        
+        .status-btn.active {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* أزرار التحكم الإضافية */
+        .teacher-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .control-btn.edit { background: #9c27b0; }
+        .control-btn.camera { background: #607d8b; }
+        .control-btn.reset { background: #795548; }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* نمط الصور المصغرة */
+        .teacher-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            margin: 0 auto 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .teacher-photo:hover {
+            transform: scale(1.1);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* نافذة الكاميرا */
+        .camera-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .camera-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .camera-video {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .camera-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .camera-btn.capture { background: #4caf50; }
+        .camera-btn.switch { background: #2196f3; }
+        .camera-btn.close { background: #f44336; }
+
+        .camera-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* نافذة عرض الصورة */
+        .photo-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-container {
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+        }
+
+        .photo-full {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        /* نافذة التعديل */
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .edit-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            color: white;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            margin: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: right;
+        }
+
+        /* بطاقات الصفوف */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .class-card {
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .class-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .total-points {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ffa726;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .criteria-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .criteria-name {
+            color: white;
+            font-weight: 500;
+        }
+
+        .points-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .point-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .point-btn.minus { background: #f44336; }
+        .point-btn.plus { background: #4caf50; }
+
+        .points-display {
+            color: white;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        /* تبويبات الإدارة */
+        .admin-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(45deg, #42a5f5, #ab47bc);
+            box-shadow: 0 8px 20px rgba(66, 165, 245, 0.4);
+        }
+
+        .admin-tab-content {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+        }
+
+        /* حقول الإدخال */
+        .password-input {
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1.1rem;
+            margin: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+        }
+
+        /* شريط حالة الاستيراد */
+        .import-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+            animation: slideInRight 0.5s ease;
+        }
+
+        /* الرسوم المتحركة */
+        @keyframes modernGradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes modernBackgroundPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 107, 157, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(255, 107, 157, 0.8); }
+        }
+
+        @keyframes animatedTitle {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2.5rem; }
+            .header-info { flex-direction: column; gap: 1rem; }
+            .navigation { flex-direction: column; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .teachers-grid { grid-template-columns: 1fr; }
+            .classes-grid { grid-template-columns: 1fr; }
+            .admin-tabs { flex-direction: column; }
+            .admin-tab { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- الخلفية الحية -->
+    <div class="live-background"></div>
+    <div class="background-overlay"></div>
+
+    <!-- شريط حالة الاستيراد -->
+    <div id="importStatus" class="import-status"></div>
+
+    <!-- الترويسة -->
+    <header class="header glass-morphism">
+        <div class="logo-container">
+            <div class="logo" id="logo1">📚</div>
+            <div class="logo" id="logo2">🏫</div>
+        </div>
+        
+        <h1 class="main-title">الطابور المدرسي</h1>
+        <p class="subtitle" id="subtitle">انضباط يعكس وعيًا ونظام يصنع الأجيال</p>
+        
+        <div class="header-info">
+            <div class="info-card glass-morphism">
+                <div id="schoolInfo">مدرسة أم مالك الانصارية للبنات</div>
+                <div id="principalInfo">المديرة: أ.أحلام بنت علي الحمدانية</div>
+                <div id="currentDateTime"></div>
+            </div>
+        </div>
+        
+        <div class="stars-summary">
+            <div class="star-card glass-morphism">
+                <h3>🌟 نجمة اليوم</h3>
+                <p id="starOfDay">لم يتم الاختيار بعد</p>
+            </div>
+            <div class="star-card glass-morphism">
+                <h3>⭐ نجم الطابور اليوم</h3>
+                <p id="queueStarDay">لم يتم الاختيار بعد</p>
+            </div>
+            <div class="star-card glass-morphism">
+                <h3>🏆 نجمة الشهر</h3>
+                <p id="starOfMonth">لم يتم الاختيار بعد</p>
+            </div>
+            <div class="star-card glass-morphism">
+                <h3>👑 نجم الطابور للشهر</h3>
+                <p id="queueStarMonth">لم يتم الاختيار بعد</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- شريط التنقل -->
+    <nav class="navigation glass-morphism">
+        <button class="nav-button active" onclick="showSection('attendance')">
+            👥 حضور المعلمات
+        </button>
+        <button class="nav-button" onclick="showSection('queue-star')">
+            ⭐ نجم الطابور
+        </button>
+        <button class="nav-button" onclick="showSection('admin')">
+            ⚙️ إدارة النظام
+        </button>
+    </nav>
+
+    <!-- نوافذ الكاميرا والتعديل -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-container">
+            <h3 style="color: white; margin-bottom: 1rem;">📸 التقاط صورة للمعلمة</h3>
+            <video id="cameraVideo" class="camera-video" autoplay></video>
+            <canvas id="cameraCanvas" style="display: none;"></canvas>
+            <div class="camera-controls">
+                <button class="camera-btn capture" onclick="capturePhoto()">
+                    📸 التقاط الصورة
+                </button>
+                <button class="camera-btn switch" onclick="switchCamera()">
+                    🔄 تبديل الكاميرا
+                </button>
+                <button class="camera-btn close" onclick="closeCameraModal()">
+                    ❌ إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة عرض الصورة -->
+    <div id="photoModal" class="photo-modal" onclick="closePhotoModal()">
+        <div class="photo-container">
+            <img id="photoFull" class="photo-full" src="" alt="صورة المعلمة">
+            <div style="color: white; margin-top: 1rem; font-size: 1.1rem;" id="photoInfo"></div>
+        </div>
+    </div>
+
+    <!-- نافذة التعديل -->
+    <div id="editModal" class="edit-modal">
+        <div class="edit-container">
+            <h3 style="margin-bottom: 1rem; text-align: center;">✏️ تعديل بيانات المعلمة</h3>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">اسم المعلمة:</label>
+                <input type="text" id="editTeacherName" class="edit-input" readonly>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">الصف:</label>
+                <input type="text" id="editTeacherClass" class="edit-input" readonly>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">حالة الحضور:</label>
+                <select id="editAttendanceStatus" class="edit-input">
+                    <option value="present">حاضرة</option>
+                    <option value="absent">غائبة</option>
+                    <option value="late">متأخرة</option>
+                    <option value="excused">بعذر</option>
+                    <option value="not-recorded">لم يتم التسجيل</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">ملاحظات:</label>
+                <textarea id="editNotes" class="edit-input" rows="3" placeholder="أضف ملاحظات إضافية..."></textarea>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="camera-btn capture" onclick="saveEdit()">💾 حفظ التعديل</button>
+                <button class="camera-btn close" onclick="closeEditModal()">❌ إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="main-content">
+        <!-- قسم حضور المعلمات -->
+        <section id="attendance" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card glass-morphism" style="background: linear-gradient(135deg, #4caf50, #81c784);">
+                    <div class="stat-number" id="presentCount">0</div>
+                    <div class="stat-label">حاضرات</div>
+                </div>
+                <div class="stat-card glass-morphism" style="background: linear-gradient(135deg, #f44336, #e57373);">
+                    <div class="stat-number" id="absentCount">0</div>
+                    <div class="stat-label">غائبات</div>
+                </div>
+                <div class="stat-card glass-morphism" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                    <div class="stat-number" id="notRecordedCount">0</div>
+                    <div class="stat-label">لم يتم التسجيل</div>
+                </div>
+                <div class="stat-card glass-morphism" style="background: linear-gradient(135deg, #2196f3, #64b5f6);">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">الإجمالي</div>
+                </div>
+            </div>
+            
+            <!-- قسم المعلمات الحاضرات -->
+            <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;" id="presentTeachersSection">
+                <h3 style="color: white; text-align: center; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <span style="font-size: 1.5rem;">✅</span>
+                    المعلمات الحاضرات اليوم
+                    <span id="presentTeachersCount" style="background: #4caf50; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.9rem; margin-right: 0.5rem;">0</span>
+                </h3>
+                <div id="presentTeachersList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; text-align: center;">
+                    <div style="color: rgba(255,255,255,0.7); font-style: italic; grid-column: 1 / -1;">لم يتم تسجيل أي حضور بعد</div>
+                </div>
+            </div>
+            
+            <div class="teachers-grid" id="teachersGrid">
+                <!-- سيتم تحميل بطاقات المعلمات هنا -->
+            </div>
+        </section>
+
+        <!-- قسم نجم الطابور -->
+        <section id="queue-star" class="section">
+            <div class="classes-grid" id="classesGrid">
+                <!-- سيتم تحميل بطاقات الصفوف هنا -->
+            </div>
+        </section>
+
+        <!-- قسم إدارة النظام -->
+        <section id="admin" class="section">
+            <div class="glass-morphism" style="padding: 2rem; text-align: center;">
+                <h2 style="color: white; margin-bottom: 2rem;">🔐 إدارة النظام</h2>
+                <div id="adminLogin">
+                    <input type="password" id="adminPassword" class="password-input" placeholder="كلمة المرور">
+                    <br>
+                    <button class="nav-button" onclick="checkAdminPassword()">دخول</button>
+                </div>
+                <div id="adminPanel" style="display: none;">
+                    <!-- تبويبات الإدارة -->
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" onclick="showAdminTab('teachers')">👥 إدارة المعلمات</button>
+                        <button class="admin-tab" onclick="showAdminTab('stars')">⭐ إدارة النجوم</button>
+                        <button class="admin-tab" onclick="showAdminTab('settings')">⚙️ الإعدادات</button>
+                        <button class="admin-tab" onclick="showAdminTab('data')">📊 إدارة البيانات</button>
+                    </div>
+
+                    <!-- تبويب إدارة المعلمات -->
+                    <div id="adminTab-teachers" class="admin-tab-content active">
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🌐 إدارة رابط Google Sheets</h4>
+                            
+                            <!-- إدارة الرابط -->
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="color: white; display: block; margin-bottom: 0.5rem; font-weight: 600;">🔗 رابط Google Sheets:</label>
+                                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                    <input type="url" id="googleSheetsUrlInput" class="password-input" style="margin: 0; flex: 1; font-size: 0.9rem;" 
+                                           value="https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQSZ9MELNNPjoTsx_Uysz2s0e6eF-Ta9RjvAakDjp-w4VtLMxXYcQ_H5bBmhP8w/pubhtml?gid=836784017&single=true"
+                                           placeholder="أدخل رابط Google Sheets">
+                                    <button class="status-btn" style="background: #4caf50; padding: 0.75rem 1rem;" onclick="updateGoogleSheetsUrl()">💾 حفظ</button>
+                                </div>
+                                <small style="color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
+                                    يجب أن يكون الرابط من نوع /pubhtml أو /pub?output=csv
+                                </small>
+                            </div>
+
+                            <!-- حالة الاستيراد -->
+                            <div style="padding: 1rem; background: rgba(76, 175, 80, 0.2); border-radius: 10px; border: 1px solid rgba(76, 175, 80, 0.3); margin-bottom: 1rem;">
+                                <div style="color: white; text-align: center;">
+                                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;" id="importStatusText">✅ الاستيراد التلقائي مفعل مع الحفظ الذكي</div>
+                                    <div style="font-size: 0.9rem; opacity: 0.9;">يتم تحميل البيانات تلقائياً من الشيت وحفظها كافتراضية</div>
+                                    <div style="font-size: 0.9rem; opacity: 0.9;">فحص التحديثات كل 30 ثانية + نسخ احتياطية تلقائية</div>
+                                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">الإصدار 28+ - نظام إدارة الروابط المحسن</div>
+                                </div>
+                            </div>
+
+                            <!-- أزرار التحكم -->
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                                <button class="status-btn" style="background: #2196f3;" onclick="manualImportFromSheet()">🔄 استيراد فوري</button>
+                                <button class="status-btn" style="background: #4caf50;" onclick="loadSavedDefaultData()">💾 البيانات المحفوظة</button>
+                                <button class="status-btn" style="background: #9c27b0;" onclick="loadStaticDefaultData()">📋 البيانات الثابتة</button>
+                                <button class="status-btn" style="background: #e91e63;" onclick="debugSheetData()">🔍 تشخيص البيانات</button>
+                                <button class="status-btn" style="background: #ff9800;" onclick="testSheetConnection()">🔗 اختبار الاتصال</button>
+                            </div>
+
+                            <!-- معلومات الرابط الحالي -->
+                            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; color: white; font-size: 0.9rem;">
+                                <div style="margin-bottom: 0.5rem;"><strong>🔗 الرابط المحفوظ:</strong></div>
+                                <div style="word-break: break-all; font-family: monospace; background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 5px;" id="currentSheetUrl">
+                                    https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQSZ9MELNNPjoTsx_Uysz2s0e6eF-Ta9RjvAakDjp-w4VtLMxXYcQ_H5bBmhP8w/pubhtml?gid=836784017&single=true
+                                </div>
+                                <div style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.8;">
+                                    <span id="lastConnectionTest">آخر اختبار اتصال: لم يتم الاختبار بعد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- قسم عرض البيانات المستوردة -->
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;" id="importedDataSection">
+                            <h4 style="color: white; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                📊 البيانات المستوردة من الشيت
+                                <span id="importedDataCount" style="background: #4caf50; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.8rem;">0 معلمة</span>
+                            </h4>
+                            
+                            <!-- إحصائيات سريعة -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                                <div style="text-align: center; padding: 1rem; background: rgba(76, 175, 80, 0.2); border-radius: 10px; border: 1px solid rgba(76, 175, 80, 0.3);">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #4caf50;" id="totalImportedTeachers">24</div>
+                                    <div style="color: white; font-size: 0.9rem;">إجمالي المعلمات</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(33, 150, 243, 0.2); border-radius: 10px; border: 1px solid rgba(33, 150, 243, 0.3);">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #2196f3;" id="totalImportedClasses">24</div>
+                                    <div style="color: white; font-size: 0.9rem;">إجمالي الصفوف</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(255, 152, 0, 0.2); border-radius: 10px; border: 1px solid rgba(255, 152, 0, 0.3);">
+                                    <div style="font-size: 1.5rem; font-weight: bold; color: #ff9800;" id="lastUpdateTime">--:--</div>
+                                    <div style="color: white; font-size: 0.9rem;">آخر تحديث</div>
+                                </div>
+                            </div>
+
+                            <!-- تبويبات عرض البيانات -->
+                            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                                <button class="status-btn active" style="background: #2196f3;" onclick="showDataTab('teachers')" id="teachersTab">👥 المعلمات</button>
+                                <button class="status-btn" style="background: #9c27b0;" onclick="showDataTab('classes')" id="classesTab">🏫 الصفوف</button>
+                                <button class="status-btn" style="background: #4caf50;" onclick="showDataTab('summary')" id="summaryTab">📋 ملخص</button>
+                            </div>
+
+                            <!-- محتوى تبويب المعلمات -->
+                            <div id="teachersDataTab" class="data-tab-content">
+                                <h5 style="color: white; margin-bottom: 1rem; text-align: center;">👥 قائمة المعلمات المستوردة</h5>
+                                <div id="importedTeachersList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; max-height: 400px; overflow-y: auto; padding: 0.5rem;">
+                                    <!-- سيتم ملء البيانات هنا -->
+                                </div>
+                            </div>
+
+                            <!-- محتوى تبويب الصفوف -->
+                            <div id="classesDataTab" class="data-tab-content" style="display: none;">
+                                <h5 style="color: white; margin-bottom: 1rem; text-align: center;">🏫 قائمة الصفوف المستوردة</h5>
+                                <div id="importedClassesList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-height: 400px; overflow-y: auto; padding: 0.5rem;">
+                                    <!-- سيتم ملء البيانات هنا -->
+                                </div>
+                            </div>
+
+                            <!-- محتوى تبويب الملخص -->
+                            <div id="summaryDataTab" class="data-tab-content" style="display: none;">
+                                <h5 style="color: white; margin-bottom: 1rem; text-align: center;">📋 ملخص البيانات المستوردة</h5>
+                                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; color: white; font-size: 0.9rem;">
+                                    <div id="dataSummary">
+                                        <!-- سيتم ملء الملخص هنا -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-morphism" style="padding: 1.5rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🔧 إجراءات سريعة</h4>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="status-btn" style="background: #4caf50;" onclick="markAllPresent()">تسجيل الكل حاضر</button>
+                                <button class="status-btn" style="background: #f44336;" onclick="resetAllAttendance()">إعادة تعيين الكل</button>
+                                <button class="status-btn" style="background: #2196f3;" onclick="copyTeachersData()">📋 نسخ البيانات</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- تبويب إدارة النجوم -->
+                    <div id="adminTab-stars" class="admin-tab-content">
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🌟 نجوم المعلمات</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <label style="color: white; display: block; margin-bottom: 0.5rem;">نجمة اليوم:</label>
+                                    <select id="starOfDaySelect" class="password-input" style="margin: 0;" onchange="updateStarOfDay()">
+                                        <option value="">اختر المعلمة</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="color: white; display: block; margin-bottom: 0.5rem;">نجمة الشهر:</label>
+                                    <select id="starOfMonthSelect" class="password-input" style="margin: 0;" onchange="updateStarOfMonth()">
+                                        <option value="">اختر المعلمة</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">⭐ نجوم الصفوف (نجم الطابور)</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <div>
+                                    <label style="color: white; display: block; margin-bottom: 0.5rem;">نجم الطابور اليوم:</label>
+                                    <select id="queueStarDaySelect" class="password-input" style="margin: 0;" onchange="updateQueueStarDay()">
+                                        <option value="">تحديد تلقائي</option>
+                                    </select>
+                                    <small style="color: rgba(255,255,255,0.7);">يتم التحديد تلقائياً حسب النقاط</small>
+                                </div>
+                                <div>
+                                    <label style="color: white; display: block; margin-bottom: 0.5rem;">نجم الطابور للشهر:</label>
+                                    <select id="queueStarMonthSelect" class="password-input" style="margin: 0;" onchange="updateQueueStarMonth()">
+                                        <option value="">اختر الصف</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- تبويب الإعدادات -->
+                    <div id="adminTab-settings" class="admin-tab-content">
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🏫 بيانات المدرسة</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <input type="text" id="schoolName" placeholder="اسم المدرسة" class="password-input" style="margin: 0;" value="مدرسة أم مالك الانصارية للبنات">
+                                <input type="text" id="principalName" placeholder="اسم المديرة" class="password-input" style="margin: 0;" value="أ.أحلام بنت علي الحمدانية">
+                                <input type="text" id="systemSubtitle" class="password-input" style="margin: 0;" value="انضباط يعكس وعيًا ونظام يصنع الأجيال" placeholder="العنوان الفرعي">
+                            </div>
+                        </div>
+
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🔐 تغيير كلمة المرور</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <input type="password" id="currentPassword" placeholder="كلمة المرور الحالية" class="password-input" style="margin: 0;">
+                                <input type="password" id="newSystemPassword" placeholder="كلمة المرور الجديدة" class="password-input" style="margin: 0;">
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <button class="nav-button" onclick="updateSystemSettings()">💾 حفظ جميع الإعدادات</button>
+                        </div>
+                    </div>
+
+                    <!-- تبويب إدارة البيانات -->
+                    <div id="adminTab-data" class="admin-tab-content">
+                        <div class="glass-morphism" style="padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">🗑️ مسح البيانات</h4>
+                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="status-btn" style="background: #ff5722;" onclick="clearAttendanceData()">مسح بيانات الحضور</button>
+                                <button class="status-btn" style="background: #e91e63;" onclick="clearPointsData()">مسح نقاط الصفوف</button>
+                                <button class="status-btn" style="background: #f44336;" onclick="resetSystem()">مسح جميع البيانات</button>
+                            </div>
+                        </div>
+
+                        <div class="glass-morphism" style="padding: 1.5rem;">
+                            <h4 style="color: white; margin-bottom: 1rem;">📈 إحصائيات النظام</h4>
+                            <div id="systemStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; color: white;">
+                                    <div style="font-size: 2rem; font-weight: bold;" id="attendanceRate">0%</div>
+                                    <div>معدل الحضور</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; color: white;">
+                                    <div style="font-size: 2rem; font-weight: bold;" id="totalTeachers">0</div>
+                                    <div>عدد المعلمات</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; color: white;">
+                                    <div style="font-size: 2rem; font-weight: bold;" id="totalClasses">0</div>
+                                    <div>عدد الصفوف</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px; color: white;">
+                                    <div style="font-size: 2rem; font-weight: bold;" id="systemUptime">0</div>
+                                    <div>وقت التشغيل (دقيقة)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // بيانات النظام
+        let teachers = [];
+        let classes = [];
+        let stars = {
+            teacherDay: null,
+            teacherMonth: null,
+            queueDay: null,
+            queueMonth: null
+        };
+        let settings = {
+            adminPassword: '123456',
+            schoolName: 'مدرسة أم مالك الانصارية للبنات',
+            principalName: 'أ.أحلام بنت علي الحمدانية',
+            subtitle: 'انضباط يعكس وعيًا ونظام يصنع الأجيال'
+        };
+        let startTime = Date.now();
+        let lastImportedData = null;
+        let autoUpdateInterval = null;
+        let googleSheetsUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAQSZ9MELNNPjoTsx_Uysz2s0e6eF-Ta9RjvAakDjp-w4VtLMxXYcQ_H5bBmhP8w/pubhtml?gid=836784017&single=true';
+        
+        // البيانات الافتراضية المحفوظة (سيتم تحديثها من الشيت)
+        let savedDefaultTeachers = [];
+        let savedDefaultClasses = [];
+        let lastSuccessfulImport = null;
+
+        // تحديث التاريخ والوقت
+        function updateDateTime() {
+            const now = new Date();
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Riyadh'
+            };
+            
+            const arabicDate = now.toLocaleDateString('ar-SA', options);
+            const hijriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }).format(now);
+            
+            document.getElementById('currentDateTime').innerHTML = `
+                <div>${arabicDate}</div>
+                <div style="font-size: 0.9rem; opacity: 0.8;">${hijriDate}</div>
+            `;
+        }
+
+        // عرض حالة الاستيراد
+        function showAutoImportStatus(message, color = '#4caf50') {
+            const statusElement = document.getElementById('importStatus');
+            statusElement.textContent = message;
+            statusElement.style.backgroundColor = color;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // تحديث رابط Google Sheets
+        function updateGoogleSheetsUrl() {
+            const newUrl = document.getElementById('googleSheetsUrlInput').value.trim();
+            
+            if (!newUrl) {
+                alert('يرجى إدخال رابط صحيح');
+                return;
+            }
+            
+            // التحقق من صحة الرابط
+            if (!newUrl.includes('docs.google.com/spreadsheets') || 
+                (!newUrl.includes('/pubhtml') && !newUrl.includes('/pub?output=csv'))) {
+                alert('الرابط غير صحيح. يجب أن يكون رابط Google Sheets من نوع /pubhtml أو /pub?output=csv');
+                return;
+            }
+            
+            googleSheetsUrl = newUrl;
+            document.getElementById('currentSheetUrl').textContent = newUrl;
+            
+            showAutoImportStatus('💾 تم حفظ الرابط الجديد بنجاح', '#4caf50');
+            
+            // اختبار الاتصال مباشرة
+            testSheetConnection();
+        }
+
+        // اختبار الاتصال بالشيت
+        async function testSheetConnection() {
+            showAutoImportStatus('🔗 جاري اختبار الاتصال بالشيت...', '#ffa726');
+            
+            try {
+                const result = await attemptSheetImport(googleSheetsUrl, true);
+                
+                if (result.success) {
+                    document.getElementById('lastConnectionTest').textContent = 
+                        `آخر اختبار اتصال: ✅ نجح (${new Date().toLocaleTimeString('ar-SA')}) - ${result.teachersCount} معلمة`;
+                    showAutoImportStatus('✅ الاتصال بالشيت يعمل بشكل صحيح', '#4caf50');
+                } else {
+                    document.getElementById('lastConnectionTest').textContent = 
+                        `آخر اختبار اتصال: ❌ فشل (${new Date().toLocaleTimeString('ar-SA')})`;
+                    showAutoImportStatus('❌ فشل في الاتصال بالشيت', '#f44336');
+                }
+            } catch (error) {
+                document.getElementById('lastConnectionTest').textContent = 
+                    `آخر اختبار اتصال: ❌ خطأ (${new Date().toLocaleTimeString('ar-SA')})`;
+                showAutoImportStatus('❌ خطأ في اختبار الاتصال', '#f44336');
+            }
+        }
+
+        // محاولة استيراد البيانات من الشيت
+        async function attemptSheetImport(url, testOnly = false) {
+            console.log('🔍 بدء محاولة الاستيراد من:', url);
+            
+            // استخراج معرف الجدول من الرابط
+            let spreadsheetId = '';
+            let gid = '0';
+            
+            // دعم أنواع مختلفة من روابط Google Sheets
+            if (url.includes('/spreadsheets/d/e/')) {
+                const idMatch = url.match(/\/spreadsheets\/d\/e\/([a-zA-Z0-9-_]+)/);
+                if (idMatch) {
+                    spreadsheetId = idMatch[1];
+                }
+            } else if (url.includes('/spreadsheets/d/')) {
+                const idMatch = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                if (idMatch) {
+                    spreadsheetId = idMatch[1];
+                }
+            }
+            
+            if (!spreadsheetId) {
+                throw new Error('لا يمكن استخراج معرف الجدول من الرابط');
+            }
+            
+            const gidMatch = url.match(/gid=(\d+)/);
+            if (gidMatch) {
+                gid = gidMatch[1];
+            }
+            
+            console.log('📋 معرف الجدول:', spreadsheetId, 'GID:', gid);
+            
+            // محاولة الحصول على البيانات
+            let csvText = '';
+            let success = false;
+            let method = '';
+            let lastError = '';
+            
+            // الطريقة الأولى: CORS Anywhere Proxy
+            if (!success) {
+                try {
+                    console.log('🔄 محاولة الطريقة الأولى: CORS Anywhere...');
+                    const csvUrl1 = `https://docs.google.com/spreadsheets/d/e/${spreadsheetId}/pub?output=csv&gid=${gid}`;
+                    const proxyUrl1 = 'https://cors-anywhere.herokuapp.com/' + csvUrl1;
+                    const response1 = await fetch(proxyUrl1, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    if (response1.ok) {
+                        csvText = await response1.text();
+                        console.log('📄 البيانات المستلمة (الطريقة الأولى):', csvText.substring(0, 200) + '...');
+                        if (csvText && csvText.length > 50 && !csvText.includes('<!DOCTYPE html>') && !csvText.includes('Access to fetch')) {
+                            success = true;
+                            method = 'CORS Anywhere Proxy';
+                        }
+                    }
+                } catch (error) {
+                    lastError = error.message;
+                    console.log('❌ فشلت الطريقة الأولى:', error.message);
+                }
+            }
+            
+            // الطريقة الثانية: AllOrigins Proxy
+            if (!success) {
+                try {
+                    console.log('🔄 محاولة الطريقة الثانية: AllOrigins...');
+                    const csvUrl2 = `https://docs.google.com/spreadsheets/d/e/${spreadsheetId}/pub?output=csv&gid=${gid}`;
+                    const proxyUrl2 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(csvUrl2);
+                    const response2 = await fetch(proxyUrl2);
+                    
+                    if (response2.ok) {
+                        csvText = await response2.text();
+                        console.log('📄 البيانات المستلمة (الطريقة الثانية):', csvText.substring(0, 200) + '...');
+                        if (csvText && csvText.length > 50 && !csvText.includes('<!DOCTYPE html>')) {
+                            success = true;
+                            method = 'AllOrigins Proxy';
+                        }
+                    }
+                } catch (error) {
+                    lastError = error.message;
+                    console.log('❌ فشلت الطريقة الثانية:', error.message);
+                }
+            }
+            
+            // الطريقة الثالثة: محاولة مباشرة بدون بروكسي
+            if (!success) {
+                try {
+                    console.log('🔄 محاولة الطريقة الثالثة: اتصال مباشر...');
+                    const csvUrl3 = `https://docs.google.com/spreadsheets/d/e/${spreadsheetId}/pub?output=csv&gid=${gid}`;
+                    const response3 = await fetch(csvUrl3, {
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'text/csv,text/plain,*/*'
+                        }
+                    });
+                    
+                    if (response3.ok) {
+                        csvText = await response3.text();
+                        console.log('📄 البيانات المستلمة (الطريقة الثالثة):', csvText.substring(0, 200) + '...');
+                        if (csvText && csvText.length > 50 && !csvText.includes('<!DOCTYPE html>')) {
+                            success = true;
+                            method = 'الاتصال المباشر';
+                        }
+                    }
+                } catch (error) {
+                    lastError = error.message;
+                    console.log('❌ فشلت الطريقة الثالثة:', error.message);
+                }
+            }
+            
+            // الطريقة الرابعة: محاولة مع رابط مختلف
+            if (!success) {
+                try {
+                    console.log('🔄 محاولة الطريقة الرابعة: رابط بديل...');
+                    const csvUrl4 = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv&gid=${gid}`;
+                    const proxyUrl4 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(csvUrl4);
+                    const response4 = await fetch(proxyUrl4);
+                    
+                    if (response4.ok) {
+                        csvText = await response4.text();
+                        console.log('📄 البيانات المستلمة (الطريقة الرابعة):', csvText.substring(0, 200) + '...');
+                        if (csvText && csvText.length > 50 && !csvText.includes('<!DOCTYPE html>')) {
+                            success = true;
+                            method = 'رابط التصدير البديل';
+                        }
+                    }
+                } catch (error) {
+                    lastError = error.message;
+                    console.log('❌ فشلت الطريقة الرابعة:', error.message);
+                }
+            }
+            
+            if (!success) {
+                throw new Error(`فشل في الحصول على البيانات من جميع الطرق المتاحة. آخر خطأ: ${lastError}`);
+            }
+            
+            console.log('✅ تم الحصول على البيانات بنجاح باستخدام:', method);
+            
+            // معالجة البيانات CSV
+            const lines = csvText.split('\n').filter(line => line.trim());
+            console.log('📊 عدد الأسطر المستلمة:', lines.length);
+            
+            if (lines.length < 2) {
+                throw new Error('البيانات فارغة أو غير صحيحة - لا توجد أسطر كافية');
+            }
+            
+            // طباعة أول بضعة أسطر للتشخيص
+            console.log('📋 أول 3 أسطر من البيانات:');
+            for (let i = 0; i < Math.min(3, lines.length); i++) {
+                console.log(`السطر ${i}:`, lines[i]);
+            }
+            
+            // استخراج المعلمات والصفوف
+            const newTeachers = [];
+            const newClasses = [];
+            const classesSet = new Set();
+            
+            // تخطي السطر الأول (العناوين) والبدء من السطر الثاني
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // معالجة CSV بشكل أفضل - التعامل مع الفواصل داخل الاقتباس
+                const columns = parseCSVLine(line);
+                
+                console.log(`السطر ${i}:`, columns);
+                
+                if (columns.length >= 2 && columns[0] && columns[1]) {
+                    const teacherName = columns[0].trim();
+                    const className = columns[1].trim();
+                    
+                    if (teacherName && className) {
+                        // إضافة المعلمة
+                        newTeachers.push({
+                            id: i,
+                            name: teacherName,
+                            class: className,
+                            status: 'not-recorded',
+                            attendanceTime: null,
+                            photo: null,
+                            photoTime: null,
+                            notes: null,
+                            lastEdit: null
+                        });
+                        
+                        // إضافة الصف إلى المجموعة
+                        classesSet.add(className);
+                        
+                        console.log(`✅ تمت إضافة المعلمة: ${teacherName} - الصف: ${className}`);
+                    }
+                }
+            }
+            
+            // إنشاء قائمة الصفوف
+            let classId = 1;
+            classesSet.forEach(className => {
+                newClasses.push({
+                    id: classId++,
+                    name: className,
+                    speed: 0,
+                    quiet: 0,
+                    cleanliness: 0,
+                    soundLevel: 0,
+                    dailyPoints: 0,
+                    monthlyPoints: 0,
+                    total: 0
+                });
+            });
+            
+            console.log(`📊 النتائج النهائية: ${newTeachers.length} معلمة، ${newClasses.length} صف`);
+            
+            return {
+                success: true,
+                teachers: newTeachers,
+                classes: newClasses,
+                teachersCount: newTeachers.length,
+                classesCount: newClasses.length,
+                method: method,
+                csvText: csvText
+            };
+        }
+        
+        // دالة لمعالجة سطر CSV بشكل صحيح
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            // إضافة العمود الأخير
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            
+            return result;
+        }
+
+        // الاستيراد اليدوي من الشيت
+        async function manualImportFromSheet() {
+            console.log('📥 بدء الاستيراد اليدوي من الشيت...');
+            showAutoImportStatus('⏳ جاري تحميل البيانات من الشيت...', '#ffa726');
+            
+            try {
+                const result = await attemptSheetImport(googleSheetsUrl);
+                
+                // تحديث البيانات الافتراضية المحفوظة
+                updateDefaultData(result.teachers, result.classes);
+                
+                // تحديث البيانات الحالية
+                teachers = result.teachers;
+                classes = result.classes;
+                
+                // حفظ البيانات المستوردة
+                lastImportedData = {
+                    teachers: result.teachers,
+                    classes: result.classes,
+                    timestamp: new Date().toLocaleTimeString('ar-SA'),
+                    source: `Google Sheets (${result.method})`
+                };
+                
+                // تحديث الواجهة
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSelects();
+                updatePresentTeachersList();
+                updateImportedDataDisplay();
+                
+                showAutoImportStatus(`✅ تم استيراد ${result.teachersCount} معلمة و ${result.classesCount} صف بنجاح!`, '#4caf50');
+                
+                console.log(`✅ تم الاستيراد بنجاح: ${result.teachersCount} معلمة، ${result.classesCount} صف`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في الاستيراد اليدوي:', error);
+                showAutoImportStatus('❌ فشل في تحميل البيانات من الشيت', '#f44336');
+                
+                // عرض تفاصيل الخطأ
+                alert(`خطأ في الاستيراد:\n${error.message}\n\nتأكد من:\n1. صحة الرابط\n2. أن الجدول منشور للعامة\n3. وجود بيانات في الجدول`);
+            }
+        }
+
+        // الاستيراد التلقائي من Google Sheets
+        async function autoImportFromSheet(silent = false) {
+            if (!silent) {
+                console.log('📥 بدء الاستيراد التلقائي من الشيت...');
+                showAutoImportStatus('⏳ جاري تحميل البيانات تلقائياً من الشيت...', '#ffa726');
+            }
+            
+            try {
+                const result = await attemptSheetImport(googleSheetsUrl);
+                
+                // تحديث البيانات الافتراضية المحفوظة
+                updateDefaultData(result.teachers, result.classes);
+                
+                // تحديث البيانات الحالية
+                teachers = result.teachers;
+                classes = result.classes;
+                
+                // حفظ البيانات المستوردة
+                lastImportedData = {
+                    teachers: result.teachers,
+                    classes: result.classes,
+                    timestamp: new Date().toLocaleTimeString('ar-SA'),
+                    source: `Google Sheets Auto (${result.method})`
+                };
+                
+                // تحديث الواجهة
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSelects();
+                updatePresentTeachersList();
+                updateImportedDataDisplay();
+                
+                if (!silent) {
+                    showAutoImportStatus(`✅ تم استيراد ${result.teachersCount} معلمة و ${result.classesCount} صف بنجاح!`, '#4caf50');
+                }
+                
+                console.log(`✅ تم الاستيراد التلقائي بنجاح: ${result.teachersCount} معلمة، ${result.classesCount} صف`);
+                
+            } catch (error) {
+                console.error('❌ خطأ في الاستيراد التلقائي:', error);
+                if (!silent) {
+                    showAutoImportStatus('❌ فشل في تحميل البيانات من الشيت، استخدام البيانات المحفوظة', '#ff9800');
+                }
+                
+                // تحميل البيانات الافتراضية المحفوظة في حالة الفشل
+                loadSavedDefaultData();
+            }
+        }
+
+        // تحديث البيانات الافتراضية المحفوظة
+        function updateDefaultData(newTeachers, newClasses) {
+            savedDefaultTeachers = JSON.parse(JSON.stringify(newTeachers));
+            savedDefaultClasses = JSON.parse(JSON.stringify(newClasses));
+            lastSuccessfulImport = new Date().toISOString();
+            
+            console.log('💾 تم حفظ البيانات الجديدة كافتراضية:', {
+                teachers: savedDefaultTeachers.length,
+                classes: savedDefaultClasses.length,
+                timestamp: lastSuccessfulImport
+            });
+        }
+
+        // تحميل البيانات الافتراضية المحفوظة
+        function loadSavedDefaultData() {
+            if (savedDefaultTeachers.length > 0 && savedDefaultClasses.length > 0) {
+                console.log('📋 تحميل البيانات الافتراضية المحفوظة من آخر استيراد ناجح...');
+                
+                teachers = JSON.parse(JSON.stringify(savedDefaultTeachers));
+                classes = JSON.parse(JSON.stringify(savedDefaultClasses));
+                
+                // إعادة تعيين المعرفات والحالات
+                teachers.forEach((teacher, index) => {
+                    teacher.id = index + 1;
+                    teacher.status = 'not-recorded';
+                    teacher.attendanceTime = null;
+                    teacher.photo = null;
+                    teacher.photoTime = null;
+                    teacher.notes = null;
+                    teacher.lastEdit = null;
+                });
+                
+                classes.forEach((classItem, index) => {
+                    classItem.id = index + 1;
+                    classItem.speed = 0;
+                    classItem.quiet = 0;
+                    classItem.cleanliness = 0;
+                    classItem.soundLevel = 0;
+                    classItem.dailyPoints = 0;
+                    classItem.monthlyPoints = 0;
+                    classItem.total = 0;
+                });
+                
+                lastImportedData = {
+                    teachers: teachers,
+                    classes: classes,
+                    timestamp: new Date().toLocaleTimeString('ar-SA'),
+                    source: 'البيانات المحفوظة من آخر استيراد ناجح'
+                };
+                
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSelects();
+                updatePresentTeachersList();
+                updateImportedDataDisplay();
+                
+                showAutoImportStatus('📋 تم تحميل البيانات المحفوظة من آخر استيراد ناجح', '#2196f3');
+            } else {
+                // إذا لم توجد بيانات محفوظة، استخدم البيانات الثابتة
+                loadStaticDefaultData();
+            }
+        }
+
+        // تحميل البيانات الافتراضية الثابتة (الإصدار 27)
+        function loadStaticDefaultData() {
+            console.log('📋 تحميل البيانات الافتراضية من الإصدار 27...');
+            
+            teachers = [
+                { id: 1, name: 'أ. أمل بنت سالم الحارثية', class: '1/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 2, name: 'أ. فاطمة بنت محمد الغافرية', class: '1/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 3, name: 'أ. مريم بنت أحمد الكندية', class: '1/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 4, name: 'أ. عائشة بنت علي الشامسية', class: '2/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 5, name: 'أ. خديجة بنت يوسف العبرية', class: '2/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 6, name: 'أ. زينب بنت حمد الهنائية', class: '2/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 7, name: 'أ. رقية بنت سعيد المعمرية', class: '3/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 8, name: 'أ. حفصة بنت راشد الجابرية', class: '3/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 9, name: 'أ. أسماء بنت خالد الرواحية', class: '3/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 10, name: 'أ. سعاد بنت ناصر البلوشية', class: '4/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 11, name: 'أ. نورة بنت عبدالله السيابية', class: '4/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 12, name: 'أ. هدى بنت إبراهيم الفارسية', class: '4/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 13, name: 'أ. ليلى بنت عمر الكلبانية', class: '5/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 14, name: 'أ. صفية بنت حسن الرحبية', class: '5/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 15, name: 'أ. جميلة بنت سليمان الغيثية', class: '5/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 16, name: 'أ. وردة بنت محمود الحبسية', class: '6/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 17, name: 'أ. نجاة بنت عبدالرحمن الشكيلية', class: '6/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 18, name: 'أ. سلمى بنت طالب الهاشمية', class: '6/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 19, name: 'أ. منى بنت جابر العامرية', class: '7/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 20, name: 'أ. هناء بنت كريم الصوافية', class: '7/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 21, name: 'أ. رحمة بنت فهد الجهورية', class: '7/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 22, name: 'أ. شيماء بنت راشد المقبالية', class: '8/1', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 23, name: 'أ. إيمان بنت سعود الحراصية', class: '8/2', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null },
+                { id: 24, name: 'أ. نادية بنت خلفان البوسعيدية', class: '8/3', status: 'not-recorded', attendanceTime: null, photo: null, photoTime: null, notes: null, lastEdit: null }
+            ];
+
+            classes = [
+                { id: 1, name: '1/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 2, name: '1/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 3, name: '1/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 4, name: '2/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 5, name: '2/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 6, name: '2/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 7, name: '3/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 8, name: '3/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 9, name: '3/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 10, name: '4/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 11, name: '4/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 12, name: '4/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 13, name: '5/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 14, name: '5/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 15, name: '5/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 16, name: '6/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 17, name: '6/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 18, name: '6/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 19, name: '7/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 20, name: '7/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 21, name: '7/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 22, name: '8/1', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 23, name: '8/2', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 },
+                { id: 24, name: '8/3', speed: 0, quiet: 0, cleanliness: 0, soundLevel: 0, dailyPoints: 0, monthlyPoints: 0, total: 0 }
+            ];
+
+            renderTeachers();
+            renderClasses();
+            updateStats();
+            updateStarSelects();
+            updatePresentTeachersList();
+            updateImportedDataDisplay();
+            
+            showAutoImportStatus('📋 تم تحميل البيانات الافتراضية الثابتة', '#2196f3');
+        }
+
+        // تحميل البيانات الافتراضية (نقطة دخول موحدة)
+        function loadDefaultData() {
+            loadSavedDefaultData();
+        }
+
+        // تشخيص بيانات الشيت
+        async function debugSheetData() {
+            console.log('🔍 تشخيص بيانات الشيت...');
+            showAutoImportStatus('🔍 جاري تشخيص النظام...', '#9c27b0');
+            
+            // اختبار الاتصال أولاً
+            let connectionStatus = 'لم يتم الاختبار';
+            let connectionDetails = '';
+            
+            try {
+                const result = await attemptSheetImport(googleSheetsUrl, true);
+                connectionStatus = `✅ متصل (${result.method})`;
+                connectionDetails = `${result.teachersCount} معلمة، ${result.classesCount} صف`;
+            } catch (error) {
+                connectionStatus = `❌ فشل الاتصال`;
+                connectionDetails = error.message;
+            }
+            
+            console.log('الرابط المستخدم:', googleSheetsUrl);
+            console.log('عدد المعلمات الحالي:', teachers.length);
+            console.log('عدد الصفوف الحالي:', classes.length);
+            console.log('آخر بيانات مستوردة:', lastImportedData);
+            console.log('البيانات المحفوظة:', {
+                teachers: savedDefaultTeachers.length,
+                classes: savedDefaultClasses.length,
+                lastImport: lastSuccessfulImport
+            });
+            
+            const debugInfo = `
+🔍 تشخيص شامل للنظام:
+
+📡 حالة الاتصال:
+• الحالة: ${connectionStatus}
+• التفاصيل: ${connectionDetails}
+
+🔗 معلومات الرابط:
+• الرابط: ${googleSheetsUrl}
+• صحة الرابط: ${googleSheetsUrl.includes('docs.google.com/spreadsheets') ? '✅ صحيح' : '❌ غير صحيح'}
+
+📊 البيانات الحالية:
+• المعلمات: ${teachers.length}
+• الصفوف: ${classes.length}
+• المصدر: ${lastImportedData ? lastImportedData.source : 'غير محدد'}
+• آخر تحديث: ${lastImportedData ? lastImportedData.timestamp : 'غير محدد'}
+
+💾 البيانات المحفوظة:
+• معلمات محفوظة: ${savedDefaultTeachers.length}
+• صفوف محفوظة: ${savedDefaultClasses.length}
+• آخر استيراد ناجح: ${lastSuccessfulImport ? new Date(lastSuccessfulImport).toLocaleString('ar-SA') : 'لا يوجد'}
+
+⚙️ حالة النظام:
+• التحديث التلقائي: ${autoUpdateInterval ? '✅ مفعل' : '❌ معطل'}
+• وقت التشغيل: ${Math.floor((Date.now() - startTime) / 60000)} دقيقة
+• الإصدار: 28+ (نظام إدارة الروابط المحسن)
+            `;
+            
+            alert(debugInfo);
+            showAutoImportStatus('🔍 تم عرض تفاصيل التشخيص الشامل', '#9c27b0');
+        }
+
+        // عرض البيانات المستوردة
+        function showImportedData() {
+            updateImportedDataDisplay();
+            showAutoImportStatus('👁️ تم تحديث عرض البيانات المستوردة', '#4caf50');
+        }
+
+        // تحديث عرض البيانات المستوردة
+        function updateImportedDataDisplay() {
+            // تحديث العدادات
+            document.getElementById('totalImportedTeachers').textContent = teachers.length;
+            document.getElementById('totalImportedClasses').textContent = classes.length;
+            document.getElementById('importedDataCount').textContent = `${teachers.length} معلمة`;
+            
+            if (lastImportedData) {
+                document.getElementById('lastUpdateTime').textContent = lastImportedData.timestamp;
+            }
+            
+            // تحديث قائمة المعلمات المستوردة
+            const teachersList = document.getElementById('importedTeachersList');
+            teachersList.innerHTML = teachers.map(teacher => `
+                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; color: white;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">${teacher.name}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">الصف: ${teacher.class}</div>
+                    <div style="font-size: 0.8rem; opacity: 0.7;">الحالة: ${getStatusText(teacher.status)}</div>
+                </div>
+            `).join('');
+            
+            // تحديث قائمة الصفوف المستوردة
+            const classesList = document.getElementById('importedClassesList');
+            classesList.innerHTML = classes.map(classItem => `
+                <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem; color: white; text-align: center;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">${classItem.name}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">النقاط: ${classItem.total}</div>
+                </div>
+            `).join('');
+            
+            // تحديث الملخص
+            const summary = document.getElementById('dataSummary');
+            summary.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <strong>📊 إحصائيات الاستيراد:</strong><br>
+                    • إجمالي المعلمات: ${teachers.length}<br>
+                    • إجمالي الصفوف: ${classes.length}<br>
+                    • آخر تحديث: ${lastImportedData ? lastImportedData.timestamp : 'غير محدد'}<br>
+                    • مصدر البيانات: ${lastImportedData ? lastImportedData.source : 'البيانات الافتراضية'}
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong>💾 البيانات المحفوظة:</strong><br>
+                    • معلمات محفوظة: ${savedDefaultTeachers.length}<br>
+                    • صفوف محفوظة: ${savedDefaultClasses.length}<br>
+                    • آخر استيراد ناجح: ${lastSuccessfulImport ? new Date(lastSuccessfulImport).toLocaleString('ar-SA') : 'لا يوجد'}
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <strong>📋 توزيع الصفوف:</strong><br>
+                    ${getClassDistribution()}
+                </div>
+                <div>
+                    <strong>✅ حالة النظام:</strong><br>
+                    • الاستيراد التلقائي: مفعل مع حفظ ذكي<br>
+                    • فترة التحديث: كل 30 ثانية<br>
+                    • النسخ الاحتياطية: تلقائية<br>
+                    • حالة الاتصال: متصل
+                </div>
+            `;
+        }
+
+        // الحصول على نص الحالة
+        function getStatusText(status) {
+            const statusTexts = {
+                'present': 'حاضرة',
+                'absent': 'غائبة',
+                'late': 'متأخرة',
+                'excused': 'بعذر',
+                'not-recorded': 'لم يتم التسجيل'
+            };
+            return statusTexts[status] || 'غير محدد';
+        }
+
+        // الحصول على توزيع الصفوف
+        function getClassDistribution() {
+            const distribution = {};
+            classes.forEach(classItem => {
+                const grade = classItem.name.split('/')[0];
+                distribution[grade] = (distribution[grade] || 0) + 1;
+            });
+            
+            return Object.entries(distribution)
+                .map(([grade, count]) => `الصف ${grade}: ${count} شعبة`)
+                .join('<br>');
+        }
+
+        // عرض تبويب البيانات
+        function showDataTab(tabName) {
+            // إزالة الفئة النشطة من جميع التبويبات
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                if (btn.id && btn.id.includes('Tab')) {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // إخفاء جميع محتويات التبويبات
+            document.querySelectorAll('.data-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // إظهار التبويب المحدد
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            document.getElementById(`${tabName}DataTab`).style.display = 'block';
+        }
+
+        // عرض بطاقات المعلمات
+        function renderTeachers() {
+            const grid = document.getElementById('teachersGrid');
+            grid.innerHTML = '';
+            
+            teachers.forEach(teacher => {
+                const card = document.createElement('div');
+                card.className = `teacher-card glass-morphism ${teacher.status}`;
+                
+                card.innerHTML = `
+                    ${teacher.photo ? `<img src="${teacher.photo}" class="teacher-photo" onclick="showPhoto(${teacher.id})" alt="صورة ${teacher.name}">` : `<div class="teacher-avatar">${teacher.name.charAt(0)}</div>`}
+                    <div class="teacher-name">${teacher.name}</div>
+                    <div class="teacher-class">${teacher.class}</div>
+                    <div class="attendance-status">
+                        <button class="status-btn present ${teacher.status === 'present' ? 'active' : ''}" 
+                                onclick="updateAttendance(${teacher.id}, 'present')">✅ حاضرة</button>
+                        <button class="status-btn absent ${teacher.status === 'absent' ? 'active' : ''}" 
+                                onclick="updateAttendance(${teacher.id}, 'absent')">❌ غائبة</button>
+                        <button class="status-btn late ${teacher.status === 'late' ? 'active' : ''}" 
+                                onclick="updateAttendance(${teacher.id}, 'late')">⏰ متأخرة</button>
+                        <button class="status-btn excused ${teacher.status === 'excused' ? 'active' : ''}" 
+                                onclick="updateAttendance(${teacher.id}, 'excused')">📋 بعذر</button>
+                    </div>
+                    <div class="teacher-controls">
+                        <button class="control-btn edit" onclick="openEditModal(${teacher.id})">
+                            ✏️ تعديل
+                        </button>
+                        <button class="control-btn camera" onclick="openCameraModal(${teacher.id})">
+                            📸 تصوير
+                        </button>
+                        <button class="control-btn reset" onclick="resetTeacherData(${teacher.id})">
+                            🔄 إعادة تعيين
+                        </button>
+                    </div>
+                    ${teacher.attendanceTime ? `<div style="text-align: center; color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 0.5rem;">
+                        تم التسجيل: ${teacher.attendanceTime}
+                    </div>` : ''}
+                    ${teacher.notes ? `<div style="text-align: center; color: rgba(255,255,255,0.7); font-size: 0.8rem; margin-top: 0.3rem; font-style: italic;">
+                        ملاحظة: ${teacher.notes}
+                    </div>` : ''}
+                    ${teacher.photoTime ? `<div style="text-align: center; color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 0.3rem;">
+                        📸 تم التصوير: ${teacher.photoTime}
+                    </div>` : ''}
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            updatePresentTeachersList();
+        }
+
+        // عرض بطاقات الصفوف
+        function renderClasses() {
+            const grid = document.getElementById('classesGrid');
+            grid.innerHTML = '';
+            
+            classes.forEach(classItem => {
+                const card = document.createElement('div');
+                card.className = 'class-card glass-morphism';
+                
+                card.innerHTML = `
+                    <div class="class-name">${classItem.name}</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #ffa726;">${classItem.dailyPoints || 0}</div>
+                            <div style="color: white; font-size: 0.9rem;">نقاط اليوم</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #42a5f5;">${classItem.monthlyPoints || 0}</div>
+                            <div style="color: white; font-size: 0.9rem;">نقاط الشهر</div>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-row">
+                        <span class="criteria-name">⭐ الهدوء</span>
+                        <div class="points-controls">
+                            <button class="point-btn minus" onclick="updatePoints(${classItem.id}, 'quiet', -1)">-</button>
+                            <span class="points-display">${classItem.quiet}</span>
+                            <button class="point-btn plus" onclick="updatePoints(${classItem.id}, 'quiet', 1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-row">
+                        <span class="criteria-name">⚡ سرعة الاصطفاف</span>
+                        <div class="points-controls">
+                            <button class="point-btn minus" onclick="updatePoints(${classItem.id}, 'speed', -1)">-</button>
+                            <span class="points-display">${classItem.speed}</span>
+                            <button class="point-btn plus" onclick="updatePoints(${classItem.id}, 'speed', 1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-row">
+                        <span class="criteria-name">🔊 مستوى الصوت</span>
+                        <div class="points-controls">
+                            <button class="point-btn minus" onclick="updatePoints(${classItem.id}, 'soundLevel', -1)">-</button>
+                            <span class="points-display">${classItem.soundLevel || 0}</span>
+                            <button class="point-btn plus" onclick="updatePoints(${classItem.id}, 'soundLevel', 1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-row">
+                        <span class="criteria-name">🧹 النظافة</span>
+                        <div class="points-controls">
+                            <button class="point-btn minus" onclick="updatePoints(${classItem.id}, 'cleanliness', -1)">-</button>
+                            <span class="points-display">${classItem.cleanliness}</span>
+                            <button class="point-btn plus" onclick="updatePoints(${classItem.id}, 'cleanliness', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // تحديث قائمة المعلمات الحاضرات
+        function updatePresentTeachersList() {
+            const presentTeachers = teachers.filter(t => t.status === 'present');
+            const listContainer = document.getElementById('presentTeachersList');
+            const countElement = document.getElementById('presentTeachersCount');
+            
+            countElement.textContent = presentTeachers.length;
+            
+            if (presentTeachers.length === 0) {
+                listContainer.innerHTML = '<div style="color: rgba(255,255,255,0.7); font-style: italic; grid-column: 1 / -1;">لم يتم تسجيل أي حضور بعد</div>';
+            } else {
+                listContainer.innerHTML = presentTeachers.map(teacher => `
+                    <div style="background: rgba(76, 175, 80, 0.2); border: 1px solid rgba(76, 175, 80, 0.4); border-radius: 10px; padding: 1rem; color: white;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                            <span style="font-size: 1.2rem;">✅</span>
+                            ${teacher.name}
+                        </div>
+                        <div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 0.5rem;">${teacher.class}</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">
+                            وقت الحضور: ${teacher.attendanceTime}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // تحديث حضور المعلمة
+        function updateAttendance(teacherId, status) {
+            const teacher = teachers.find(t => t.id === teacherId);
+            if (teacher) {
+                teacher.status = status;
+                teacher.attendanceTime = new Date().toLocaleTimeString('ar-SA');
+                renderTeachers();
+                updateStats();
+                updateImportedDataDisplay();
+            }
+        }
+
+        // تحديث نقاط الصف
+        function updatePoints(classId, criteria, change) {
+            const classItem = classes.find(c => c.id === classId);
+            if (classItem) {
+                if (!classItem[criteria]) {
+                    classItem[criteria] = 0;
+                }
+                
+                classItem[criteria] = Math.max(0, classItem[criteria] + change);
+                
+                const dailyTotal = (classItem.quiet || 0) + (classItem.speed || 0) + (classItem.soundLevel || 0) + (classItem.cleanliness || 0);
+                classItem.dailyPoints = dailyTotal;
+                
+                if (!classItem.monthlyPoints) {
+                    classItem.monthlyPoints = 0;
+                }
+                classItem.monthlyPoints += change;
+                classItem.monthlyPoints = Math.max(0, classItem.monthlyPoints);
+                
+                classItem.total = dailyTotal;
+                
+                renderClasses();
+                updateAutoQueueStar();
+                updateImportedDataDisplay();
+            }
+        }
+
+        // تحديث نجم الطابور التلقائي
+        function updateAutoQueueStar() {
+            if (classes.length > 0) {
+                const topClass = classes.reduce((prev, current) => 
+                    (prev.total > current.total) ? prev : current
+                );
+                stars.queueDay = topClass.name;
+                document.getElementById('queueStarDay').textContent = topClass.name;
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            const present = teachers.filter(t => t.status === 'present').length;
+            const absent = teachers.filter(t => t.status === 'absent').length;
+            const notRecorded = teachers.filter(t => t.status === 'not-recorded').length;
+            const total = teachers.length;
+            
+            document.getElementById('presentCount').textContent = present;
+            document.getElementById('absentCount').textContent = absent;
+            document.getElementById('notRecordedCount').textContent = notRecorded;
+            document.getElementById('totalCount').textContent = total;
+
+            const attendanceRate = total > 0 ? Math.round((present / total) * 100) : 0;
+            document.getElementById('attendanceRate').textContent = attendanceRate + '%';
+            document.getElementById('totalTeachers').textContent = total;
+            document.getElementById('totalClasses').textContent = classes.length;
+            
+            const uptime = Math.floor((Date.now() - startTime) / 60000);
+            document.getElementById('systemUptime').textContent = uptime;
+        }
+
+        // عرض القسم المحدد
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // عرض تبويب الإدارة
+        function showAdminTab(tabName) {
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.admin-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            document.getElementById(`adminTab-${tabName}`).classList.add('active');
+        }
+
+        // فحص كلمة مرور الإدارة
+        function checkAdminPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === settings.adminPassword) {
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                updateStarSelects();
+            } else {
+                alert('كلمة المرور غير صحيحة');
+            }
+        }
+
+        // تحديث قوائم النجوم
+        function updateStarSelects() {
+            const teacherSelects = ['starOfDaySelect', 'starOfMonthSelect'];
+            const classSelects = ['queueStarDaySelect', 'queueStarMonthSelect'];
+
+            teacherSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">اختر المعلمة</option>';
+                    teachers.forEach(teacher => {
+                        const option = document.createElement('option');
+                        option.value = teacher.name;
+                        option.textContent = teacher.name;
+                        select.appendChild(option);
+                    });
+                }
+            });
+
+            classSelects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">اختر الصف</option>';
+                    classes.forEach(classItem => {
+                        const option = document.createElement('option');
+                        option.value = classItem.name;
+                        option.textContent = classItem.name;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        }
+
+        // تحديث النجوم
+        function updateStarOfDay() {
+            const value = document.getElementById('starOfDaySelect').value;
+            stars.teacherDay = value;
+            document.getElementById('starOfDay').textContent = value || 'لم يتم الاختيار بعد';
+        }
+
+        function updateStarOfMonth() {
+            const value = document.getElementById('starOfMonthSelect').value;
+            stars.teacherMonth = value;
+            document.getElementById('starOfMonth').textContent = value || 'لم يتم الاختيار بعد';
+        }
+
+        function updateQueueStarDay() {
+            const value = document.getElementById('queueStarDaySelect').value;
+            if (value) {
+                stars.queueDay = value;
+                document.getElementById('queueStarDay').textContent = value;
+            }
+        }
+
+        function updateQueueStarMonth() {
+            const value = document.getElementById('queueStarMonthSelect').value;
+            stars.queueMonth = value;
+            document.getElementById('queueStarMonth').textContent = value || 'لم يتم الاختيار بعد';
+        }
+
+        // تحديث إعدادات النظام
+        function updateSystemSettings() {
+            const schoolName = document.getElementById('schoolName').value.trim();
+            const principalName = document.getElementById('principalName').value.trim();
+            const subtitle = document.getElementById('systemSubtitle').value.trim();
+            const currentPassword = document.getElementById('currentPassword').value.trim();
+            const newPassword = document.getElementById('newSystemPassword').value.trim();
+            
+            if (schoolName) {
+                settings.schoolName = schoolName;
+                document.getElementById('schoolInfo').textContent = schoolName;
+            }
+            
+            if (principalName) {
+                settings.principalName = principalName;
+                document.getElementById('principalInfo').textContent = `المديرة: ${principalName}`;
+            }
+            
+            if (subtitle) {
+                settings.subtitle = subtitle;
+                document.getElementById('subtitle').textContent = subtitle;
+            }
+            
+            if (newPassword) {
+                if (currentPassword === settings.adminPassword) {
+                    settings.adminPassword = newPassword;
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newSystemPassword').value = '';
+                    alert('تم تغيير كلمة المرور بنجاح!');
+                } else {
+                    alert('كلمة المرور الحالية غير صحيحة');
+                    return;
+                }
+            }
+            
+            alert('تم حفظ الإعدادات بنجاح!');
+        }
+
+        // الإجراءات السريعة
+        function markAllPresent() {
+            teachers.forEach(teacher => {
+                teacher.status = 'present';
+                teacher.attendanceTime = new Date().toLocaleTimeString('ar-SA');
+            });
+            renderTeachers();
+            updateStats();
+            updateImportedDataDisplay();
+            alert('تم تسجيل جميع المعلمات كحاضرات!');
+        }
+
+        function resetAllAttendance() {
+            if (confirm('هل أنت متأكد من إعادة تعيين حضور جميع المعلمات؟')) {
+                teachers.forEach(teacher => {
+                    teacher.status = 'not-recorded';
+                    teacher.attendanceTime = null;
+                });
+                renderTeachers();
+                updateStats();
+                updateImportedDataDisplay();
+                alert('تم إعادة تعيين حضور جميع المعلمات!');
+            }
+        }
+
+        function copyTeachersData() {
+            const data = teachers.map(t => `${t.name}\t${t.class}\t${getStatusText(t.status)}\t${t.attendanceTime || ''}`).join('\n');
+            navigator.clipboard.writeText(data).then(() => {
+                alert('تم نسخ بيانات المعلمات إلى الحافظة!');
+            });
+        }
+
+        function clearAttendanceData() {
+            if (confirm('هل أنت متأكد من مسح جميع بيانات الحضور؟')) {
+                resetAllAttendance();
+            }
+        }
+
+        function clearPointsData() {
+            if (confirm('هل أنت متأكد من مسح جميع نقاط الصفوف؟')) {
+                classes.forEach(classItem => {
+                    classItem.speed = 0;
+                    classItem.quiet = 0;
+                    classItem.cleanliness = 0;
+                    classItem.soundLevel = 0;
+                    classItem.dailyPoints = 0;
+                    classItem.monthlyPoints = 0;
+                    classItem.total = 0;
+                });
+                renderClasses();
+                updateImportedDataDisplay();
+                alert('تم مسح جميع نقاط الصفوف!');
+            }
+        }
+
+        function resetSystem() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات وإعادة تعيين النظام؟\n\nسيتم:\n- إعادة تحميل البيانات من الشيت\n- مسح جميع بيانات الحضور\n- مسح جميع نقاط الصفوف\n- إعادة تعيين النجوم')) {
+                // إعادة تحميل البيانات من الشيت
+                manualImportFromSheet().then(() => {
+                    // مسح بيانات الحضور
+                    teachers.forEach(teacher => {
+                        teacher.status = 'not-recorded';
+                        teacher.attendanceTime = null;
+                        teacher.photo = null;
+                        teacher.photoTime = null;
+                        teacher.notes = null;
+                        teacher.lastEdit = null;
+                    });
+                    
+                    // مسح نقاط الصفوف
+                    classes.forEach(classItem => {
+                        classItem.speed = 0;
+                        classItem.quiet = 0;
+                        classItem.cleanliness = 0;
+                        classItem.soundLevel = 0;
+                        classItem.dailyPoints = 0;
+                        classItem.monthlyPoints = 0;
+                        classItem.total = 0;
+                    });
+                    
+                    // إعادة تعيين النجوم
+                    stars = {
+                        teacherDay: null,
+                        teacherMonth: null,
+                        queueDay: null,
+                        queueMonth: null
+                    };
+                    
+                    // تحديث عرض النجوم
+                    document.getElementById('starOfDay').textContent = 'لم يتم الاختيار بعد';
+                    document.getElementById('starOfMonth').textContent = 'لم يتم الاختيار بعد';
+                    document.getElementById('queueStarDay').textContent = 'لم يتم الاختيار بعد';
+                    document.getElementById('queueStarMonth').textContent = 'لم يتم الاختيار بعد';
+                    
+                    // تحديث الواجهة
+                    renderTeachers();
+                    renderClasses();
+                    updateStats();
+                    updateStarSelects();
+                    updatePresentTeachersList();
+                    updateImportedDataDisplay();
+                    
+                    alert('✅ تم إعادة تعيين النظام بالكامل بنجاح!');
+                }).catch(error => {
+                    console.error('خطأ في إعادة التعيين:', error);
+                    alert('❌ حدث خطأ أثناء إعادة التعيين. يرجى المحاولة مرة أخرى.');
+                });
+            }
+        }
+
+        // متغيرات الكاميرا
+        let currentStream = null;
+        let currentTeacherId = null;
+        let facingMode = 'user'; // 'user' للكاميرا الأمامية، 'environment' للخلفية
+
+        // فتح نافذة الكاميرا
+        async function openCameraModal(teacherId) {
+            currentTeacherId = teacherId;
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('cameraVideo');
+            
+            try {
+                // طلب إذن الوصول للكاميرا
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode },
+                    audio: false
+                });
+                
+                video.srcObject = currentStream;
+                modal.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('خطأ في الوصول للكاميرا:', error);
+                alert('لا يمكن الوصول للكاميرا. تأكد من منح الإذن للموقع.');
+            }
+        }
+
+        // تبديل الكاميرا
+        async function switchCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            
+            try {
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode },
+                    audio: false
+                });
+                
+                document.getElementById('cameraVideo').srcObject = currentStream;
+            } catch (error) {
+                console.error('خطأ في تبديل الكاميرا:', error);
+                alert('لا يمكن تبديل الكاميرا');
+            }
+        }
+
+        // التقاط الصورة
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            ctx.drawImage(video, 0, 0);
+            
+            const photoData = canvas.toDataURL('image/jpeg', 0.8);
+            const currentTime = new Date().toLocaleTimeString('ar-SA');
+            
+            // حفظ الصورة للمعلمة
+            const teacher = teachers.find(t => t.id === currentTeacherId);
+            if (teacher) {
+                teacher.photo = photoData;
+                teacher.photoTime = currentTime;
+                teacher.status = 'present'; // تسجيل تلقائي كحاضرة
+                teacher.attendanceTime = currentTime;
+                
+                renderTeachers();
+                updateStats();
+                updatePresentTeachersList();
+                updateImportedDataDisplay();
+                
+                alert('✅ تم التقاط الصورة وتسجيل الحضور بنجاح!');
+            }
+            
+            closeCameraModal();
+        }
+
+        // إغلاق نافذة الكاميرا
+        function closeCameraModal() {
+            const modal = document.getElementById('cameraModal');
+            
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            
+            modal.style.display = 'none';
+            currentTeacherId = null;
+        }
+
+        // عرض الصورة بالحجم الكامل
+        function showPhoto(teacherId) {
+            const teacher = teachers.find(t => t.id === teacherId);
+            if (teacher && teacher.photo) {
+                const modal = document.getElementById('photoModal');
+                const img = document.getElementById('photoFull');
+                const info = document.getElementById('photoInfo');
+                
+                img.src = teacher.photo;
+                info.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 0.5rem;">${teacher.name}</div>
+                    <div>الصف: ${teacher.class}</div>
+                    <div>وقت التصوير: ${teacher.photoTime}</div>
+                `;
+                
+                modal.style.display = 'flex';
+            }
+        }
+
+        // إغلاق نافذة عرض الصورة
+        function closePhotoModal() {
+            document.getElementById('photoModal').style.display = 'none';
+        }
+
+        // فتح نافذة التعديل
+        function openEditModal(teacherId) {
+            const teacher = teachers.find(t => t.id === teacherId);
+            if (teacher) {
+                currentTeacherId = teacherId;
+                
+                document.getElementById('editTeacherName').value = teacher.name;
+                document.getElementById('editTeacherClass').value = teacher.class;
+                document.getElementById('editAttendanceStatus').value = teacher.status;
+                document.getElementById('editNotes').value = teacher.notes || '';
+                
+                document.getElementById('editModal').style.display = 'flex';
+            }
+        }
+
+        // حفظ التعديل
+        function saveEdit() {
+            const teacher = teachers.find(t => t.id === currentTeacherId);
+            if (teacher) {
+                const newStatus = document.getElementById('editAttendanceStatus').value;
+                const notes = document.getElementById('editNotes').value.trim();
+                const currentTime = new Date().toLocaleTimeString('ar-SA');
+                
+                teacher.status = newStatus;
+                teacher.notes = notes;
+                teacher.attendanceTime = currentTime;
+                teacher.lastEdit = currentTime;
+                
+                renderTeachers();
+                updateStats();
+                updatePresentTeachersList();
+                updateImportedDataDisplay();
+                
+                closeEditModal();
+                alert('✅ تم حفظ التعديل بنجاح!');
+            }
+        }
+
+        // إغلاق نافذة التعديل
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentTeacherId = null;
+        }
+
+        // إعادة تعيين بيانات المعلمة
+        function resetTeacherData(teacherId) {
+            const teacher = teachers.find(t => t.id === teacherId);
+            if (teacher) {
+                const confirmReset = confirm(`هل أنت متأكد من إعادة تعيين جميع بيانات ${teacher.name}؟\n\nسيتم مسح:\n- حالة الحضور\n- الصورة\n- الملاحظات\n- أوقات التسجيل`);
+                
+                if (confirmReset) {
+                    teacher.status = 'not-recorded';
+                    teacher.attendanceTime = null;
+                    teacher.photo = null;
+                    teacher.photoTime = null;
+                    teacher.notes = null;
+                    teacher.lastEdit = null;
+                    
+                    renderTeachers();
+                    updateStats();
+                    updatePresentTeachersList();
+                    updateImportedDataDisplay();
+                    
+                    alert('✅ تم إعادة تعيين بيانات المعلمة بنجاح!');
+                }
+            }
+        }
+
+        // بدء النظام
+        function initializeSystem() {
+            console.log('🚀 بدء تشغيل نظام إدارة الطابور المدرسي - الإصدار 28');
+            console.log('🔗 الرابط المحفوظ:', googleSheetsUrl);
+            
+            // تحديث التاريخ والوقت
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // تحديث عرض الرابط في الواجهة
+            document.getElementById('currentSheetUrl').textContent = googleSheetsUrl;
+            document.getElementById('googleSheetsUrlInput').value = googleSheetsUrl;
+            
+            // بدء الاستيراد التلقائي
+            console.log('📥 بدء الاستيراد الأولي من الشيت...');
+            autoImportFromSheet(false);
+            
+            // تعيين فترة التحديث التلقائي كل 30 ثانية
+            autoUpdateInterval = setInterval(() => {
+                autoImportFromSheet(true);
+            }, 30000);
+            
+            console.log('✅ تم تشغيل النظام بنجاح مع نظام إدارة الروابط المحسن');
+        }
+
+        // تشغيل النظام عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', initializeSystem);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9823979df14a127a',t:'MTc1ODM5NTEwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
