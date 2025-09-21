@@ -2526,18 +2526,15 @@
                 ['متأخرات', data.late.length],
                 ['بعذر', data.excused.length],
                 [],
-                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل', 'ملاحظات']
             ];
 
             const allTeachers = [
-                ...data.present.map(t => ({ ...t, status: 'حاضرة' })),
-                ...data.absent.map(t => ({ ...t, status: 'غائبة' })),
-                ...data.late.map(t => ({ ...t, status: 'متأخرة' })),
-                ...data.excused.map(t => ({ ...t, status: 'بعذر' }))
+                ...teachers.filter(t => t.status !== 'not-recorded')
             ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
 
             allTeachers.forEach(t => {
-                wsData.push([getStatusText(t.status), t.name, t.class, t.timestamp || '']);
+                wsData.push([getStatusText(t.status), t.name, t.class, t.timestamp || '', t.notes || '']);
             });
 
             const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -2569,12 +2566,12 @@
         function exportCompleteReportToExcel() {
             const attendanceData = [
                 ['تقرير الحضور اليومي'],
-                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل', 'ملاحظات']
             ];
             const allTeachers = [
-                ...teachers.map(t => ({ ...t, status: getStatusText(t.status) }))
-            ];
-            allTeachers.forEach(t => attendanceData.push([t.status, t.name, t.class, t.timestamp || '']));
+                ...teachers.filter(t => t.status !== 'not-recorded')
+            ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
+            allTeachers.forEach(t => attendanceData.push([getStatusText(t.status), t.name, t.class, t.timestamp || '', t.notes || '']));
 
             const starsData = [
                 ['تقرير نجوم الطابور اليومي'],
