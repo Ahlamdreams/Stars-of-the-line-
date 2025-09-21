@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة الطابور المدرسي</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
         
@@ -637,46 +640,13 @@
 
         /* استجابة للشاشات الصغيرة */
         @media (max-width: 768px) {
-            .main-title { font-size: 2rem; }
-            .subtitle { font-size: 1rem; }
+            .main-title { font-size: 2.5rem; }
             .header-info { flex-direction: column; gap: 1rem; }
-            .header-image { width: 120px; height: 120px; }
-            .header-logo-image { width: 80px; height: 80px; }
-            .navigation { flex-direction: column; gap: 0.5rem; }
-            .nav-button { padding: 0.8rem 1.5rem; font-size: 1rem; }
-            .teachers-grid, .classes-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .attendance-stats { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-            .tabs { flex-direction: column; gap: 0.25rem; }
-            .tab-btn { padding: 0.8rem 1rem; font-size: 0.9rem; }
-            .modal-content { width: 95%; max-width: none; margin: 1rem; }
-            .password-input { width: 250px; font-size: 1rem; }
-            .criteria-row { flex-direction: column; gap: 0.5rem; text-align: center; }
-            .criteria-controls-btn { justify-content: center; }
-            .teacher-card, .class-card { margin: 0.5rem 0; }
-            .star-card { padding: 1rem; }
-            .stat-number { font-size: 2rem; }
-        }
-
-        @media (max-width: 480px) {
-            .main-title { font-size: 1.8rem; }
-            .header { padding: 1rem; margin: 0.5rem; }
-            .main-content { padding: 1rem; }
-            .nav-button { padding: 0.7rem 1rem; font-size: 0.9rem; }
-            .attendance-stats { grid-template-columns: 1fr; }
-            .stat-card { padding: 1rem; }
-            .teacher-card, .class-card { padding: 1rem; }
-            .modal-content { padding: 1rem; }
-            .form-input { padding: 0.8rem; font-size: 0.9rem; }
-            .password-input { width: 200px; }
-            .logo { width: 60px; height: 60px; font-size: 1.5rem; }
-            .header-logo-image { width: 60px; height: 60px; }
-        }
-
-        @media (max-width: 320px) {
-            .main-title { font-size: 1.5rem; }
-            .nav-button { padding: 0.6rem 0.8rem; font-size: 0.8rem; }
-            .password-input { width: 180px; }
-            .modal-content { padding: 0.8rem; }
+            .header-image { width: 150px; height: 150px; }
+            .navigation { flex-direction: column; }
+            .teachers-grid, .classes-grid { grid-template-columns: 1fr; }
+            .attendance-stats { grid-template-columns: repeat(2, 1fr); }
+            .tabs { flex-direction: column; }
         }
 
         /* حالة التحميل */
@@ -884,17 +854,67 @@
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
+
+        .report-preview-container {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+            padding: 2rem;
+            border-radius: 15px;
+            background: white;
+            color: #333;
+            text-align: right;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .report-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .report-date {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .report-section-title {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-right: 4px solid #ab47bc;
+            padding-right: 1rem;
+        }
+
+        .report-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .report-list-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px dashed #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-list-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
-    <!-- الخلفية الحية -->
     <div class="live-background"></div>
     <div class="background-overlay"></div>
 
-    <!-- الجسيمات العائمة -->
     <div class="floating-particles" id="particles"></div>
 
-    <!-- الترويسة -->
     <header class="header glass-morphism">
         <div class="logo-container">
             <div class="logo">
@@ -942,7 +962,6 @@
         </div>
     </header>
 
-    <!-- شريط التنقل -->
     <nav class="navigation glass-morphism">
         <button class="nav-button active" onclick="showSection('attendance')">
             👥 حضور المعلمات
@@ -955,9 +974,7 @@
         </button>
     </nav>
 
-    <!-- المحتوى الرئيسي -->
     <main class="main-content">
-        <!-- قسم حضور المعلمات -->
         <section id="attendance" class="section active">
             <div class="attendance-stats">
                 <div class="stat-card glass-morphism" style="background: linear-gradient(135deg, #4caf50, #81c784);">
@@ -997,7 +1014,6 @@
             </div>
         </section>
 
-        <!-- قسم نجم الطابور -->
         <section id="queue-star" class="section">
             <div class="classes-grid" id="classesGrid">
                 <div class="glass-morphism" style="padding: 3rem; text-align: center; color: white; grid-column: 1 / -1;">
@@ -1011,7 +1027,6 @@
             </div>
         </section>
 
-        <!-- قسم إدارة النظام -->
         <section id="system-management" class="section">
             <div class="system-management glass-morphism">
                 <div id="passwordPrompt" class="password-prompt">
@@ -1030,16 +1045,13 @@
                         <button class="tab-btn" onclick="showTab('settings')">الإعدادات</button>
                     </div>
 
-                    <!-- إدارة المعلمات -->
                     <div id="teachers-management" class="tab-content active">
                         <h3 style="color: white; text-align: center; margin-bottom: 2rem;">إدارة المعلمات والبيانات</h3>
                         
-                        <!-- معلومات النظام -->
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📊 معلومات النظام</h4>
                             <div id="dataManagementInfo" style="color: white; margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 10px;">
-                                <!-- سيتم تحديث هذا القسم تلقائياً -->
-                            </div>
+                                </div>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                                 <button class="nav-button" onclick="exportSavedData()">📤 تصدير البيانات</button>
                                 <button class="nav-button" onclick="importSavedData()">📥 استيراد البيانات</button>
@@ -1047,7 +1059,6 @@
                             </div>
                         </div>
                         
-                        <!-- معلومات الشيت المرجعي -->
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📋 الشيت المرجعي</h4>
                             <div style="color: white; margin-bottom: 1rem; padding: 1rem; background: rgba(33, 150, 243, 0.2); border-radius: 10px;">
@@ -1091,12 +1102,10 @@
                         <div class="glass-morphism" style="padding: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">قائمة المعلمات</h4>
                             <div id="teachersManagementList" style="max-height: 400px; overflow-y: auto;">
-                                <!-- سيتم تحميل قائمة المعلمات هنا -->
-                            </div>
+                                </div>
                         </div>
                     </div>
 
-                    <!-- إدارة النجوم -->
                     <div id="stars-management" class="tab-content">
                         <h3 style="color: white; text-align: center; margin-bottom: 2rem;">إدارة النجوم</h3>
                         
@@ -1143,7 +1152,6 @@
                         </div>
                     </div>
 
-                    <!-- طباعة الشهادات -->
                     <div id="certificates" class="tab-content">
                         <h3 style="color: white; text-align: center; margin-bottom: 2rem;">طباعة الشهادات</h3>
                         
@@ -1165,11 +1173,9 @@
                         </div>
                     </div>
 
-                    <!-- تصدير التقارير -->
                     <div id="reports" class="tab-content">
                         <h3 style="color: white; text-align: center; margin-bottom: 2rem;">تصدير التقارير والبيانات</h3>
                         
-                        <!-- تقارير الحضور -->
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📊 تقارير الحضور</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
@@ -1177,19 +1183,8 @@
                                 <button class="nav-button" onclick="exportDailyAttendance('excel')">📊 تقرير يومي (Excel)</button>
                                 <button class="nav-button" onclick="exportDailyAttendance('pdf')">📄 تقرير يومي (PDF)</button>
                             </div>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                                <button class="nav-button" onclick="exportWeeklyAttendance('image')">📸 تقرير أسبوعي (صورة)</button>
-                                <button class="nav-button" onclick="exportWeeklyAttendance('excel')">📊 تقرير أسبوعي (Excel)</button>
-                                <button class="nav-button" onclick="exportWeeklyAttendance('pdf')">📄 تقرير أسبوعي (PDF)</button>
-                            </div>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                <button class="nav-button" onclick="exportMonthlyAttendance('image')">📸 تقرير شهري (صورة)</button>
-                                <button class="nav-button" onclick="exportMonthlyAttendance('excel')">📊 تقرير شهري (Excel)</button>
-                                <button class="nav-button" onclick="exportMonthlyAttendance('pdf')">📄 تقرير شهري (PDF)</button>
-                            </div>
                         </div>
 
-                        <!-- تقارير نجوم الطابور -->
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">⭐ تقارير نجوم الطابور</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
@@ -1197,30 +1192,16 @@
                                 <button class="nav-button" onclick="exportDailyStars('excel')">📊 نجوم يومية (Excel)</button>
                                 <button class="nav-button" onclick="exportDailyStars('pdf')">📄 نجوم يومية (PDF)</button>
                             </div>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                                <button class="nav-button" onclick="exportWeeklyStars('image')">📸 نجوم أسبوعية (صورة)</button>
-                                <button class="nav-button" onclick="exportWeeklyStars('excel')">📊 نجوم أسبوعية (Excel)</button>
-                                <button class="nav-button" onclick="exportWeeklyStars('pdf')">📄 نجوم أسبوعية (PDF)</button>
-                            </div>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                <button class="nav-button" onclick="exportMonthlyStars('image')">📸 نجوم شهرية (صورة)</button>
-                                <button class="nav-button" onclick="exportMonthlyStars('excel')">📊 نجوم شهرية (Excel)</button>
-                                <button class="nav-button" onclick="exportMonthlyStars('pdf')">📄 نجوم شهرية (PDF)</button>
-                            </div>
                         </div>
-
-                        <!-- تقارير شاملة -->
+                        
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📋 التقارير الشاملة</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                                <button class="nav-button" onclick="exportCompleteReport('image')">📸 تقرير شامل (صورة)</button>
                                 <button class="nav-button" onclick="exportCompleteReport('excel')">📊 تقرير شامل (Excel)</button>
                                 <button class="nav-button" onclick="exportCompleteReport('pdf')">📄 تقرير شامل (PDF)</button>
-                                <button class="nav-button" onclick="exportAllData()">💾 تصدير جميع البيانات</button>
                             </div>
                         </div>
 
-                        <!-- معاينة التقرير -->
                         <div class="glass-morphism" style="padding: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">👁️ معاينة التقرير</h4>
                             <div id="reportPreview" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 300px; max-height: 500px; overflow-y: auto;">
@@ -1229,7 +1210,6 @@
                         </div>
                     </div>
 
-                    <!-- الإعدادات -->
                     <div id="settings" class="tab-content">
                         <h3 style="color: white; text-align: center;">الإعدادات</h3>
                         <div style="color: white;">
@@ -1250,7 +1230,6 @@
         </section>
     </main>
 
-    <!-- نافذة تعديل المعلمة المنبثقة -->
     <div id="teacherModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -1278,7 +1257,6 @@
         </div>
     </div>
 
-    <!-- نافذة تعديل الصف المنبثقة -->
     <div id="classModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -1302,7 +1280,6 @@
         </div>
     </div>
 
-    <!-- نافذة الكاميرا المنبثقة -->
     <div id="cameraModal" class="modal-overlay">
         <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
             <div class="modal-header">
@@ -1311,12 +1288,10 @@
             </div>
             <div class="modal-body">
                 <div id="cameraContainer" style="text-align: center;">
-                    <!-- معاينة الكاميرا -->
                     <div id="cameraPreview" style="position: relative; margin-bottom: 1rem;">
                         <video id="cameraVideo" style="width: 100%; max-width: 600px; height: auto; border-radius: 10px; background: #000;" autoplay muted></video>
                         <canvas id="cameraCanvas" style="display: none;"></canvas>
                         
-                        <!-- معلومات المعلمة على الصورة -->
                         <div id="photoOverlay" style="position: absolute; bottom: 10px; left: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 8px; font-family: 'Tajawal', sans-serif;">
                             <div id="overlayTeacherName" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;"></div>
                             <div id="overlayClassName" style="font-size: 1rem; margin-bottom: 5px;"></div>
@@ -1324,7 +1299,6 @@
                         </div>
                     </div>
                     
-                    <!-- أزرار التحكم -->
                     <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
                         <button id="startCameraBtn" class="modal-btn modal-btn-primary" onclick="startCamera()">
                             📹 تشغيل الكاميرا
@@ -1340,18 +1314,14 @@
                         </button>
                     </div>
                     
-                    <!-- الصور المحفوظة -->
                     <div id="capturedPhotos" style="display: none;">
                         <h4 style="color: #333; margin-bottom: 1rem;">الصور المحفوظة:</h4>
                         <div id="photosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; max-height: 300px; overflow-y: auto;">
-                            <!-- الصور ستظهر هنا -->
-                        </div>
+                            </div>
                     </div>
                     
-                    <!-- رسائل الحالة -->
                     <div id="cameraStatus" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;">
-                        <!-- رسائل الحالة ستظهر هنا -->
-                    </div>
+                        </div>
                 </div>
             </div>
             <div class="modal-actions">
@@ -1418,83 +1388,9 @@
             autoSync: false
         };
 
-        // تحميل البيانات الثابتة مع نظام استرداد متقدم
+        // تحميل البيانات الثابتة
         function loadFixedData() {
-            let saved = null;
-            let dataSource = 'جديدة';
-            
-            // محاولة تحميل البيانات من مصادر متعددة بترتيب الأولوية
-            try {
-                // 1. البيانات الأساسية
-                saved = localStorage.getItem('schoolQueueData');
-                if (saved) {
-                    dataSource = 'أساسية';
-                }
-            } catch (error) {
-                console.warn('فشل في تحميل البيانات الأساسية:', error);
-            }
-            
-            if (!saved) {
-                try {
-                    // 2. النسخة الاحتياطية اليومية الأحدث
-                    const today = new Date().toISOString().split('T')[0];
-                    saved = localStorage.getItem(`schoolQueueData_backup_${today}`);
-                    if (saved) {
-                        dataSource = 'احتياطية يومية';
-                    }
-                } catch (error) {
-                    console.warn('فشل في تحميل النسخة الاحتياطية اليومية:', error);
-                }
-            }
-            
-            if (!saved) {
-                try {
-                    // 3. النسخة الاحتياطية من sessionStorage
-                    saved = sessionStorage.getItem('schoolQueueData_session');
-                    if (saved) {
-                        dataSource = 'جلسة';
-                    }
-                } catch (error) {
-                    console.warn('فشل في تحميل بيانات الجلسة:', error);
-                }
-            }
-            
-            if (!saved) {
-                try {
-                    // 4. النسخة الطارئة
-                    saved = sessionStorage.getItem('schoolQueueData_emergency');
-                    if (saved) {
-                        dataSource = 'طارئة';
-                    }
-                } catch (error) {
-                    console.warn('فشل في تحميل البيانات الطارئة:', error);
-                }
-            }
-            
-            if (!saved) {
-                // 5. البحث عن أحدث نسخة احتياطية متاحة
-                try {
-                    const keys = Object.keys(localStorage);
-                    const backupKeys = keys.filter(key => 
-                        key.startsWith('schoolQueueData_backup_') || 
-                        key.startsWith('schoolQueueData_weekly_')
-                    ).sort().reverse();
-                    
-                    for (const key of backupKeys) {
-                        try {
-                            saved = localStorage.getItem(key);
-                            if (saved) {
-                                dataSource = key.includes('weekly') ? 'احتياطية أسبوعية' : 'احتياطية قديمة';
-                                break;
-                            }
-                        } catch (error) {
-                            continue;
-                        }
-                    }
-                } catch (error) {
-                    console.warn('فشل في البحث عن النسخ الاحتياطية:', error);
-                }
-            }
+            const saved = localStorage.getItem('schoolQueueData');
             
             // إنشاء البيانات الثابتة من القائمة المحددة
             teachers = [];
@@ -1540,10 +1436,6 @@
                 try {
                     const parsedData = JSON.parse(saved);
                     
-                    // التحقق من إصدار البيانات
-                    const dataVersion = parsedData.version || '1.0';
-                    console.log(`تحميل البيانات المحفوظة - الإصدار: ${dataVersion}, المصدر: ${dataSource}`);
-                    
                     // استعادة حالات الحضور والملاحظات
                     if (parsedData.teachers && parsedData.teachers.length > 0) {
                         parsedData.teachers.forEach(savedTeacher => {
@@ -1573,135 +1465,33 @@
                         });
                     }
                     
-                    // استعادة إعدادات النجوم إذا وجدت
-                    if (parsedData.stars) {
-                        if (parsedData.stars.starOfDay) {
-                            document.getElementById('starOfDay').textContent = parsedData.stars.starOfDay;
-                        }
-                        if (parsedData.stars.queueStar) {
-                            document.getElementById('queueStar').textContent = parsedData.stars.queueStar;
-                        }
-                        if (parsedData.stars.starOfMonth) {
-                            document.getElementById('starOfMonth').textContent = parsedData.stars.starOfMonth;
-                        }
-                        if (parsedData.stars.queueStarMonth) {
-                            document.getElementById('queueStarMonth').textContent = parsedData.stars.queueStarMonth;
-                        }
-                    }
-                    
-                    console.log(`✅ تم تحميل البيانات بنجاح من المصدر: ${dataSource}`);
-                    
-                    // حفظ البيانات المستردة في المصدر الأساسي إذا تم تحميلها من مصدر احتياطي
-                    if (dataSource !== 'أساسية') {
-                        setTimeout(() => {
-                            saveDataToLocal();
-                            console.log('تم حفظ البيانات المستردة في المصدر الأساسي');
-                        }, 1000);
-                    }
-                    
+                    console.log('تم تحميل البيانات الثابتة مع استعادة الحضور والنقاط المحفوظة');
                 } catch (error) {
                     console.error('خطأ في تحليل البيانات المحفوظة:', error);
-                    console.log('سيتم استخدام البيانات الافتراضية');
-                    dataSource = 'افتراضية (خطأ في التحليل)';
                 }
             } else {
-                console.log('لا توجد بيانات محفوظة - سيتم استخدام البيانات الافتراضية');
+                console.log('تم تحميل البيانات الثابتة الجديدة');
             }
             
-            console.log(`📊 تم تحميل البيانات: ${dataSource}`);
             console.log('👥 المعلمات:', teachers.length);
             console.log('📚 الصفوف:', classes.length);
-            
-            // حفظ البيانات الحالية إذا لم تكن محفوظة من قبل
-            if (!saved || dataSource === 'جديدة') {
-                setTimeout(() => {
-                    saveDataToLocal();
-                    console.log('تم حفظ البيانات الجديدة');
-                }, 500);
-            }
             
             return true;
         }
 
-        // حفظ البيانات في localStorage مع نسخ احتياطية متعددة
+        // حفظ البيانات في localStorage
         function saveDataToLocal() {
             try {
                 savedData.teachers = teachers;
                 savedData.classes = classes;
                 savedData.lastUpdate = new Date().toISOString();
-                savedData.version = '2.0';
                 
-                const dataString = JSON.stringify(savedData);
-                
-                // حفظ البيانات الأساسية
-                localStorage.setItem('schoolQueueData', dataString);
-                
-                // حفظ نسخة احتياطية يومية
-                const today = new Date().toISOString().split('T')[0];
-                localStorage.setItem(`schoolQueueData_backup_${today}`, dataString);
-                
-                // حفظ نسخة احتياطية أسبوعية
-                const weekNumber = getWeekNumber(new Date());
-                localStorage.setItem(`schoolQueueData_weekly_${weekNumber}`, dataString);
-                
-                // تنظيف النسخ الاحتياطية القديمة (الاحتفاظ بآخر 7 أيام و 4 أسابيع)
-                cleanupOldBackups();
-                
-                console.log('تم حفظ البيانات محلياً مع النسخ الاحتياطية');
-                
-                // حفظ إضافي في sessionStorage كنسخة احتياطية سريعة
-                sessionStorage.setItem('schoolQueueData_session', dataString);
-                
+                localStorage.setItem('schoolQueueData', JSON.stringify(savedData));
+                console.log('تم حفظ البيانات محلياً');
                 return true;
             } catch (error) {
                 console.error('خطأ في حفظ البيانات:', error);
-                
-                // محاولة حفظ في sessionStorage كبديل
-                try {
-                    sessionStorage.setItem('schoolQueueData_emergency', JSON.stringify(savedData));
-                    console.log('تم الحفظ الطارئ في sessionStorage');
-                } catch (sessionError) {
-                    console.error('فشل الحفظ الطارئ:', sessionError);
-                }
-                
                 return false;
-            }
-        }
-
-        // الحصول على رقم الأسبوع
-        function getWeekNumber(date) {
-            const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-            const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
-            return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-        }
-
-        // تنظيف النسخ الاحتياطية القديمة
-        function cleanupOldBackups() {
-            try {
-                const keys = Object.keys(localStorage);
-                const today = new Date();
-                const currentWeek = getWeekNumber(today);
-                
-                keys.forEach(key => {
-                    // تنظيف النسخ اليومية القديمة (أكثر من 7 أيام)
-                    if (key.startsWith('schoolQueueData_backup_')) {
-                        const backupDate = new Date(key.replace('schoolQueueData_backup_', ''));
-                        const daysDiff = (today - backupDate) / (1000 * 60 * 60 * 24);
-                        if (daysDiff > 7) {
-                            localStorage.removeItem(key);
-                        }
-                    }
-                    
-                    // تنظيف النسخ الأسبوعية القديمة (أكثر من 4 أسابيع)
-                    if (key.startsWith('schoolQueueData_weekly_')) {
-                        const weekNumber = parseInt(key.replace('schoolQueueData_weekly_', ''));
-                        if (Math.abs(currentWeek - weekNumber) > 4) {
-                            localStorage.removeItem(key);
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('خطأ في تنظيف النسخ الاحتياطية:', error);
             }
         }
 
@@ -2125,7 +1915,8 @@
                 'present': 'حاضرة',
                 'absent': 'غائبة',
                 'late': 'متأخرة',
-                'excused': 'بعذر'
+                'excused': 'بعذر',
+                'not-recorded': 'لم يتم التسجيل'
             };
             return statusMap[status] || 'غير محدد';
         }
@@ -2149,6 +1940,7 @@
                 teacher.timestamp = null;
                 renderTeachers();
                 updateStats();
+                saveDataToLocal();
                 alert(`تم إعادة تعيين حضور ${teacher.name}`);
             }
         }
@@ -2342,6 +2134,7 @@
             renderTeachersManagementList();
             updateStarSelects();
             hideAddTeacherForm();
+            saveDataToLocal();
             alert('تم إضافة المعلمة بنجاح');
         }
 
@@ -2351,6 +2144,7 @@
                 renderTeachers();
                 updateStats();
                 renderTeachersManagementList();
+                saveDataToLocal();
                 alert('تم حذف المعلمة بنجاح');
             }
         }
@@ -2367,6 +2161,7 @@
                 teacher.class = newClass.trim();
                 renderTeachers();
                 renderTeachersManagementList();
+                saveDataToLocal();
                 alert('تم تحديث بيانات المعلمة بنجاح');
             }
         }
@@ -2454,7 +2249,7 @@
                 
                 saveDataToLocal();
                 renderClasses();
-                alert('تم مسح النقاط الشهرية لجميع الصفوف بنجاح');
+                alert(`تم مسح النقاط الشهرية لـ ${classItem.name}`);
             }
         }
 
@@ -2684,20 +2479,12 @@
             if (format === 'image') {
                 generateAttendanceReportImage(reportData);
             } else if (format === 'excel') {
-                exportToExcel(reportData, 'تقرير_الحضور_اليومي');
+                exportAttendanceToExcel(reportData, 'تقرير_الحضور_اليومي');
             } else if (format === 'pdf') {
-                exportToPDF(reportData, 'تقرير_الحضور_اليومي');
+                exportAttendanceToPDF(reportData, 'تقرير_الحضور_اليومي');
             }
         }
-
-        function exportWeeklyAttendance(format) {
-            alert('ميزة التقرير الأسبوعي ستكون متاحة قريباً');
-        }
-
-        function exportMonthlyAttendance(format) {
-            alert('ميزة التقرير الشهري ستكون متاحة قريباً');
-        }
-
+        
         function exportDailyStars(format) {
             const dates = getFormattedDates();
             const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
@@ -2713,33 +2500,295 @@
             
             if (format === 'image') {
                 generateStarsReportImage(reportData);
-            } else {
-                alert('ميزة التصدير بصيغة ' + format + ' ستكون متاحة قريباً');
+            } else if (format === 'excel') {
+                exportStarsToExcel(reportData, 'تقرير_نجوم_الطابور_اليومي');
+            } else if (format === 'pdf') {
+                exportStarsToPDF(reportData, 'تقرير_نجوم_الطابور_اليومي');
             }
         }
 
-        function exportWeeklyStars(format) {
-            alert('ميزة تقرير النجوم الأسبوعي ستكون متاحة قريباً');
-        }
-
-        function exportMonthlyStars(format) {
-            alert('ميزة تقرير النجوم الشهري ستكون متاحة قريباً');
-        }
-
         function exportCompleteReport(format) {
-            alert('ميزة التقرير الشامل ستكون متاحة قريباً');
+            if (format === 'excel') {
+                exportCompleteReportToExcel();
+            } else if (format === 'pdf') {
+                exportCompleteReportToPDF();
+            }
         }
 
-        function exportAllData() {
-            alert('ميزة تصدير جميع البيانات ستكون متاحة قريباً');
+        // وظائف جديدة للتصدير إلى Excel
+        function exportAttendanceToExcel(data, filename) {
+            const wsData = [
+                ['تقرير الحضور اليومي'],
+                ['التاريخ', data.date],
+                ['إجمالي المعلمات', data.total],
+                ['حاضرات', data.present.length],
+                ['غائبات', data.absent.length],
+                ['متأخرات', data.late.length],
+                ['بعذر', data.excused.length],
+                [],
+                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+            ];
+
+            const allTeachers = [
+                ...data.present.map(t => ({ ...t, status: 'حاضرة' })),
+                ...data.absent.map(t => ({ ...t, status: 'غائبة' })),
+                ...data.late.map(t => ({ ...t, status: 'متأخرة' })),
+                ...data.excused.map(t => ({ ...t, status: 'بعذر' }))
+            ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
+
+            allTeachers.forEach(t => {
+                wsData.push([getStatusText(t.status), t.name, t.class, t.timestamp || '']);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تقرير الحضور');
+
+            XLSX.writeFile(wb, `${filename}.xlsx`);
         }
 
-        function exportToExcel(data, filename) {
-            alert('ميزة التصدير إلى Excel ستكون متاحة قريباً');
+        function exportStarsToExcel(data, filename) {
+            const wsData = [
+                ['تقرير نجوم الطابور اليومي'],
+                ['التاريخ', data.date],
+                [],
+                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
+            ];
+
+            data.classes.forEach((c, index) => {
+                wsData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(wsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'تقرير النجوم');
+
+            XLSX.writeFile(wb, `${filename}.xlsx`);
         }
 
-        function exportToPDF(data, filename) {
-            alert('ميزة التصدير إلى PDF ستكون متاحة قريباً');
+        function exportCompleteReportToExcel() {
+            const attendanceData = [
+                ['تقرير الحضور اليومي'],
+                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+            ];
+            const allTeachers = [
+                ...teachers.map(t => ({ ...t, status: getStatusText(t.status) }))
+            ];
+            allTeachers.forEach(t => attendanceData.push([t.status, t.name, t.class, t.timestamp || '']));
+
+            const starsData = [
+                ['تقرير نجوم الطابور اليومي'],
+                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
+            ];
+            const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
+            sortedClasses.forEach((c, index) => {
+                starsData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
+            });
+
+            const wb = XLSX.utils.book_new();
+            const attendanceWs = XLSX.utils.aoa_to_sheet(attendanceData);
+            const starsWs = XLSX.utils.aoa_to_sheet(starsData);
+            
+            XLSX.utils.book_append_sheet(wb, attendanceWs, 'تقرير الحضور');
+            XLSX.utils.book_append_sheet(wb, starsWs, 'تقرير النجوم');
+
+            XLSX.writeFile(wb, `تقرير_شامل_${getFormattedDates().gregorian}.xlsx`);
+        }
+        
+        // وظائف جديدة للتصدير إلى PDF
+        function exportAttendanceToPDF(data, filename) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // تحقق من وجود الخط
+            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
+            if (!fontExists) {
+                 console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
+                 return;
+            } else {
+                 doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
+                 doc.setFont('Tajawal');
+            }
+            
+            doc.setRTLTextMode(true);
+            
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 20;
+
+            doc.text(data.title, pageWidth / 2, 20, { align: 'center' });
+            doc.text(`التاريخ: ${data.date}`, pageWidth / 2, 30, { align: 'center' });
+            
+            const tableData = [
+                ['حالة الحضور', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+            ];
+            const allTeachers = [
+                ...data.present.map(t => ({ ...t, status: 'حاضرة' })),
+                ...data.absent.map(t => ({ ...t, status: 'غائبة' })),
+                ...data.late.map(t => ({ ...t, status: 'متأخرة' })),
+                ...data.excused.map(t => ({ ...t, status: 'بعذر' }))
+            ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
+            
+            allTeachers.forEach(t => {
+                tableData.push([getStatusText(t.status), t.name, t.class, t.timestamp || 'غير مسجل']);
+            });
+
+            doc.autoTable({
+                startY: 40,
+                head: [tableData[0]],
+                body: tableData.slice(1),
+                theme: 'striped',
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 50 },
+                    2: { cellWidth: 30 },
+                    3: { cellWidth: 50 }
+                },
+                styles: {
+                    font: 'Tajawal',
+                    direction: 'rtl',
+                    halign: 'right'
+                }
+            });
+
+            doc.save(`${filename}.pdf`);
+        }
+
+        function exportStarsToPDF(data, filename) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
+            if (!fontExists) {
+                console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
+                return;
+            } else {
+                doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
+                doc.setFont('Tajawal');
+            }
+            
+            doc.setRTLTextMode(true);
+            
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            doc.text(data.title, pageWidth / 2, 20, { align: 'center' });
+            doc.text(`التاريخ: ${data.date}`, pageWidth / 2, 30, { align: 'center' });
+            
+            const tableData = [
+                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
+            ];
+            
+            data.classes.forEach((c, index) => {
+                tableData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
+            });
+
+            doc.autoTable({
+                startY: 40,
+                head: [tableData[0]],
+                body: tableData.slice(1),
+                theme: 'striped',
+                columnStyles: {
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 60 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 40 }
+                },
+                styles: {
+                    font: 'Tajawal',
+                    direction: 'rtl',
+                    halign: 'right'
+                }
+            });
+
+            doc.save(`${filename}.pdf`);
+        }
+
+        function exportCompleteReportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
+            if (!fontExists) {
+                console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
+                return;
+            } else {
+                doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
+                doc.setFont('Tajawal');
+            }
+
+            const pageHeight = doc.internal.pageSize.height;
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 20;
+            let y = margin;
+            const lineHeight = 10;
+            const currentDate = getFormattedDates().gregorian;
+
+            doc.setRTLTextMode(true);
+            doc.text('تقرير شامل للنظام', pageWidth / 2, y, { align: 'center' });
+            y += lineHeight;
+            doc.text(`التاريخ: ${currentDate}`, pageWidth / 2, y, { align: 'center' });
+            y += lineHeight * 2;
+
+            // Attendance Section
+            doc.text('تقرير الحضور اليومي', margin, y);
+            y += lineHeight;
+
+            const attendanceData = [
+                ['حالة الحضور', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
+            ];
+            const allTeachers = teachers.map(t => ({ ...t, status: getStatusText(t.status) }));
+            allTeachers.forEach(t => attendanceData.push([t.status, t.name, t.class, t.timestamp || 'غير مسجل']));
+
+            doc.autoTable({
+                startY: y,
+                head: [attendanceData[0]],
+                body: attendanceData.slice(1),
+                theme: 'striped',
+                columnStyles: {
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 50 },
+                    2: { cellWidth: 30 },
+                    3: { cellWidth: 50 }
+                },
+                styles: {
+                    font: 'Tajawal',
+                    direction: 'rtl',
+                    halign: 'right'
+                }
+            });
+
+            y = doc.lastAutoTable.finalY + lineHeight * 2;
+
+            // Stars Section
+            doc.text('تقرير نجوم الطابور اليومي', margin, y);
+            y += lineHeight;
+
+            const starsData = [
+                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
+            ];
+            const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
+            sortedClasses.forEach((c, index) => {
+                starsData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
+            });
+
+            doc.autoTable({
+                startY: y,
+                head: [starsData[0]],
+                body: starsData.slice(1),
+                theme: 'striped',
+                columnStyles: {
+                    0: { cellWidth: 20 },
+                    1: { cellWidth: 60 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 40 }
+                },
+                styles: {
+                    font: 'Tajawal',
+                    direction: 'rtl',
+                    halign: 'right'
+                }
+            });
+
+            doc.save(`تقرير_شامل_${currentDate}.pdf`);
         }
 
         // إنشاء تقرير الحضور كصورة
@@ -2747,84 +2796,91 @@
             const preview = document.getElementById('reportPreview');
             
             preview.innerHTML = `
-                <div style="border: 3px solid #4caf50; padding: 2rem; border-radius: 15px; background: linear-gradient(45deg, #fff, #f8f9fa);">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <h1 style="color: #4caf50; font-size: 2rem; margin-bottom: 0.5rem;">${data.title}</h1>
-                        <p style="color: #333; font-weight: bold;">${data.date}</p>
-                        <p style="color: #666; font-size: 0.9rem;">${data.hijriDate}</p>
+                <div id="report-content" class="report-preview-container">
+                    <div class="report-header">
+                        <h1 class="report-title" style="color: #4caf50;">${data.title}</h1>
+                        <p class="report-date">${data.date} / ${data.hijriDate}</p>
                     </div>
                     
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0;">
-                        <div style="text-align: center; padding: 1rem; background: rgba(76, 175, 80, 0.1); border-radius: 10px;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0; text-align: center;">
+                        <div style="padding: 1rem; background: rgba(76, 175, 80, 0.1); border-radius: 10px;">
                             <div style="font-size: 2rem; color: #4caf50; font-weight: bold;">${data.present.length}</div>
-                            <div style="color: #333;">حاضرات</div>
+                            <div>حاضرات</div>
                         </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(244, 67, 54, 0.1); border-radius: 10px;">
+                        <div style="padding: 1rem; background: rgba(244, 67, 54, 0.1); border-radius: 10px;">
                             <div style="font-size: 2rem; color: #f44336; font-weight: bold;">${data.absent.length}</div>
-                            <div style="color: #333;">غائبات</div>
+                            <div>غائبات</div>
                         </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 10px;">
+                        <div style="padding: 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 10px;">
                             <div style="font-size: 2rem; color: #ff9800; font-weight: bold;">${data.late.length}</div>
-                            <div style="color: #333;">متأخرات</div>
+                            <div>متأخرات</div>
                         </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(33, 150, 243, 0.1); border-radius: 10px;">
+                        <div style="padding: 1rem; background: rgba(33, 150, 243, 0.1); border-radius: 10px;">
                             <div style="font-size: 2rem; color: #2196f3; font-weight: bold;">${data.excused.length}</div>
-                            <div style="color: #333;">بعذر</div>
+                            <div>بعذر</div>
                         </div>
                     </div>
                     
-                    ${data.present.length > 0 ? `
-                    <div style="margin: 2rem 0;">
-                        <h3 style="color: #4caf50; margin-bottom: 1rem;">المعلمات الحاضرات:</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
-                            ${data.present.map((teacher, index) => `
-                                <div style="padding: 0.5rem; background: rgba(76, 175, 80, 0.1); border-radius: 5px; text-align: right;">
-                                    ${index + 1}. ${teacher.name} - ${teacher.class}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                    
+                    <h3 class="report-section-title">المعلمات الحاضرات</h3>
+                    <ul class="report-list">
+                        ${data.present.length > 0 ? 
+                            data.present.map(t => `<li class="report-list-item">${t.name} - ${t.class}</li>`).join('') :
+                            '<li class="report-list-item" style="color: #999;">لا توجد معلمات حاضرات.</li>'
+                        }
+                    </ul>
+
+                    <h3 class="report-section-title">المعلمات الغائبات</h3>
+                    <ul class="report-list">
+                        ${data.absent.length > 0 ? 
+                            data.absent.map(t => `<li class="report-list-item">${t.name} - ${t.class}</li>`).join('') :
+                            '<li class="report-list-item" style="color: #999;">لا توجد معلمات غائبات.</li>'
+                        }
+                    </ul>
+
                     <div style="text-align: center; margin-top: 2rem; color: #666;">
                         <p>مديرة المدرسة: أ.أحلام بنت علي الحمدانية</p>
                     </div>
                 </div>
             `;
             
-            alert('تم إنشاء تقرير الحضور اليومي! يمكنك رؤيته في قسم معاينة التقرير.');
+            // تحويل المحتوى إلى صورة
+            setTimeout(() => {
+                const content = document.getElementById('report-content');
+                html2canvas(content, { scale: 2 }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = `تقرير_الحضور_اليومي_${data.date}.png`;
+                    link.click();
+                    alert('تم إنشاء التقرير كصورة بنجاح!');
+                });
+            }, 100);
         }
 
         function generateStarsReportImage(data) {
             const preview = document.getElementById('reportPreview');
             
             preview.innerHTML = `
-                <div style="border: 3px solid #ffa726; padding: 2rem; border-radius: 15px; background: linear-gradient(45deg, #fff, #f8f9fa);">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <h1 style="color: #ffa726; font-size: 2rem; margin-bottom: 0.5rem;">${data.title}</h1>
-                        <p style="color: #333; font-weight: bold;">${data.date}</p>
-                        <p style="color: #666; font-size: 0.9rem;">${data.hijriDate}</p>
+                <div id="report-content" class="report-preview-container">
+                    <div class="report-header">
+                        <h1 class="report-title" style="color: #ffa726;">${data.title}</h1>
+                        <p class="report-date">${data.date} / ${data.hijriDate}</p>
                     </div>
                     
-                    ${data.starOfDay && data.starOfDay !== 'لم يتم الاختيار بعد' ? `
                     <div style="text-align: center; margin: 2rem 0; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
                         <h3 style="color: #ffc107;">🌟 نجمة اليوم: ${data.starOfDay}</h3>
                         <h3 style="color: #ffc107;">⭐ نجم الطابور: ${data.queueStar}</h3>
                     </div>
-                    ` : ''}
                     
-                    <div style="margin: 2rem 0;">
-                        <h3 style="color: #333; margin-bottom: 1rem;">ترتيب الصفوف حسب النقاط:</h3>
-                        ${data.classes.map((classItem, index) => `
-                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; margin: 0.5rem 0; background: ${index === 0 ? 'rgba(255, 193, 7, 0.2)' : index === 1 ? 'rgba(158, 158, 158, 0.2)' : index === 2 ? 'rgba(205, 127, 50, 0.2)' : 'rgba(0, 0, 0, 0.05)'}; border-radius: 10px;">
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    <div style="font-size: 1.5rem;">${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`}</div>
-                                    <div style="font-weight: bold; color: #333;">${classItem.name}</div>
-                                </div>
-                                <div style="font-size: 1.5rem; font-weight: bold; color: #ffa726;">${classItem.totalPoints} نقطة</div>
-                            </div>
+                    <h3 class="report-section-title">ترتيب الصفوف حسب النقاط</h3>
+                    <ul class="report-list">
+                        ${data.classes.map((c, index) => `
+                            <li class="report-list-item">
+                                <span>${index + 1}. ${c.name}</span>
+                                <span>${c.totalPoints} نقطة</span>
+                            </li>
                         `).join('')}
-                    </div>
+                    </ul>
                     
                     <div style="text-align: center; margin-top: 2rem; color: #666;">
                         <p>مديرة المدرسة: أ.أحلام بنت علي الحمدانية</p>
@@ -2832,7 +2888,18 @@
                 </div>
             `;
             
-            alert('تم إنشاء تقرير نجوم الطابور! يمكنك رؤيته في قسم معاينة التقرير.');
+            // تحويل المحتوى إلى صورة
+            setTimeout(() => {
+                const content = document.getElementById('report-content');
+                html2canvas(content, { scale: 2 }).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = imgData;
+                    link.download = `تقرير_نجوم_الطابور_اليومي_${data.date}.png`;
+                    link.click();
+                    alert('تم إنشاء التقرير كصورة بنجاح!');
+                });
+            }, 100);
         }
 
         // وظائف إدارة البيانات الإضافية
@@ -3317,22 +3384,22 @@
             ctx.direction = 'rtl';
             
             // اسم المعلمة
-            ctx.font = 'bold 24px Arial';
+            ctx.font = 'bold 24px Tajawal, sans-serif';
             ctx.fillText(teacher.name, canvas.width - 20, canvas.height - 85);
             
             // الصف
-            ctx.font = '20px Arial';
+            ctx.font = '20px Tajawal, sans-serif';
             ctx.fillText(teacher.class, canvas.width - 20, canvas.height - 55);
             
             // التاريخ والوقت
-            ctx.font = '16px Arial';
+            ctx.font = '16px Tajawal, sans-serif';
             ctx.fillText(new Date().toLocaleString('ar-SA'), canvas.width - 20, canvas.height - 25);
             
             // شعار المدرسة (نص)
             ctx.textAlign = 'left';
-            ctx.font = 'bold 18px Arial';
+            ctx.font = 'bold 18px Tajawal, sans-serif';
             ctx.fillText('الطابور المدرسي', 20, canvas.height - 85);
-            ctx.font = '14px Arial';
+            ctx.font = '14px Tajawal, sans-serif';
             ctx.fillText('أ.أحلام بنت علي الحمدانية', 20, canvas.height - 60);
         }
 
@@ -3492,239 +3559,8 @@
             }
         });
 
-        // حفظ تلقائي دوري
-        function startAutoSave() {
-            // حفظ كل 30 ثانية
-            setInterval(() => {
-                try {
-                    saveDataToLocal();
-                    console.log('💾 حفظ تلقائي تم بنجاح');
-                } catch (error) {
-                    console.error('❌ فشل الحفظ التلقائي:', error);
-                }
-            }, 30000);
-            
-            // حفظ عند إغلاق الصفحة أو تغيير التبويب
-            window.addEventListener('beforeunload', function(event) {
-                try {
-                    saveDataToLocal();
-                    console.log('💾 حفظ عند الإغلاق تم بنجاح');
-                } catch (error) {
-                    console.error('❌ فشل الحفظ عند الإغلاق:', error);
-                }
-            });
-            
-            // حفظ عند فقدان التركيز على الصفحة
-            document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') {
-                    try {
-                        saveDataToLocal();
-                        console.log('💾 حفظ عند فقدان التركيز تم بنجاح');
-                    } catch (error) {
-                        console.error('❌ فشل الحفظ عند فقدان التركيز:', error);
-                    }
-                }
-            });
-        }
-
-        // مراقبة حالة التخزين
-        function monitorStorageHealth() {
-            setInterval(() => {
-                try {
-                    // فحص مساحة التخزين المتاحة
-                    const testKey = 'storage_test_' + Date.now();
-                    const testData = 'x'.repeat(1024); // 1KB
-                    
-                    localStorage.setItem(testKey, testData);
-                    localStorage.removeItem(testKey);
-                    
-                    // فحص وجود البيانات الأساسية
-                    const mainData = localStorage.getItem('schoolQueueData');
-                    if (!mainData) {
-                        console.warn('⚠️ البيانات الأساسية مفقودة - محاولة الاستعادة');
-                        loadFixedData();
-                    }
-                    
-                } catch (error) {
-                    console.error('❌ مشكلة في التخزين:', error);
-                    
-                    // محاولة تنظيف التخزين
-                    try {
-                        cleanupOldBackups();
-                        console.log('🧹 تم تنظيف التخزين');
-                    } catch (cleanupError) {
-                        console.error('❌ فشل تنظيف التخزين:', cleanupError);
-                    }
-                }
-            }, 300000); // كل 5 دقائق
-        }
-
-        // إضافة معلومات حالة النظام
-        function addSystemStatusIndicator() {
-            const statusIndicator = document.createElement('div');
-            statusIndicator.id = 'systemStatus';
-            statusIndicator.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 20px;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 0.5rem 1rem;
-                border-radius: 20px;
-                font-size: 0.8rem;
-                z-index: 1000;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                display: none;
-                transition: all 0.3s ease;
-            `;
-            
-            document.body.appendChild(statusIndicator);
-            
-            // تحديث حالة النظام
-            function updateSystemStatus(message, type = 'info') {
-                const indicator = document.getElementById('systemStatus');
-                if (!indicator) return;
-                
-                let color = '#2196f3'; // أزرق للمعلومات
-                if (type === 'success') color = '#4caf50'; // أخضر للنجاح
-                if (type === 'warning') color = '#ff9800'; // برتقالي للتحذير
-                if (type === 'error') color = '#f44336'; // أحمر للخطأ
-                
-                indicator.style.borderColor = color;
-                indicator.style.color = color;
-                indicator.textContent = message;
-                indicator.style.display = 'block';
-                
-                // إخفاء بعد 3 ثوان للرسائل العادية
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        indicator.style.display = 'none';
-                    }, 3000);
-                }
-            }
-            
-            // ربط مؤشر الحالة بالوظائف
-            window.updateSystemStatus = updateSystemStatus;
-        }
-
-        // تحسين وظائف الحفظ مع مؤشر الحالة
-        function updateAttendanceWithSave(teacherId, status) {
-            updateAttendance(teacherId, status);
-            const success = saveDataToLocal();
-            if (window.updateSystemStatus) {
-                window.updateSystemStatus(
-                    success ? '💾 تم حفظ الحضور' : '❌ فشل حفظ الحضور',
-                    success ? 'success' : 'error'
-                );
-            }
-        }
-
-        function updatePointsWithSave(classIndex, criteria, change) {
-            updatePoints(classIndex, criteria, change);
-            const success = saveDataToLocal();
-            if (window.updateSystemStatus) {
-                window.updateSystemStatus(
-                    success ? '💾 تم حفظ النقاط' : '❌ فشل حفظ النقاط',
-                    success ? 'success' : 'error'
-                );
-            }
-        }
-
-        // تحسين إدارة البيانات مع معلومات النسخ الاحتياطية
-        function updateDataManagement() {
-            const info = document.getElementById('dataManagementInfo');
-            if (!info) return;
-            
-            const lastUpdate = savedData.lastUpdate ? new Date(savedData.lastUpdate).toLocaleString('ar-SA') : 'لم يتم الحفظ بعد';
-            const dataSize = JSON.stringify(savedData).length;
-            const sizeKB = (dataSize / 1024).toFixed(2);
-            
-            // إحصائيات الحضور
-            const presentCount = teachers.filter(t => t.status === 'present').length;
-            const absentCount = teachers.filter(t => t.status === 'absent').length;
-            const lateCount = teachers.filter(t => t.status === 'late').length;
-            const excusedCount = teachers.filter(t => t.status === 'excused').length;
-            const notRecordedCount = teachers.filter(t => t.status === 'not-recorded').length;
-            
-            // عدد النسخ الاحتياطية
-            let backupCount = 0;
-            try {
-                const keys = Object.keys(localStorage);
-                backupCount = keys.filter(key => 
-                    key.startsWith('schoolQueueData_backup_') || 
-                    key.startsWith('schoolQueueData_weekly_')
-                ).length;
-            } catch (error) {
-                console.warn('فشل في عد النسخ الاحتياطية:', error);
-            }
-            
-            info.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                    <div style="text-align: center; padding: 0.8rem; background: rgba(76, 175, 80, 0.2); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #4caf50;">${teachers.length}</div>
-                        <div style="font-size: 0.9rem;">إجمالي المعلمات</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.8rem; background: rgba(33, 150, 243, 0.2); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #2196f3;">${classes.length}</div>
-                        <div style="font-size: 0.9rem;">إجمالي الصفوف</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.8rem; background: rgba(255, 193, 7, 0.2); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #ffc107;">${sizeKB}</div>
-                        <div style="font-size: 0.9rem;">كيلوبايت</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.8rem; background: rgba(156, 39, 176, 0.2); border-radius: 8px;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: #9c27b0;">${backupCount}</div>
-                        <div style="font-size: 0.9rem;">نسخ احتياطية</div>
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; margin-bottom: 1rem;">
-                    <div style="text-align: center; padding: 0.5rem; background: rgba(76, 175, 80, 0.1); border-radius: 6px;">
-                        <div style="font-weight: bold; color: #4caf50;">${presentCount}</div>
-                        <div style="font-size: 0.8rem;">حاضرات</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.5rem; background: rgba(244, 67, 54, 0.1); border-radius: 6px;">
-                        <div style="font-weight: bold; color: #f44336;">${absentCount}</div>
-                        <div style="font-size: 0.8rem;">غائبات</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.5rem; background: rgba(255, 152, 0, 0.1); border-radius: 6px;">
-                        <div style="font-weight: bold; color: #ff9800;">${lateCount}</div>
-                        <div style="font-size: 0.8rem;">متأخرات</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.5rem; background: rgba(33, 150, 243, 0.1); border-radius: 6px;">
-                        <div style="font-weight: bold; color: #2196f3;">${excusedCount}</div>
-                        <div style="font-size: 0.8rem;">بعذر</div>
-                    </div>
-                    <div style="text-align: center; padding: 0.5rem; background: rgba(158, 158, 158, 0.1); border-radius: 6px;">
-                        <div style="font-weight: bold; color: #9e9e9e;">${notRecordedCount}</div>
-                        <div style="font-size: 0.8rem;">لم يسجل</div>
-                    </div>
-                </div>
-                
-                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 1rem;">
-                    <div><strong>🕒 آخر حفظ:</strong> ${lastUpdate}</div>
-                    <div><strong>💾 النسخ الاحتياطية:</strong> ${backupCount} نسخة متاحة</div>
-                    <div><strong>🔄 الحفظ التلقائي:</strong> كل 30 ثانية</div>
-                </div>
-                
-                <div style="padding: 1rem; background: rgba(33, 150, 243, 0.1); border-radius: 8px; border-left: 4px solid #2196f3;">
-                    <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">
-                        <strong>💡 نصائح للحفاظ على البيانات:</strong><br>
-                        • البيانات تُحفظ تلقائياً كل 30 ثانية<br>
-                        • يتم إنشاء نسخ احتياطية يومية وأسبوعية<br>
-                        • استخدم "تصدير البيانات" لحفظ نسخة خارجية<br>
-                        • تجنب مسح بيانات المتصفح لضمان الاحتفاظ بالبيانات
-                    </div>
-                </div>
-            `;
-        }
-
-        // تهيئة الصفحة مع النظام المحسن
+        // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            // إضافة مؤشر حالة النظام
-            addSystemStatusIndicator();
-            
             // تحميل البيانات الثابتة
             loadFixedData();
             
@@ -3743,25 +3579,10 @@
                 updateDataManagement();
             }
             
-            // بدء الحفظ التلقائي
-            startAutoSave();
-            
-            // بدء مراقبة حالة التخزين
-            monitorStorageHealth();
-            
-            // إشعار بنجاح التحميل
-            if (window.updateSystemStatus) {
-                setTimeout(() => {
-                    window.updateSystemStatus('✅ تم تحميل النظام بنجاح', 'success');
-                }, 1000);
-            }
-            
-            console.log('✅ تم تحميل النظام المحسن بالبيانات الثابتة بنجاح');
+            console.log('✅ تم تحميل النظام بالبيانات الثابتة بنجاح');
             console.log('👥 المعلمات:', teachers.length);
             console.log('📚 الصفوف:', classes.length);
-            console.log('💾 نظام الحفظ التلقائي: مفعل');
-            console.log('🔄 مراقبة التخزين: مفعلة');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c320172a0127a',t:'MTc1ODQ4NTMxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
