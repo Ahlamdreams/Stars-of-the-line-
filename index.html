@@ -1179,21 +1179,41 @@
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📊 تقارير الحضور</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                                <button class="nav-button" onclick="exportDailyAttendance('image')">📸 تقرير يومي (صورة)</button>
-                                <button class="nav-button" onclick="exportDailyAttendance('excel')">📊 تقرير يومي (Excel)</button>
-                                <button class="nav-button" onclick="exportDailyAttendance('pdf')">📄 تقرير يومي (PDF)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyAttendance('image')">📸 تقرير يومي (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyAttendance('excel')">📊 تقرير يومي (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyAttendance('pdf')">📄 تقرير يومي (PDF)</button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                                <button class="nav-button" onclick="generateAndExportWeeklyAttendance('image')">📸 تقرير أسبوعي (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportWeeklyAttendance('excel')">📊 تقرير أسبوعي (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportWeeklyAttendance('pdf')">📄 تقرير أسبوعي (PDF)</button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <button class="nav-button" onclick="generateAndExportMonthlyAttendance('image')">📸 تقرير شهري (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportMonthlyAttendance('excel')">📊 تقرير شهري (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportMonthlyAttendance('pdf')">📄 تقرير شهري (PDF)</button>
                             </div>
                         </div>
 
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">⭐ تقارير نجوم الطابور</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                                <button class="nav-button" onclick="exportDailyStars('image')">📸 نجوم يومية (صورة)</button>
-                                <button class="nav-button" onclick="exportDailyStars('excel')">📊 نجوم يومية (Excel)</button>
-                                <button class="nav-button" onclick="exportDailyStars('pdf')">📄 نجوم يومية (PDF)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyStars('image')">📸 نجوم يومية (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyStars('excel')">📊 نجوم يومية (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportDailyStars('pdf')">📄 نجوم يومية (PDF)</button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                                <button class="nav-button" onclick="generateAndExportWeeklyStars('image')">📸 نجوم أسبوعية (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportWeeklyStars('excel')">📊 نجوم أسبوعية (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportWeeklyStars('pdf')">📄 نجوم أسبوعية (PDF)</button>
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <button class="nav-button" onclick="generateAndExportMonthlyStars('image')">📸 نجوم شهرية (صورة)</button>
+                                <button class="nav-button" onclick="generateAndExportMonthlyStars('excel')">📊 نجوم شهرية (Excel)</button>
+                                <button class="nav-button" onclick="generateAndExportMonthlyStars('pdf')">📄 نجوم شهرية (PDF)</button>
                             </div>
                         </div>
-                        
+
                         <div class="glass-morphism" style="padding: 2rem; margin-bottom: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">📋 التقارير الشاملة</h4>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
@@ -1206,6 +1226,9 @@
                             <h4 style="color: white; margin-bottom: 1rem;">👁️ معاينة التقرير</h4>
                             <div id="reportPreview" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 300px; max-height: 500px; overflow-y: auto;">
                                 <p>اختر نوع التقرير لمعاينته</p>
+                            </div>
+                            <div style="text-align: center; margin-top: 1rem;">
+                                <button class="nav-button" onclick="printReport()">🖨️ طباعة التقرير</button>
                             </div>
                         </div>
                     </div>
@@ -1845,7 +1868,6 @@
             });
         }
 
-        // تحديث حضور المعلمة
         function updateAttendance(teacherId, status) {
             const teacher = teachers.find(t => t.id === teacherId);
             if (teacher) {
@@ -1857,7 +1879,6 @@
             }
         }
 
-        // تحديث نقاط الصف
         function updatePoints(classIndex, criteria, change) {
             const classItem = classes[classIndex];
             if (!classItem) return;
@@ -1880,7 +1901,6 @@
             alert(`تم تحديث ${criteriaNames[criteria]} لـ ${classItem.name}: ${newValue}`);
         }
 
-        // تحديث الإحصائيات
         function updateStats() {
             const present = teachers.filter(t => t.status === 'present').length;
             const absent = teachers.filter(t => t.status === 'absent').length;
@@ -1894,7 +1914,6 @@
             document.getElementById('notRecordedCount').textContent = notRecorded;
             document.getElementById('totalCount').textContent = total;
 
-            // تحديث سجل الحضور
             const log = document.getElementById('attendanceLog');
             const recordedTeachers = teachers.filter(t => t.status !== 'not-recorded' && t.timestamp);
             
@@ -1909,7 +1928,6 @@
             }
         }
 
-        // الحصول على نص الحالة
         function getStatusText(status) {
             const statusMap = {
                 'present': 'حاضرة',
@@ -1921,7 +1939,6 @@
             return statusMap[status] || 'غير محدد';
         }
 
-        // تحديث نجم الطابور
         function updateStarOfQueue() {
             if (classes.length === 0) return;
             const topClass = classes.reduce((max, current) => 
@@ -1932,7 +1949,6 @@
             }
         }
 
-        // إعادة تعيين معلمة
         function resetTeacher(teacherId) {
             const teacher = teachers.find(t => t.id === teacherId);
             if (teacher && confirm(`هل تريد إعادة تعيين حضور ${teacher.name}؟`)) {
@@ -1945,7 +1961,6 @@
             }
         }
 
-        // عرض تفاصيل المعلمة
         function showTeacherDetails(teacherId) {
             const teacher = teachers.find(t => t.id === teacherId);
             if (teacher) {
@@ -1963,8 +1978,7 @@
                 alert(details);
             }
         }
-
-        // إعادة تعيين نقاط الصف
+        
         function resetClassPoints(classIndex) {
             const classItem = classes[classIndex];
             if (classItem && confirm(`هل تريد إعادة تعيين جميع نقاط ${classItem.name}؟`)) {
@@ -1981,8 +1995,7 @@
                 alert(`تم إعادة تعيين نقاط ${classItem.name}`);
             }
         }
-
-        // إعادة تعيين نقاط اليوم فقط
+        
         function resetDailyPoints(classIndex) {
             const classItem = classes[classIndex];
             if (classItem && confirm(`هل تريد مسح نقاط اليوم لـ ${classItem.name}؟`)) {
@@ -1999,8 +2012,7 @@
                 alert(`تم مسح نقاط اليوم لـ ${classItem.name}`);
             }
         }
-
-        // إضافة النقاط اليومية إلى النقاط الشهرية
+        
         function addToMonthlyPoints(classIndex) {
             const classItem = classes[classIndex];
             if (classItem && classItem.totalPoints > 0) {
@@ -2015,8 +2027,7 @@
                 alert('لا توجد نقاط يومية لإضافتها');
             }
         }
-
-        // إعادة تعيين النقاط الشهرية
+        
         function resetMonthlyPoints(classIndex) {
             const classItem = classes[classIndex];
             if (classItem && confirm(`هل تريد مسح النقاط الشهرية لـ ${classItem.name}؟`)) {
@@ -2027,8 +2038,7 @@
                 alert(`تم مسح النقاط الشهرية لـ ${classItem.name}`);
             }
         }
-
-        // تعيين الصف كنجم
+        
         function setAsStarClass(className) {
             if (confirm(`هل تريد تعيين ${className} كنجم اليوم؟`)) {
                 document.getElementById('starOfDay').textContent = className;
@@ -2037,29 +2047,23 @@
             }
         }
 
-        // عرض القسم
         function showSection(sectionName) {
-            // إخفاء جميع الأقسام
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
             
-            // إزالة التفعيل من جميع الأزرار
             document.querySelectorAll('.nav-button').forEach(btn => {
                 btn.classList.remove('active');
             });
             
-            // تفعيل القسم المطلوب
             document.getElementById(sectionName).classList.add('active');
             
-            // تفعيل الزر المناسب
             const clickedButton = document.querySelector(`[onclick="showSection('${sectionName}')"]`);
             if (clickedButton) {
                 clickedButton.classList.add('active');
             }
         }
 
-        // فحص كلمة مرور النظام
         function checkSystemPassword() {
             const input = document.getElementById('systemPassword');
             if (input.value === systemPassword) {
@@ -2072,8 +2076,7 @@
                 input.value = '';
             }
         }
-
-        // عرض التبويب
+        
         function showTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -2086,7 +2089,6 @@
             event.target.classList.add('active');
         }
 
-        // إدارة المعلمات
         function showAddTeacherForm() {
             document.getElementById('addTeacherForm').style.display = 'block';
         }
@@ -2198,7 +2200,6 @@
             }
         }
 
-        // مسح نقاط اليوم لجميع الصفوف
         function resetAllDailyPoints() {
             if (confirm('هل أنت متأكد من مسح نقاط اليوم لجميع الصفوف؟')) {
                 classes.forEach(classItem => {
@@ -2217,7 +2218,6 @@
             }
         }
 
-        // إضافة نقاط اليوم للنقاط الشهرية لجميع الصفوف
         function addAllDailyToMonthly() {
             const classesWithPoints = classes.filter(c => c.totalPoints > 0);
             
@@ -2240,7 +2240,6 @@
             }
         }
 
-        // مسح النقاط الشهرية لجميع الصفوف
         function resetAllMonthlyPoints() {
             if (confirm('هل أنت متأكد من مسح النقاط الشهرية لجميع الصفوف؟')) {
                 classes.forEach(classItem => {
@@ -2249,11 +2248,10 @@
                 
                 saveDataToLocal();
                 renderClasses();
-                alert(`تم مسح النقاط الشهرية لـ ${classItem.name}`);
+                alert(`تم مسح النقاط الشهرية لجميع الصفوف`);
             }
         }
 
-        // مسح جميع النقاط (اليومية والشهرية)
         function resetAllPoints() {
             if (confirm('هل أنت متأكد من مسح جميع النقاط (اليومية والشهرية) لجميع الصفوف؟\n\n⚠️ لا يمكن التراجع عن هذا الإجراء!')) {
                 classes.forEach(classItem => {
@@ -2273,7 +2271,6 @@
             }
         }
 
-        // إدارة النجوم
         function updateStarSelects() {
             const selects = ['starOfDaySelect', 'queueStarSelect', 'starOfMonthSelect', 'queueStarMonthSelect'];
             
@@ -2314,7 +2311,6 @@
             alert('تم تحديث نجوم الشهر بنجاح');
         }
 
-        // طباعة الشهادات
         function printDailyCertificate() {
             const starOfDay = document.getElementById('starOfDay').textContent;
             if (starOfDay === 'لم يتم الاختيار بعد') {
@@ -2458,7 +2454,7 @@
         }
 
         // وظائف تصدير التقارير
-        function exportDailyAttendance(format) {
+        function generateAndExportDailyAttendance(format) {
             const dates = getFormattedDates();
             const presentTeachers = teachers.filter(t => t.status === 'present');
             const absentTeachers = teachers.filter(t => t.status === 'absent');
@@ -2485,7 +2481,7 @@
             }
         }
         
-        function exportDailyStars(format) {
+        function generateAndExportDailyStars(format) {
             const dates = getFormattedDates();
             const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
             
@@ -2507,65 +2503,107 @@
             }
         }
 
+        function generateAndExportWeeklyAttendance(format) {
+            alert('ميزة التقرير الأسبوعي قيد التطوير. يمكنك معاينة تقرير اليوم وطباعته.');
+        }
+
+        function generateAndExportMonthlyAttendance(format) {
+             alert('ميزة التقرير الشهري قيد التطوير. يمكنك معاينة تقرير اليوم وطباعته.');
+        }
+
+        function generateAndExportWeeklyStars(format) {
+            alert('ميزة تقرير النجوم الأسبوعي قيد التطوير. يمكنك معاينة تقرير اليوم وطباعته.');
+        }
+
+        function generateAndExportMonthlyStars(format) {
+            alert('ميزة تقرير النجوم الشهري قيد التطوير. يمكنك معاينة تقرير اليوم وطباعته.');
+        }
+
         function exportCompleteReport(format) {
+            const reportContentDiv = document.getElementById('reportPreview');
+            reportContentDiv.innerHTML = `<p>جاري إنشاء التقرير الشامل...</p>`;
+            
+            const attendanceReportData = {
+                title: 'تقرير الحضور اليومي',
+                date: getFormattedDates().gregorian,
+                hijriDate: getFormattedDates().hijri,
+                present: teachers.filter(t => t.status === 'present'),
+                absent: teachers.filter(t => t.status === 'absent'),
+                late: teachers.filter(t => t.status === 'late'),
+                excused: teachers.filter(t => t.status === 'excused'),
+                total: teachers.length
+            };
+
+            const starsReportData = {
+                title: 'تقرير نجوم الطابور اليومي',
+                date: getFormattedDates().gregorian,
+                hijriDate: getFormattedDates().hijri,
+                classes: [...classes].sort((a, b) => b.totalPoints - a.totalPoints),
+                starOfDay: document.getElementById('starOfDay').textContent,
+                queueStar: document.getElementById('queueStar').textContent
+            };
+
+            const combinedHtml = `
+                <div id="report-content" class="report-preview-container">
+                    <div class="report-header">
+                        <h1 class="report-title" style="color: #ab47bc;">تقرير شامل للنظام</h1>
+                        <p class="report-date">${attendanceReportData.date} / ${attendanceReportData.hijriDate}</p>
+                    </div>
+
+                    <h3 class="report-section-title">📊 تقرير الحضور اليومي</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1rem 0; text-align: center;">
+                        <div style="padding: 1rem; background: rgba(76, 175, 80, 0.1); border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #4caf50; font-weight: bold;">${attendanceReportData.present.length}</div>
+                            <div>حاضرات</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(244, 67, 54, 0.1); border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #f44336; font-weight: bold;">${attendanceReportData.absent.length}</div>
+                            <div>غائبات</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #ff9800; font-weight: bold;">${attendanceReportData.late.length}</div>
+                            <div>متأخرات</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(33, 150, 243, 0.1); border-radius: 10px;">
+                            <div style="font-size: 2rem; color: #2196f3; font-weight: bold;">${attendanceReportData.excused.length}</div>
+                            <div>بعذر</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="report-section-title">⭐ تقرير نجوم الطابور اليومي</h3>
+                    <div style="text-align: center; margin: 1rem 0; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
+                        <h3 style="color: #ffc107; font-size: 1.2rem;">🌟 نجمة اليوم: ${starsReportData.starOfDay}</h3>
+                        <h3 style="color: #ffc107; font-size: 1.2rem;">⭐ نجم الطابور: ${starsReportData.queueStar}</h3>
+                    </div>
+                    <ul class="report-list">
+                        ${starsReportData.classes.map((c, index) => `
+                            <li class="report-list-item">
+                                <span>${index + 1}. ${c.name}</span>
+                                <span>${c.totalPoints} نقطة</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+
+                    <div style="text-align: center; margin-top: 2rem; color: #666;">
+                        <p>مديرة المدرسة: أ.أحلام بنت علي الحمدانية</p>
+                    </div>
+                </div>
+            `;
+            
+            reportContentDiv.innerHTML = combinedHtml;
+
             if (format === 'excel') {
                 exportCompleteReportToExcel();
             } else if (format === 'pdf') {
                 exportCompleteReportToPDF();
             }
         }
-
-        // وظائف جديدة للتصدير إلى Excel
-        function exportAttendanceToExcel(data, filename) {
-            const wsData = [
-                ['تقرير الحضور اليومي'],
-                ['التاريخ', data.date],
-                ['إجمالي المعلمات', data.total],
-                ['حاضرات', data.present.length],
-                ['غائبات', data.absent.length],
-                ['متأخرات', data.late.length],
-                ['بعذر', data.excused.length],
-                [],
-                ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل', 'ملاحظات']
-            ];
-
-            const allTeachers = [
-                ...teachers.filter(t => t.status !== 'not-recorded')
-            ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
-
-            allTeachers.forEach(t => {
-                wsData.push([getStatusText(t.status), t.name, t.class, t.timestamp || '', t.notes || '']);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(wsData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'تقرير الحضور');
-
-            XLSX.writeFile(wb, `${filename}.xlsx`);
-        }
-
-        function exportStarsToExcel(data, filename) {
-            const wsData = [
-                ['تقرير نجوم الطابور اليومي'],
-                ['التاريخ', data.date],
-                [],
-                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
-            ];
-
-            data.classes.forEach((c, index) => {
-                wsData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(wsData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'تقرير النجوم');
-
-            XLSX.writeFile(wb, `${filename}.xlsx`);
-        }
-
+        
         function exportCompleteReportToExcel() {
             const attendanceData = [
                 ['تقرير الحضور اليومي'],
+                ['التاريخ', getFormattedDates().gregorian],
+                [],
                 ['الحالة', 'اسم المعلمة', 'الصف', 'توقيت التسجيل', 'ملاحظات']
             ];
             const allTeachers = [
@@ -2575,6 +2613,8 @@
 
             const starsData = [
                 ['تقرير نجوم الطابور اليومي'],
+                ['التاريخ', getFormattedDates().gregorian],
+                [],
                 ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
             ];
             const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
@@ -2590,316 +2630,61 @@
             XLSX.utils.book_append_sheet(wb, starsWs, 'تقرير النجوم');
 
             XLSX.writeFile(wb, `تقرير_شامل_${getFormattedDates().gregorian}.xlsx`);
-        }
-        
-        // وظائف جديدة للتصدير إلى PDF
-        function exportAttendanceToPDF(data, filename) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // تحقق من وجود الخط
-            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
-            if (!fontExists) {
-                 console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
-                 return;
-            } else {
-                 doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
-                 doc.setFont('Tajawal');
-            }
-            
-            doc.setRTLTextMode(true);
-            
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const margin = 20;
-
-            doc.text(data.title, pageWidth / 2, 20, { align: 'center' });
-            doc.text(`التاريخ: ${data.date}`, pageWidth / 2, 30, { align: 'center' });
-            
-            const tableData = [
-                ['حالة الحضور', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
-            ];
-            const allTeachers = [
-                ...data.present.map(t => ({ ...t, status: 'حاضرة' })),
-                ...data.absent.map(t => ({ ...t, status: 'غائبة' })),
-                ...data.late.map(t => ({ ...t, status: 'متأخرة' })),
-                ...data.excused.map(t => ({ ...t, status: 'بعذر' }))
-            ].sort((a, b) => a.class.localeCompare(b.class, 'ar'));
-            
-            allTeachers.forEach(t => {
-                tableData.push([getStatusText(t.status), t.name, t.class, t.timestamp || 'غير مسجل']);
-            });
-
-            doc.autoTable({
-                startY: 40,
-                head: [tableData[0]],
-                body: tableData.slice(1),
-                theme: 'striped',
-                columnStyles: {
-                    0: { cellWidth: 30 },
-                    1: { cellWidth: 50 },
-                    2: { cellWidth: 30 },
-                    3: { cellWidth: 50 }
-                },
-                styles: {
-                    font: 'Tajawal',
-                    direction: 'rtl',
-                    halign: 'right'
-                }
-            });
-
-            doc.save(`${filename}.pdf`);
-        }
-
-        function exportStarsToPDF(data, filename) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
-            if (!fontExists) {
-                console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
-                return;
-            } else {
-                doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
-                doc.setFont('Tajawal');
-            }
-            
-            doc.setRTLTextMode(true);
-            
-            const pageWidth = doc.internal.pageSize.getWidth();
-
-            doc.text(data.title, pageWidth / 2, 20, { align: 'center' });
-            doc.text(`التاريخ: ${data.date}`, pageWidth / 2, 30, { align: 'center' });
-            
-            const tableData = [
-                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
-            ];
-            
-            data.classes.forEach((c, index) => {
-                tableData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
-            });
-
-            doc.autoTable({
-                startY: 40,
-                head: [tableData[0]],
-                body: tableData.slice(1),
-                theme: 'striped',
-                columnStyles: {
-                    0: { cellWidth: 20 },
-                    1: { cellWidth: 60 },
-                    2: { cellWidth: 40 },
-                    3: { cellWidth: 40 }
-                },
-                styles: {
-                    font: 'Tajawal',
-                    direction: 'rtl',
-                    halign: 'right'
-                }
-            });
-
-            doc.save(`${filename}.pdf`);
+            alert('تم تصدير التقرير الشامل إلى ملف Excel بنجاح!');
         }
 
         function exportCompleteReportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            const fontExists = doc.getFontList()['Tajawal'] !== undefined;
-            if (!fontExists) {
-                console.error('Font "Tajawal" is not loaded. Please ensure "Tajawal-Regular.ttf" is correctly configured.');
+            const reportContent = document.getElementById('reportPreview');
+            if (reportContent.innerHTML.includes('اختر نوع التقرير')) {
+                alert('يرجى أولاً الضغط على "تقرير شامل (صورة)" لإنشاء المعاينة.');
                 return;
-            } else {
-                doc.addFont('Tajawal-Regular.ttf', 'Tajawal', 'normal');
-                doc.setFont('Tajawal');
             }
 
-            const pageHeight = doc.internal.pageSize.height;
-            const pageWidth = doc.internal.pageSize.width;
-            const margin = 20;
-            let y = margin;
-            const lineHeight = 10;
-            const currentDate = getFormattedDates().gregorian;
-
-            doc.setRTLTextMode(true);
-            doc.text('تقرير شامل للنظام', pageWidth / 2, y, { align: 'center' });
-            y += lineHeight;
-            doc.text(`التاريخ: ${currentDate}`, pageWidth / 2, y, { align: 'center' });
-            y += lineHeight * 2;
-
-            // Attendance Section
-            doc.text('تقرير الحضور اليومي', margin, y);
-            y += lineHeight;
-
-            const attendanceData = [
-                ['حالة الحضور', 'اسم المعلمة', 'الصف', 'توقيت التسجيل']
-            ];
-            const allTeachers = teachers.map(t => ({ ...t, status: getStatusText(t.status) }));
-            allTeachers.forEach(t => attendanceData.push([t.status, t.name, t.class, t.timestamp || 'غير مسجل']));
-
-            doc.autoTable({
-                startY: y,
-                head: [attendanceData[0]],
-                body: attendanceData.slice(1),
-                theme: 'striped',
-                columnStyles: {
-                    0: { cellWidth: 30 },
-                    1: { cellWidth: 50 },
-                    2: { cellWidth: 30 },
-                    3: { cellWidth: 50 }
-                },
-                styles: {
-                    font: 'Tajawal',
-                    direction: 'rtl',
-                    halign: 'right'
-                }
-            });
-
-            y = doc.lastAutoTable.finalY + lineHeight * 2;
-
-            // Stars Section
-            doc.text('تقرير نجوم الطابور اليومي', margin, y);
-            y += lineHeight;
-
-            const starsData = [
-                ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']
-            ];
-            const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
-            sortedClasses.forEach((c, index) => {
-                starsData.push([index + 1, c.name, c.totalPoints, c.monthlyPoints]);
-            });
-
-            doc.autoTable({
-                startY: y,
-                head: [starsData[0]],
-                body: starsData.slice(1),
-                theme: 'striped',
-                columnStyles: {
-                    0: { cellWidth: 20 },
-                    1: { cellWidth: 60 },
-                    2: { cellWidth: 40 },
-                    3: { cellWidth: 40 }
-                },
-                styles: {
-                    font: 'Tajawal',
-                    direction: 'rtl',
-                    halign: 'right'
-                }
-            });
-
-            doc.save(`تقرير_شامل_${currentDate}.pdf`);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>طباعة التقرير الشامل</title>
+                        <style>
+                            body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; margin: 0; padding: 20px; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        ${reportContent.innerHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
         }
 
-        // إنشاء تقرير الحضور كصورة
-        function generateAttendanceReportImage(data) {
+        function printReport() {
             const preview = document.getElementById('reportPreview');
+            if (preview.innerHTML.includes('اختر نوع التقرير')) {
+                alert('يرجى اختيار نوع التقرير لمعاينته أولاً قبل الطباعة.');
+                return;
+            }
             
-            preview.innerHTML = `
-                <div id="report-content" class="report-preview-container">
-                    <div class="report-header">
-                        <h1 class="report-title" style="color: #4caf50;">${data.title}</h1>
-                        <p class="report-date">${data.date} / ${data.hijriDate}</p>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0; text-align: center;">
-                        <div style="padding: 1rem; background: rgba(76, 175, 80, 0.1); border-radius: 10px;">
-                            <div style="font-size: 2rem; color: #4caf50; font-weight: bold;">${data.present.length}</div>
-                            <div>حاضرات</div>
-                        </div>
-                        <div style="padding: 1rem; background: rgba(244, 67, 54, 0.1); border-radius: 10px;">
-                            <div style="font-size: 2rem; color: #f44336; font-weight: bold;">${data.absent.length}</div>
-                            <div>غائبات</div>
-                        </div>
-                        <div style="padding: 1rem; background: rgba(255, 152, 0, 0.1); border-radius: 10px;">
-                            <div style="font-size: 2rem; color: #ff9800; font-weight: bold;">${data.late.length}</div>
-                            <div>متأخرات</div>
-                        </div>
-                        <div style="padding: 1rem; background: rgba(33, 150, 243, 0.1); border-radius: 10px;">
-                            <div style="font-size: 2rem; color: #2196f3; font-weight: bold;">${data.excused.length}</div>
-                            <div>بعذر</div>
-                        </div>
-                    </div>
-                    
-                    <h3 class="report-section-title">المعلمات الحاضرات</h3>
-                    <ul class="report-list">
-                        ${data.present.length > 0 ? 
-                            data.present.map(t => `<li class="report-list-item">${t.name} - ${t.class}</li>`).join('') :
-                            '<li class="report-list-item" style="color: #999;">لا توجد معلمات حاضرات.</li>'
-                        }
-                    </ul>
-
-                    <h3 class="report-section-title">المعلمات الغائبات</h3>
-                    <ul class="report-list">
-                        ${data.absent.length > 0 ? 
-                            data.absent.map(t => `<li class="report-list-item">${t.name} - ${t.class}</li>`).join('') :
-                            '<li class="report-list-item" style="color: #999;">لا توجد معلمات غائبات.</li>'
-                        }
-                    </ul>
-
-                    <div style="text-align: center; margin-top: 2rem; color: #666;">
-                        <p>مديرة المدرسة: أ.أحلام بنت علي الحمدانية</p>
-                    </div>
-                </div>
-            `;
-            
-            // تحويل المحتوى إلى صورة
-            setTimeout(() => {
-                const content = document.getElementById('report-content');
-                html2canvas(content, { scale: 2 }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = imgData;
-                    link.download = `تقرير_الحضور_اليومي_${data.date}.png`;
-                    link.click();
-                    alert('تم إنشاء التقرير كصورة بنجاح!');
-                });
-            }, 100);
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>طباعة التقرير</title>
+                        <style>
+                            body { font-family: 'Tajawal', Arial, sans-serif; direction: rtl; margin: 0; padding: 20px; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        ${preview.innerHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
         }
 
-        function generateStarsReportImage(data) {
-            const preview = document.getElementById('reportPreview');
-            
-            preview.innerHTML = `
-                <div id="report-content" class="report-preview-container">
-                    <div class="report-header">
-                        <h1 class="report-title" style="color: #ffa726;">${data.title}</h1>
-                        <p class="report-date">${data.date} / ${data.hijriDate}</p>
-                    </div>
-                    
-                    <div style="text-align: center; margin: 2rem 0; padding: 1rem; background: rgba(255, 193, 7, 0.1); border-radius: 10px;">
-                        <h3 style="color: #ffc107;">🌟 نجمة اليوم: ${data.starOfDay}</h3>
-                        <h3 style="color: #ffc107;">⭐ نجم الطابور: ${data.queueStar}</h3>
-                    </div>
-                    
-                    <h3 class="report-section-title">ترتيب الصفوف حسب النقاط</h3>
-                    <ul class="report-list">
-                        ${data.classes.map((c, index) => `
-                            <li class="report-list-item">
-                                <span>${index + 1}. ${c.name}</span>
-                                <span>${c.totalPoints} نقطة</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                    
-                    <div style="text-align: center; margin-top: 2rem; color: #666;">
-                        <p>مديرة المدرسة: أ.أحلام بنت علي الحمدانية</p>
-                    </div>
-                </div>
-            `;
-            
-            // تحويل المحتوى إلى صورة
-            setTimeout(() => {
-                const content = document.getElementById('report-content');
-                html2canvas(content, { scale: 2 }).then(canvas => {
-                    const imgData = canvas.toDataURL('image/png');
-                    const link = document.createElement('a');
-                    link.href = imgData;
-                    link.download = `تقرير_نجوم_الطابور_اليومي_${data.date}.png`;
-                    link.click();
-                    alert('تم إنشاء التقرير كصورة بنجاح!');
-                });
-            }, 100);
-        }
-
-        // وظائف إدارة البيانات الإضافية
         function updateDataManagement() {
             const info = document.getElementById('dataManagementInfo');
             if (!info) return;
@@ -2908,7 +2693,6 @@
             const dataSize = JSON.stringify(savedData).length;
             const sizeKB = (dataSize / 1024).toFixed(2);
             
-            // إحصائيات الحضور
             const presentCount = teachers.filter(t => t.status === 'present').length;
             const absentCount = teachers.filter(t => t.status === 'absent').length;
             const lateCount = teachers.filter(t => t.status === 'late').length;
@@ -2960,7 +2744,6 @@
             `;
         }
 
-        // تحديث تلقائي لحفظ البيانات عند أي تغيير
         function updateAttendanceWithSave(teacherId, status) {
             updateAttendance(teacherId, status);
             saveDataToLocal();
@@ -2971,7 +2754,6 @@
             saveDataToLocal();
         }
 
-        // وظائف مساعدة
         function getFormattedDates() {
             const now = new Date();
             const gregorian = now.toLocaleDateString('ar-SA');
@@ -2998,7 +2780,6 @@
             }
         }
 
-        // تحديث الوقت والتاريخ
         function updateDateTime() {
             const now = new Date();
             const options = { 
@@ -3012,11 +2793,9 @@
             document.getElementById('currentDateTime').textContent = now.toLocaleDateString('ar-SA', options);
         }
 
-        // إنشاء الجسيمات العائمة
         function createFloatingParticles() {
             const container = document.getElementById('particles');
             
-            // إنشاء الكرات المضيئة
             for (let i = 0; i < 5; i++) {
                 const orb = document.createElement('div');
                 orb.className = 'glowing-orb';
@@ -3028,7 +2807,6 @@
                 container.appendChild(orb);
             }
 
-            // إنشاء البريق
             for (let i = 0; i < 15; i++) {
                 const sparkle = document.createElement('div');
                 sparkle.className = 'sparkle';
@@ -3039,18 +2817,14 @@
             }
         }
 
-        // متغيرات النوافذ المنبثقة
         let currentEditingTeacherId = null;
         let currentEditingClassIndex = null;
-        
-        // متغيرات الكاميرا
         let currentCameraTeacherId = null;
         let cameraStream = null;
         let currentCameraIndex = 0;
         let availableCameras = [];
         let capturedPhotosData = [];
 
-        // وظائف النوافذ المنبثقة للمعلمات
         function openTeacherModal(teacherId) {
             const teacher = teachers.find(t => t.id === teacherId);
             if (!teacher) return;
@@ -3068,7 +2842,6 @@
             document.getElementById('teacherModal').classList.remove('active');
             currentEditingTeacherId = null;
             
-            // مسح الحقول
             document.getElementById('editTeacherName').value = '';
             document.getElementById('editTeacherClass').value = '';
             document.getElementById('editTeacherNotes').value = '';
@@ -3089,26 +2862,21 @@
                 return;
             }
             
-            // تحديث بيانات المعلمة
             teacher.name = newName;
             teacher.class = newClass;
             teacher.notes = newNotes;
             
-            // حفظ التغييرات
             saveDataToLocal();
             
-            // تحديث العرض
             renderTeachers();
             renderTeachersManagementList();
             updateStarSelects();
             
-            // إغلاق النافذة
             closeTeacherModal();
             
             alert('✅ تم حفظ التغييرات بنجاح!');
         }
 
-        // وظائف النوافذ المنبثقة للصفوف
         function openClassModal(classIndex) {
             const classItem = classes[classIndex];
             if (!classItem) return;
@@ -3125,7 +2893,6 @@
             document.getElementById('classModal').classList.remove('active');
             currentEditingClassIndex = null;
             
-            // مسح الحقول
             document.getElementById('editClassName').value = '';
             document.getElementById('editClassNotes').value = '';
         }
@@ -3144,7 +2911,6 @@
                 return;
             }
             
-            // تحديث اسم الصف في المعلمات المرتبطة
             const oldName = classItem.name;
             teachers.forEach(teacher => {
                 if (teacher.class === oldName) {
@@ -3152,81 +2918,64 @@
                 }
             });
             
-            // تحديث بيانات الصف
             classItem.name = newName;
             classItem.notes = newNotes;
             
-            // حفظ التغييرات
             saveDataToLocal();
             
-            // تحديث العرض
             renderTeachers();
             renderClasses();
             updateStarSelects();
             
-            // إغلاق النافذة
             closeClassModal();
             
             alert('✅ تم حفظ التغييرات بنجاح!');
         }
 
-        // وظائف الكاميرا
         async function openCameraModal(teacherId) {
             const teacher = teachers.find(t => t.id === teacherId);
             if (!teacher) return;
             
             currentCameraTeacherId = teacherId;
             
-            // تحديث معلومات المعلمة في الواجهة
             document.getElementById('overlayTeacherName').textContent = teacher.name;
             document.getElementById('overlayClassName').textContent = teacher.class;
             updateOverlayDateTime();
             
-            // إعادة تعيين الواجهة
             resetCameraInterface();
             
-            // فتح النافذة المنبثقة
             document.getElementById('cameraModal').classList.add('active');
             
-            // تحديث الوقت كل ثانية
             window.cameraTimeInterval = setInterval(updateOverlayDateTime, 1000);
         }
 
         function closeCameraModal() {
-            // إيقاف الكاميرا
             stopCamera();
             
-            // إيقاف تحديث الوقت
             if (window.cameraTimeInterval) {
                 clearInterval(window.cameraTimeInterval);
                 window.cameraTimeInterval = null;
             }
             
-            // إغلاق النافذة
             document.getElementById('cameraModal').classList.remove('active');
             currentCameraTeacherId = null;
             
-            // مسح البيانات المؤقتة
             capturedPhotosData = [];
             resetCameraInterface();
         }
 
         function resetCameraInterface() {
-            // إعادة تعيين الأزرار
             document.getElementById('startCameraBtn').style.display = 'inline-block';
             document.getElementById('captureBtn').style.display = 'none';
             document.getElementById('switchCameraBtn').style.display = 'none';
             document.getElementById('stopCameraBtn').style.display = 'none';
             document.getElementById('downloadAllBtn').style.display = 'none';
             
-            // إخفاء الصور المحفوظة
             document.getElementById('capturedPhotos').style.display = 'none';
             document.getElementById('photosGrid').innerHTML = '';
             
-            // إخفاء رسائل الحالة
             document.getElementById('cameraStatus').style.display = 'none';
             
-            // إيقاف الفيديو
             const video = document.getElementById('cameraVideo');
             video.srcObject = null;
         }
@@ -3235,7 +2984,6 @@
             try {
                 showCameraStatus('جاري تشغيل الكاميرا...', 'info');
                 
-                // الحصول على قائمة الكاميرات المتاحة
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 availableCameras = devices.filter(device => device.kind === 'videoinput');
                 
@@ -3243,7 +2991,6 @@
                     throw new Error('لم يتم العثور على كاميرا متاحة');
                 }
                 
-                // تشغيل الكاميرا
                 const constraints = {
                     video: {
                         deviceId: availableCameras[currentCameraIndex]?.deviceId,
@@ -3259,7 +3006,6 @@
                 const video = document.getElementById('cameraVideo');
                 video.srcObject = cameraStream;
                 
-                // تحديث الواجهة
                 document.getElementById('startCameraBtn').style.display = 'none';
                 document.getElementById('captureBtn').style.display = 'inline-block';
                 document.getElementById('stopCameraBtn').style.display = 'inline-block';
@@ -3295,7 +3041,6 @@
             const video = document.getElementById('cameraVideo');
             video.srcObject = null;
             
-            // تحديث الواجهة
             document.getElementById('startCameraBtn').style.display = 'inline-block';
             document.getElementById('captureBtn').style.display = 'none';
             document.getElementById('switchCameraBtn').style.display = 'none';
@@ -3307,15 +3052,12 @@
         async function switchCamera() {
             if (availableCameras.length <= 1) return;
             
-            // إيقاف الكاميرا الحالية
             if (cameraStream) {
                 cameraStream.getTracks().forEach(track => track.stop());
             }
             
-            // التبديل إلى الكاميرا التالية
             currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
             
-            // تشغيل الكاميرا الجديدة
             await startCamera();
         }
 
@@ -3330,20 +3072,15 @@
                 const canvas = document.getElementById('cameraCanvas');
                 const ctx = canvas.getContext('2d');
                 
-                // تعيين أبعاد الكانفاس
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 
-                // رسم الفيديو على الكانفاس
                 ctx.drawImage(video, 0, 0);
                 
-                // إضافة معلومات المعلمة على الصورة
                 await addPhotoOverlay(ctx, canvas);
                 
-                // تحويل الصورة إلى بيانات
                 const photoData = canvas.toDataURL('image/jpeg', 0.9);
                 
-                // حفظ الصورة
                 const teacher = teachers.find(t => t.id === currentCameraTeacherId);
                 const photoInfo = {
                     id: Date.now(),
@@ -3356,7 +3093,6 @@
                 
                 capturedPhotosData.push(photoInfo);
                 
-                // تحديث عرض الصور
                 updatePhotosDisplay();
                 
                 showCameraStatus(`تم التقاط الصورة بنجاح! (${capturedPhotosData.length} صور محفوظة)`, 'success');
@@ -3371,28 +3107,22 @@
             const teacher = teachers.find(t => t.id === currentCameraTeacherId);
             if (!teacher) return;
             
-            // إعدادات النص
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(10, canvas.height - 120, canvas.width - 20, 110);
             
-            // النص الأبيض
             ctx.fillStyle = 'white';
             ctx.textAlign = 'right';
             ctx.direction = 'rtl';
             
-            // اسم المعلمة
             ctx.font = 'bold 24px Tajawal, sans-serif';
             ctx.fillText(teacher.name, canvas.width - 20, canvas.height - 85);
             
-            // الصف
             ctx.font = '20px Tajawal, sans-serif';
             ctx.fillText(teacher.class, canvas.width - 20, canvas.height - 55);
             
-            // التاريخ والوقت
             ctx.font = '16px Tajawal, sans-serif';
             ctx.fillText(new Date().toLocaleString('ar-SA'), canvas.width - 20, canvas.height - 25);
             
-            // شعار المدرسة (نص)
             ctx.textAlign = 'left';
             ctx.font = 'bold 18px Tajawal, sans-serif';
             ctx.fillText('الطابور المدرسي', 20, canvas.height - 85);
@@ -3462,7 +3192,7 @@
                     link.href = photo.data;
                     link.download = `طابور_${photo.teacherName.replace(/\s+/g, '_')}_${photo.className.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}_${index + 1}.jpg`;
                     link.click();
-                }, index * 500); // تأخير بسيط بين التحميلات
+                }, index * 500);
             });
             
             showCameraStatus(`تم بدء تحميل ${capturedPhotosData.length} صور`, 'success');
@@ -3520,7 +3250,6 @@
             statusDiv.style.color = textColor;
             statusDiv.innerHTML = `${icon} ${message}`;
             
-            // إخفاء الرسالة بعد 5 ثوان للرسائل العادية
             if (type !== 'error') {
                 setTimeout(() => {
                     statusDiv.style.display = 'none';
@@ -3528,7 +3257,6 @@
             }
         }
 
-        // إغلاق النوافذ المنبثقة عند النقر خارجها
         document.addEventListener('click', function(event) {
             const teacherModal = document.getElementById('teacherModal');
             const classModal = document.getElementById('classModal');
@@ -3547,7 +3275,6 @@
             }
         });
 
-        // إغلاق النوافذ المنبثقة بمفتاح Escape
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 closeTeacherModal();
@@ -3556,22 +3283,18 @@
             }
         });
 
-        // تهيئة الصفحة
         document.addEventListener('DOMContentLoaded', function() {
-            // تحميل البيانات الثابتة
             loadFixedData();
             
             updateDateTime();
             setInterval(updateDateTime, 60000);
             createFloatingParticles();
             
-            // عرض البيانات
             renderTeachers();
             renderClasses();
             updateStats();
             updateStarSelects();
             
-            // تحديث واجهة إدارة البيانات
             if (document.getElementById('dataManagementInfo')) {
                 updateDataManagement();
             }
