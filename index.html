@@ -33,7 +33,7 @@
         .header-image:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
         .info-card { padding: 1rem 2rem; text-align: center; color: white; font-size: 1.1rem; }
         
-        /* === تعديلات بطاقات النجوم (Stars Summary) === */
+        /* === أنماط بطاقات النجوم (Stars Summary) === */
         .stars-summary { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
@@ -46,7 +46,7 @@
         .star-card {
             width: 100%; 
             color: white; 
-            padding: 1rem; /* أضفت هذا لزيادة الوسادة قليلاً */
+            padding: 1rem; 
             text-align: center;
         }
 
@@ -95,14 +95,13 @@
         .stat-label { font-size: 1.1rem; opacity: 0.9; }
         .teachers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
         
-        /* === تعديلات بطاقات المعلمات (Teacher Card Status) === */
+        /* === أنماط بطاقات المعلمات (Teacher Card Status) === */
         .teacher-card { 
             padding: 1.5rem; 
             position: relative; 
             overflow: hidden; 
-            transition: all 0.5s ease; /* تعديل لـ 0.5s ليكون التغيير أكثر سلاسة */
+            transition: all 0.5s ease; 
             cursor: pointer; 
-            /* إعادة تعيين اللون الافتراضي (لم يتم التسجيل) */
             background: rgba(255, 255, 255, 0.1); 
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -130,7 +129,7 @@
         }
         
         .teacher-card.status-not-recorded {
-            background: rgba(255, 255, 255, 0.1); /* شفاف/افتراضي لـ لم يتم التسجيل */
+            background: rgba(255, 255, 255, 0.1); 
         }
         /* ============================================== */
 
@@ -149,7 +148,36 @@
         .action-btn { padding: 0.5rem; border: none; border-radius: 8px; background: rgba(255, 255, 255, 0.2); color: white; cursor: pointer; transition: all 0.3s ease; }
         .action-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.1); }
         .classes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
-        .class-card { padding: 2rem; position: relative; overflow: hidden; transition: all 0.3s ease; }
+        
+        /* === نمط بطاقة الصف الفائز بنجم الطابور === */
+        .class-card { 
+            padding: 2rem; 
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.5s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2); /* الافتراضي */
+        }
+        
+        .class-card.queue-star-winner {
+            background: linear-gradient(45deg, #f0e68c, #ffd700); /* لون ذهبي لامع */
+            border: 3px solid white; 
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            transform: scale(1.05); /* إبراز أكبر */
+        }
+
+        .class-card.queue-star-winner .class-name, 
+        .class-card.queue-star-winner .class-points,
+        .class-card.queue-star-winner .criteria-name,
+        .class-card.queue-star-winner .criteria-points {
+            color: #333; /* تغيير لون النص إلى الداكن ليظهر على الخلفية الذهبية */
+            font-weight: 900;
+        }
+
+        .class-card.queue-star-winner .criteria-row {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        /* =========================================== */
+
         .class-card:hover { transform: translateY(-10px) rotateY(5deg) rotateX(5deg); }
         .class-name { font-size: 1.5rem; font-weight: 700; text-align: center; color: white; }
         .class-points { text-align: center; font-size: 2rem; font-weight: 900; color: #ffa726; margin-bottom: 1.5rem; }
@@ -971,32 +999,44 @@
             document.getElementById('teachersGrid').innerHTML = teachers.length === 0 ? '<div class="glass-morphism loading" style="padding: 3rem; text-align: center; color: white; grid-column: 1 / -1;">لا توجد بيانات معلمات للتحميل.</div>' : grid.innerHTML;
         }
 
+        // ⭐️ دالة عرض الصفوف المحدثة لتطبيق تمييز الصف الفائز
         function renderClasses() { 
             const grid = document.getElementById('classesGrid');
             if (!grid) return;
-            grid.innerHTML = classes.map((classItem, index) => `
-                <div class="class-card glass-morphism">
-                    <div class="class-name">${classItem.name}</div>
-                    <div class="class-points">
-                        ${classItem.dailyPoints} 
-                        <span style="font-size: 1rem; opacity: 0.8;">(إجمالي اليوم: ${classItem.totalPoints})</span>
+
+            // تحديد الصف الحاصل على أعلى نقاط يومية
+            const topDailyClass = classes.reduce((max, current) => 
+                current.dailyPoints > max.dailyPoints ? current : max, { dailyPoints: -1 }
+            );
+
+            grid.innerHTML = classes.map((classItem, index) => {
+                // إضافة فئة winner إذا كان هذا الصف هو الأعلى نقاط يومياً
+                const winnerClass = (classItem.name === topDailyClass.name && topDailyClass.dailyPoints > 0) ? 'queue-star-winner' : '';
+
+                return `
+                    <div class="class-card glass-morphism ${winnerClass}">
+                        <div class="class-name">${classItem.name}</div>
+                        <div class="class-points">
+                            ${classItem.dailyPoints} 
+                            <span style="font-size: 1rem; opacity: 0.8;">(إجمالي اليوم: ${classItem.totalPoints})</span>
+                        </div>
+                        <div style="text-align: center; color: white; margin-bottom: 1rem;">
+                            نقاط الشهر: <strong>${classItem.monthlyPoints}</strong>
+                        </div>
+                        <div class="criteria-controls">
+                            ${renderCriteriaRow(index, 'Quiet', 'الهدوء')}
+                            ${renderCriteriaRow(index, 'Speed', 'السرعة')}
+                            ${renderCriteriaRow(index, 'Volume', 'الصوت')}
+                            ${renderCriteriaRow(index, 'Cleanliness', 'النظافة')}
+                        </div>
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <button class="nav-button" style="background: #2196f3;" onclick="openClassModal(${index})">
+                                ✏️ تعديل الصف
+                            </button>
+                        </div>
                     </div>
-                    <div style="text-align: center; color: white; margin-bottom: 1rem;">
-                        نقاط الشهر: <strong>${classItem.monthlyPoints}</strong>
-                    </div>
-                    <div class="criteria-controls">
-                        ${renderCriteriaRow(index, 'Quiet', 'الهدوء')}
-                        ${renderCriteriaRow(index, 'Speed', 'السرعة')}
-                        ${renderCriteriaRow(index, 'Volume', 'الصوت')}
-                        ${renderCriteriaRow(index, 'Cleanliness', 'النظافة')}
-                    </div>
-                    <div style="text-align: center; margin-top: 1.5rem;">
-                        <button class="nav-button" style="background: #2196f3;" onclick="openClassModal(${index})">
-                            ✏️ تعديل الصف
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             document.getElementById('classesGrid').innerHTML = classes.length === 0 ? '<div class="glass-morphism loading" style="padding: 3rem; text-align: center; color: white; grid-column: 1 / -1;">لا توجد بيانات صفوف للتحميل.</div>' : grid.innerHTML;
         }
 
@@ -1066,220 +1106,6 @@
         function openClassModal(classIndex) { const classItem = classes[classIndex]; if (!classItem) return; currentEditingClassIndex = classIndex; document.getElementById('editClassName').value = classItem.name; document.getElementById('editClassNotes').value = classItem.notes || ''; document.getElementById('classModal').classList.add('active'); }
         function closeClassModal() { document.getElementById('classModal').classList.remove('active'); currentEditingClassIndex = null; }
         function resetTeacher(teacherId) { /* ... */ }
-        function showTeacherDetails(teacherId) { /* ... */ }
-        function resetAllMonthlyPoints() { /* ... */ }
-        function resetAllPoints() { /* ... */ }
-        function setAsStarClass(className) { /* ... */ }
-        
-        // ⭐️ دوال الشهادات (مُفعَّلة)
-        function printDailyCertificate() {
-            const star = document.getElementById('starOfDay').textContent;
-            if (star === 'لم يتم الاختيار بعد') { alert('يرجى اختيار نجمة اليوم أولاً'); return; }
-            const target = teachers.find(t => `${t.name} (${t.class})` === star) || star;
-            generateCertificate('نجمة اليوم', typeof target === 'string' ? target : `${target.name} (${target.class})`, '🌟', target.name ? false : true);
-        }
-
-        function printQueueCertificate() {
-            const star = document.getElementById('queueStar').textContent;
-            if (star === 'لم يتم الاختيار بعد') { alert('يرجى اختيار نجم الطابور أولاً'); return; }
-            generateCertificate('نجم الطابور', star, '⭐', true);
-        }
-
-        function printMonthlyCertificate() {
-            const star = document.getElementById('starOfMonth').textContent;
-            if (star === 'لم يتم الاختيار بعد') { alert('يرجى اختيار نجمة الشهر أولاً'); return; }
-            const target = teachers.find(t => `${t.name} (${t.class})` === star) || star;
-            generateCertificate('نجمة الشهر', typeof target === 'string' ? target : `${target.name} (${target.class})`, '🏆', target.name ? false : true);
-        }
-
-        function printAttendanceCertificate() {
-            const presentTeachers = teachers.filter(t => t.status === 'present');
-            if (presentTeachers.length === 0) { alert('لا توجد معلمات حاضرات لطباعة شهادة الحضور'); return; }
-            generateAttendanceCertificate(presentTeachers);
-        }
-        
-        function generateCertificate(type, name, icon, isClass = true) {
-            const dateInfo = getFormattedDates();
-            const preview = document.getElementById('certificatePreview');
-            const targetName = name.split(' (')[0];
-            const targetClass = isClass ? name : name.split('(')[1]?.replace(')', '') || 'المدرسة';
-
-            preview.innerHTML = `
-                <div id="certificate-content-to-print" style="border: 5px solid #ffa726; padding: 3rem; border-radius: 20px; background: linear-gradient(45deg, #fff, #f8f9fa); position: relative; width: 100%; min-height: 500px;">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">${icon}</div>
-                        <h1 style="color: #ff6b9d; font-size: 2.5rem; margin-bottom: 0.5rem;">شهادة تقدير</h1>
-                        <h2 style="color: #ab47bc; font-size: 2rem;">${type}</h2>
-                    </div>
-                    <div style="margin: 3rem 0; padding: 2rem; background: rgba(255, 107, 157, 0.1); border-radius: 15px; text-align: center;">
-                        <p style="font-size: 1.5rem; color: #333; margin-bottom: 1rem;">تُمنح هذه الشهادة لـ ${isClass ? 'صف' : 'المعلمة'}</p>
-                        <h3 style="font-size: 2.5rem; color: #ff6b9d; margin: 1rem 0; font-weight: bold;">
-                            ${targetName}
-                        </h3>
-                        <p style="font-size: 1.3rem; color: #666;">
-                            تقديراً للانضباط والتميز في الطابور المدرسي
-                        </p>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem;">
-                        <div style="text-align: center;">
-                            <p style="color: #666; margin-bottom: 0.5rem;">التاريخ</p>
-                            <p style="color: #333; font-weight: bold;">${getFormattedDates().gregorian}</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <p style="color: #666; margin-bottom: 0.5rem;">مديرة المدرسة</p>
-                            <p style="color: #333; font-weight: bold;">أ.أحلام بنت علي الحمدانية</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function printCertificate() {
-            const content = document.getElementById('certificatePreview').querySelector('#certificate-content-to-print');
-            if (!content) { alert('يرجى اختيار نوع الشهادة للمعاينة أولاً.'); return; }
-
-            // ⭐️ استخدام HTML2Canvas والـ PDF للطباعة (أفضل طريقة لطباعة التنسيقات المعقدة)
-            window.jsPDF = window.jspdf.jsPDF;
-            const doc = new jsPDF('l', 'pt', 'a4', true); // 'l' for landscape
-
-            html2canvas(content, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                const pdfWidth = doc.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                doc.save(`شهادة_${new Date().toISOString().split('T')[0]}.pdf`);
-                alert('✅ تم إنشاء ملف PDF للشهادة بنجاح.');
-            });
-        }
-        
-        // ⭐️ دوال التقارير (توليد المعاينة والتصدير)
-        
-        function generateAndExportDailyAttendance(format) {
-            const dates = getFormattedDates();
-            const present = teachers.filter(t => t.status === 'present').length;
-            const absent = teachers.filter(t => t.status === 'absent').length;
-
-            const preview = document.getElementById('reportPreview');
-            preview.innerHTML = `
-                <div id="report-content-to-print" class="report-preview-container" style="padding: 2rem; border: 1px solid #ddd;">
-                    <div class="report-header">
-                        <h1 class="report-title" style="color: #4caf50;">تقرير الحضور اليومي</h1>
-                        <p class="report-date">${dates.gregorian}</p>
-                    </div>
-                    <h3 class="report-section-title">📊 الإحصائيات</h3>
-                    <p>الحاضرات: ${present} / الغائبات: ${absent} / الإجمالي: ${teachers.length}</p>
-                    <h3 class="report-section-title">📋 تفاصيل الحضور</h3>
-                    <ul class="report-list" style="list-style-type: none; padding: 0;">
-                        ${teachers.map(t => `<li class="report-list-item"><span>${t.name}</span><span>${getStatusText(t.status)} (${t.timestamp || '---'})</span></li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            if (format === 'excel') { exportAttendanceToExcel(); }
-            if (format === 'pdf') { printReport(); }
-            if (format === 'image') { captureAndDownloadImage('تقرير_الحضور_اليومي'); }
-        }
-
-        function generateAndExportDailyStars(format) {
-            const dates = getFormattedDates();
-            const sortedClasses = [...classes].sort((a, b) => b.dailyPoints - a.dailyPoints);
-            const preview = document.getElementById('reportPreview');
-
-            preview.innerHTML = `
-                <div id="report-content-to-print" class="report-preview-container" style="padding: 2rem; border: 1px solid #ddd;">
-                    <div class="report-header">
-                        <h1 class="report-title" style="color: #ffc107;">تقرير نجوم اليوم</h1>
-                        <p class="report-date">${dates.gregorian}</p>
-                    </div>
-                    <h3 class="report-section-title">⭐ ترتيب الصفوف حسب النقاط اليومية</h3>
-                    <ul class="report-list" style="list-style-type: none; padding: 0;">
-                        ${sortedClasses.map((c, index) => `<li class="report-list-item"><span>${index + 1}. ${c.name}</span><span>${c.dailyPoints} نقطة</span></li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            if (format === 'excel') { exportStarsToExcel('Daily'); }
-            if (format === 'pdf') { printReport(); }
-            if (format === 'image') { captureAndDownloadImage('تقرير_نجوم_اليوم'); }
-        }
-        
-        function exportCompleteReport(format) {
-            // توليد معاينة شاملة قبل التصدير
-            const dates = getFormattedDates();
-            const present = teachers.filter(t => t.status === 'present').length;
-            const absent = teachers.filter(t => t.status === 'absent').length;
-            const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
-            
-            const preview = document.getElementById('reportPreview');
-            preview.innerHTML = `
-                <div id="report-content-to-print" class="report-preview-container" style="padding: 2rem; border: 1px solid #ddd;">
-                    <div class="report-header">
-                        <h1 class="report-title" style="color: #ab47bc;">تقرير شامل</h1>
-                        <p class="report-date">${dates.gregorian}</p>
-                    </div>
-                    <h3 class="report-section-title">📊 إحصائيات الحضور</h3>
-                    <p>الحاضرات: ${present} / الغائبات: ${absent} / الإجمالي: ${teachers.length}</p>
-                    <h3 class="report-section-title">🏆 ترتيب الصفوف (تراكمي)</h3>
-                    <ul class="report-list" style="list-style-type: none; padding: 0;">
-                        ${sortedClasses.map((c, index) => `<li class="report-list-item"><span>${index + 1}. ${c.name}</span><span>${c.totalPoints} نقطة تراكمية</span></li>`).join('')}
-                    </ul>
-                </div>
-            `;
-            if (format === 'excel') { exportCompleteReportToExcel(); }
-            if (format === 'pdf') { printReport(); }
-            if (format === 'image') { captureAndDownloadImage('تقرير_شامل'); }
-        }
-        
-        function captureAndDownloadImage(filename) {
-            const content = document.getElementById('reportPreview').querySelector('#report-content-to-print');
-            if (!content) { alert('يرجى توليد المعاينة أولاً.'); return; }
-
-            html2canvas(content, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `${filename}_${getFormattedDates().gregorian}.png`;
-                link.click();
-                alert('✅ تم إنشاء ملف الصورة بنجاح.');
-            });
-        }
-        
-        function exportAttendanceToExcel() {
-            const data = [['تقرير الحضور اليومي'], ['التاريخ', getFormattedDates().gregorian], [], ['ID', 'اسم المعلمة', 'الصف', 'الحالة', 'توقيت التسجيل']];
-            teachers.forEach(t => data.push([t.id, t.name, t.class, getStatusText(t.status), t.timestamp || '']));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), 'الحضور اليومي');
-            XLSX.writeFile(wb, `تقرير_الحضور_${getFormattedDates().gregorian}.xlsx`);
-        }
-
-        function exportStarsToExcel(type) {
-            const sorted = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
-            const data = [['تقرير النجوم'], ['التاريخ', getFormattedDates().gregorian], [], ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']];
-            sorted.forEach((c, index) => data.push([index + 1, c.name, c.dailyPoints, c.monthlyPoints]));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), 'النجوم');
-            XLSX.writeFile(wb, `تقرير_النجوم_${type}_${getFormattedDates().gregorian}.xlsx`);
-        }
-
-        function exportCompleteReportToExcel() {
-            const attendanceData = [['تقرير الحضور اليومي'], ['التاريخ', getFormattedDates().gregorian], [], ['ID', 'اسم المعلمة', 'الصف', 'الحالة', 'توقيت التسجيل']];
-            teachers.forEach(t => attendanceData.push([t.id, t.name, t.class, getStatusText(t.status), t.timestamp || '']));
-
-            const starsData = [['تقرير نقاط الصفوف'], ['التاريخ', getFormattedDates().gregorian], [], ['المركز', 'اسم الصف', 'نقاط اليوم', 'نقاط الشهر']];
-            const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
-            sortedClasses.forEach((c, index) => starsData.push([index + 1, c.name, c.dailyPoints, c.monthlyPoints]));
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(attendanceData), 'الحضور');
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(starsData), 'النجوم');
-            XLSX.writeFile(wb, `تقرير_شامل_${getFormattedDates().gregorian}.xlsx`);
-        }
-
-        function getFormattedDates() { 
-            const now = new Date();
-            return { gregorian: now.toLocaleDateString('ar-SA'), hijri: now.toLocaleDateString('ar-SA-u-ca-islamic') };
-        }
-        
-        function renderTeachersManagementList() { /* ... */ }
-        function openCameraModal(teacherId) { /* ... */ }
-        function closeCameraModal() { /* ... */ }
         function showTeacherDetails(teacherId) { /* ... */ }
         function resetAllMonthlyPoints() { /* ... */ }
         function resetAllPoints() { /* ... */ }
