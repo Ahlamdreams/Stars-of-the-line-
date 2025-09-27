@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
-        /* [الأنماط (CSS) بالكامل كما كانت في الكود الأصلي] */
+        /* [الأنماط (CSS) بالكامل] */
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap');
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -33,40 +33,50 @@
         .header-image:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
         .info-card { padding: 1rem 2rem; text-align: center; color: white; font-size: 1.1rem; }
         
-        /* 💡 التعديل 1: السماح للبطاقات بالتمدد في العرض */
+        /* === تعديلات بطاقات النجوم (Stars Summary) === */
         .stars-summary { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* يحافظ على التوزيع */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
             gap: 1rem; 
             margin-top: 2rem; 
             position: relative; 
             z-index: 2; 
         }
 
-        /* 💡 التعديل 2: تطبيق العرض الكامل والخط الأبيض واللون الأصلي لكل بطاقة */
         .star-card {
-            width: 100%; /* العرض الكامل ضمن عمود الـ grid */
-            color: white; /* جعل الخط أبيض لجميع النصوص داخل البطاقة */
+            width: 100%; 
+            color: white; 
+            padding: 1rem; /* أضفت هذا لزيادة الوسادة قليلاً */
+            text-align: center;
         }
 
+        .star-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .star-card p {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* الألوان المطلوبة لبطاقات النجوم */
         .star-card:nth-child(1) { 
-            background: linear-gradient(135deg, #ab47bc, #e1bee7); /* لون بنفسجي (نجمة الشهر) */
-            /* تم تغيير النمط ليتوافق مع الصورة الأصلية المرفوعة */
+            background: linear-gradient(135deg, #ab47bc, #e1bee7); /* بنفسجي - نجمة الشهر */
         }
         
         .star-card:nth-child(2) { 
-            background: linear-gradient(135deg, #ffa726, #ffcc02); /* لون أصفر (نجم الطابور) */
+            background: linear-gradient(135deg, #ffa726, #ffcc02); /* أصفر - نجم الطابور */
         }
         
         .star-card:nth-child(3) { 
-            background: linear-gradient(135deg, #ff6b9d, #ff8a80); /* لون وردي (نجمة اليوم) */
-            /* تم تغيير النمط ليتوافق مع الصورة الأصلية المرفوعة */
+            background: linear-gradient(135deg, #ff6b9d, #ff8a80); /* وردي - نجمة اليوم */
         }
 
         .star-card:nth-child(4) { 
-            background: linear-gradient(135deg, #42a5f5, #81d4fa); /* لون أزرق (نجم الطابور للشهر) */
+            background: linear-gradient(135deg, #42a5f5, #81d4fa); /* أزرق - نجم الطابور للشهر */
         }
-        /* نهاية التعديل 2 */
+        /* ============================================== */
 
         .star-card:hover { transform: translateY(-10px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
         .navigation { position: sticky; top: 0; z-index: 100; margin: 0 1rem; padding: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
@@ -84,7 +94,46 @@
         .stat-number { font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; }
         .stat-label { font-size: 1.1rem; opacity: 0.9; }
         .teachers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .teacher-card { padding: 1.5rem; position: relative; overflow: hidden; transition: all 0.3s ease; cursor: pointer; }
+        
+        /* === تعديلات بطاقات المعلمات (Teacher Card Status) === */
+        .teacher-card { 
+            padding: 1.5rem; 
+            position: relative; 
+            overflow: hidden; 
+            transition: all 0.5s ease; /* تعديل لـ 0.5s ليكون التغيير أكثر سلاسة */
+            cursor: pointer; 
+            /* إعادة تعيين اللون الافتراضي (لم يتم التسجيل) */
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .teacher-card.status-present {
+            background: linear-gradient(135deg, #4caf50, #81c784); /* أخضر - حاضر */
+            box-shadow: 0 8px 32px rgba(76, 175, 80, 0.4);
+        }
+
+        .teacher-card.status-absent {
+            background: linear-gradient(135deg, #f44336, #ef5350); /* أحمر - غائب */
+            box-shadow: 0 8px 32px rgba(244, 67, 54, 0.4);
+        }
+
+        .teacher-card.status-late {
+            background: linear-gradient(135deg, #ff9800, #ffb74d); /* برتقالي - متأخر */
+            box-shadow: 0 8px 32px rgba(255, 152, 0, 0.4);
+        }
+
+        .teacher-card.status-excused {
+            background: linear-gradient(135deg, #2196f3, #64b5f6); /* أزرق - بعذر */
+            box-shadow: 0 8px 32px rgba(33, 150, 243, 0.4);
+        }
+        
+        .teacher-card.status-not-recorded {
+            background: rgba(255, 255, 255, 0.1); /* شفاف/افتراضي لـ لم يتم التسجيل */
+        }
+        /* ============================================== */
+
         .teacher-card:hover { transform: translateY(-10px) rotateY(5deg) rotateX(5deg); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
         .teacher-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(45deg, #ff6b9d, #ffa726); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; margin: 0 auto 1rem; box-shadow: 0 0 20px rgba(255, 107, 157, 0.3); }
         .teacher-name { font-size: 1.3rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; color: white; }
@@ -102,7 +151,7 @@
         .classes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
         .class-card { padding: 2rem; position: relative; overflow: hidden; transition: all 0.3s ease; }
         .class-card:hover { transform: translateY(-10px) rotateY(5deg) rotateX(5deg); }
-        .class-name { font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 1rem; color: white; }
+        .class-name { font-size: 1.5rem; font-weight: 700; text-align: center; color: white; }
         .class-points { text-align: center; font-size: 2rem; font-weight: 900; color: #ffa726; margin-bottom: 1.5rem; }
         .criteria-controls { display: flex; flex-direction: column; gap: 1rem; }
         .criteria-row { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
@@ -130,7 +179,17 @@
         @keyframes logoPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 30px rgba(255, 107, 157, 0.5); } 50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(255, 107, 157, 0.8); } }
         @keyframes textGlow { 0% { text-shadow: 0 0 30px rgba(255, 107, 157, 0.5); } 100% { text-shadow: 0 0 50px rgba(255, 107, 157, 0.8), 0 0 70px rgba(255, 165, 38, 0.6); } }
         @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 768px) { .main-title { font-size: 2.5rem; } .header-info { flex-direction: column; gap: 1rem; } .header-image { width: 150px; height: 150px; } .navigation { flex-direction: column; } .teachers-grid, .classes-grid { grid-template-columns: 1fr; } .attendance-stats { grid-template-columns: repeat(2, 1fr); } .tabs { flex-direction: column; } }
+        @media (max-width: 768px) { 
+            .main-title { font-size: 2.5rem; } 
+            .header-info { flex-direction: column; gap: 1rem; } 
+            .header-image { width: 150px; height: 150px; } 
+            .navigation { flex-direction: column; } 
+            .teachers-grid, .classes-grid { grid-template-columns: 1fr; } 
+            .attendance-stats { grid-template-columns: repeat(2, 1fr); } 
+            .tabs { flex-direction: column; } 
+            .stars-summary { grid-template-columns: 1fr; }
+            .star-card { margin: 0.5rem 0; }
+        }
         .loading { display: flex; justify-content: center; align-items: center; padding: 2rem; color: white; font-size: 1.2rem; }
         .loading::after { content: ''; width: 20px; height: 20px; border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -165,16 +224,6 @@
         .report-list { list-style: none; padding: 0; margin: 0; }
         .report-list-item { padding: 0.75rem 1rem; border-bottom: 1px dashed #ddd; display: flex; justify-content: space-between; align-items: center; }
         .report-list-item:last-child { border-bottom: none; }
-
-        /* تعديل خاص للشاشات الأصغر لتطبيق العرض الكامل والمحاذاة للبطاقات */
-        @media (max-width: 768px) {
-            .stars-summary {
-                grid-template-columns: 1fr; /* جعل البطاقات تأخذ عرض الشاشة بالكامل */
-            }
-            .star-card {
-                margin: 0.5rem 0;
-            }
-        }
     </style>
 </head>
 <body>
@@ -781,7 +830,7 @@
             teacher.status = status;
             teacher.timestamp = timestamp;
             
-            renderTeachers();
+            renderTeachers(); // تحديث الواجهة لتطبيق اللون الجديد فوراً
             updateStats();
             
             syncToSheet('updateAttendance', { 
@@ -830,8 +879,6 @@
             }
         }
 
-        // ... (بقية الدوال المساعدة والدوال الإدارية)
-
         // ⭐️ دالة تفعيل النجوم التلقائية
         function updateStarSummaries() {
             // 1. ⭐ نجم الطابور (الأعلى نقاط اليوم)
@@ -877,44 +924,53 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
             document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
         }
+
+        // ⭐️ دالة عرض المعلمات المحدثة لتطبيق الألوان
         function renderTeachers() { 
             const grid = document.getElementById('teachersGrid');
             if (!grid) return;
-            grid.innerHTML = teachers.map(teacher => `
-                <div class="teacher-card glass-morphism" data-id="${teacher.id}">
-                    ${teacher.notes ? '<div class="notes-indicator">ملاحظات</div>' : ''}
-                    <div class="teacher-avatar">${teacher.name.charAt(0)}</div>
-                    <div class="teacher-name">${teacher.name}</div>
-                    <div class="teacher-class">${teacher.class}</div>
-                    <div class="attendance-status">
-                        <button class="status-btn present ${teacher.status === 'present' ? 'active' : ''}" 
-                                onclick="updateAttendanceWithSave(${teacher.id}, 'present')">حاضرة</button>
-                        <button class="status-btn absent ${teacher.status === 'absent' ? 'active' : ''}" 
-                                onclick="updateAttendanceWithSave(${teacher.id}, 'absent')">غائبة</button>
-                        <button class="status-btn late ${teacher.status === 'late' ? 'active' : ''}" 
-                                onclick="updateAttendanceWithSave(${teacher.id}, 'late')">متأخرة</button>
-                        <button class="status-btn excused ${teacher.status === 'excused' ? 'active' : ''}" 
-                                onclick="updateAttendanceWithSave(${teacher.id}, 'excused')">بعذر</button>
+            
+            grid.innerHTML = teachers.map(teacher => {
+                // تحديد فئة CSS بناءً على حالة الحضور لتطبيق اللون
+                const statusClass = `status-${teacher.status}`;
+
+                return `
+                    <div class="teacher-card glass-morphism ${statusClass}" data-id="${teacher.id}">
+                        ${teacher.notes ? '<div class="notes-indicator">ملاحظات</div>' : ''}
+                        <div class="teacher-avatar">${teacher.name.charAt(0)}</div>
+                        <div class="teacher-name">${teacher.name}</div>
+                        <div class="teacher-class">${teacher.class}</div>
+                        <div class="attendance-status">
+                            <button class="status-btn present ${teacher.status === 'present' ? 'active' : ''}" 
+                                    onclick="updateAttendanceWithSave(${teacher.id}, 'present')">حاضرة</button>
+                            <button class="status-btn absent ${teacher.status === 'absent' ? 'active' : ''}" 
+                                    onclick="updateAttendanceWithSave(${teacher.id}, 'absent')">غائبة</button>
+                            <button class="status-btn late ${teacher.status === 'late' ? 'active' : ''}" 
+                                    onclick="updateAttendanceWithSave(${teacher.id}, 'late')">متأخرة</button>
+                            <button class="status-btn excused ${teacher.status === 'excused' ? 'active' : ''}" 
+                                    onclick="updateAttendanceWithSave(${teacher.id}, 'excused')">بعذر</button>
+                        </div>
+                        <div style="text-align: center; color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            <strong>الحالة:</strong> ${getStatusText(teacher.status)} 
+                            ${teacher.timestamp ? `(${teacher.timestamp})` : ''}
+                        </div>
+                        <div class="teacher-actions">
+                            <button class="action-btn" onclick="openTeacherModal(${teacher.id})">
+                                ✏️ تعديل
+                            </button>
+                            <button class="action-btn" onclick="resetTeacher(${teacher.id})">
+                                🔄 إعادة تعيين
+                            </button>
+                            <button class="action-btn" onclick="openCameraModal(${teacher.id})">
+                                📸 صورة
+                            </button>
+                        </div>
                     </div>
-                    <div style="text-align: center; color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">
-                        <strong>الحالة:</strong> ${getStatusText(teacher.status)} 
-                        ${teacher.timestamp ? `(${teacher.timestamp})` : ''}
-                    </div>
-                    <div class="teacher-actions">
-                        <button class="action-btn" onclick="openTeacherModal(${teacher.id})">
-                            ✏️ تعديل
-                        </button>
-                        <button class="action-btn" onclick="resetTeacher(${teacher.id})">
-                            🔄 إعادة تعيين
-                        </button>
-                        <button class="action-btn" onclick="openCameraModal(${teacher.id})">
-                            📸 صورة
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             document.getElementById('teachersGrid').innerHTML = teachers.length === 0 ? '<div class="glass-morphism loading" style="padding: 3rem; text-align: center; color: white; grid-column: 1 / -1;">لا توجد بيانات معلمات للتحميل.</div>' : grid.innerHTML;
         }
+
         function renderClasses() { 
             const grid = document.getElementById('classesGrid');
             if (!grid) return;
@@ -1009,7 +1065,7 @@
         function openTeacherModal(teacherId) { const teacher = teachers.find(t => t.id === teacherId); if (!teacher) return; currentEditingTeacherId = teacherId; document.getElementById('editTeacherName').value = teacher.name; document.getElementById('editTeacherClass').value = teacher.class; document.getElementById('editTeacherNotes').value = teacher.notes || ''; document.getElementById('teacherModal').classList.add('active'); }
         function openClassModal(classIndex) { const classItem = classes[classIndex]; if (!classItem) return; currentEditingClassIndex = classIndex; document.getElementById('editClassName').value = classItem.name; document.getElementById('editClassNotes').value = classItem.notes || ''; document.getElementById('classModal').classList.add('active'); }
         function closeClassModal() { document.getElementById('classModal').classList.remove('active'); currentEditingClassIndex = null; }
-        function resetTeacher(teacherId) { /*... (الكود الأصلي) ...*/ }
+        function resetTeacher(teacherId) { /* ... */ }
         function showTeacherDetails(teacherId) { /* ... */ }
         function resetAllMonthlyPoints() { /* ... */ }
         function resetAllPoints() { /* ... */ }
@@ -1067,7 +1123,7 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 3rem;">
                         <div style="text-align: center;">
                             <p style="color: #666; margin-bottom: 0.5rem;">التاريخ</p>
-                            <p style="color: #333; font-weight: bold;">${dateInfo.gregorian}</p>
+                            <p style="color: #333; font-weight: bold;">${getFormattedDates().gregorian}</p>
                         </div>
                         <div style="text-align: center;">
                             <p style="color: #666; margin-bottom: 0.5rem;">مديرة المدرسة</p>
@@ -1149,6 +1205,7 @@
             // توليد معاينة شاملة قبل التصدير
             const dates = getFormattedDates();
             const present = teachers.filter(t => t.status === 'present').length;
+            const absent = teachers.filter(t => t.status === 'absent').length;
             const sortedClasses = [...classes].sort((a, b) => b.totalPoints - a.totalPoints);
             
             const preview = document.getElementById('reportPreview');
