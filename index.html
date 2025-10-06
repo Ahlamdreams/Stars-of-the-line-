@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام إدارة الطابور المدرسي - متزامن</title>
+    <!-- تضمين مكتبات التصدير -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
@@ -22,7 +23,7 @@
         .header { padding: 2rem; margin: 1rem; position: relative; overflow: hidden; }
         .header::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent); animation: rotate 10s linear infinite; }
         .logo-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .logo { width: 80px; height: 80px; background: linear-gradient(45deg, #ff6b9d, #ffa726); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: 0 0 30px rgba(255, 107, 157, 0.5); animation: logoPulse 3s ease-in-out infinite; position: relative; z-index: 2; overflow: hidden; }
+        .logo { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: 0 0 30px rgba(255, 107, 157, 0.5); animation: logoPulse 3s ease-in-out infinite; position: relative; z-index: 2; overflow: hidden; }
         .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .header-logo-image { width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 3px solid rgba(255, 255, 255, 0.4); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); transition: all 0.3s ease; }
         .header-logo-image:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
@@ -261,24 +262,25 @@
     <div class="floating-particles" id="particles"></div>
 
     <header class="header glass-morphism">
-        <div class="logo-container">
+        <div class="logo-container" id="siteHeaderLogo">
             <div class="logo">
                 ⭐
             </div>
+            <!-- تم إبقاء الصور الوهمية لتجنب ظهور أخطاء في الكونسول إذا لم يتم توفير روابط حقيقية -->
             <img src="https://lh3.googleusercontent.com/d/1mtn3vRqkD9EotyQGuBAVxjTKxUyzSr3Y" 
-                    alt="شعار المدرسة" 
-                    class="header-logo-image"
-                    onerror="this.style.display='none'; console.log('فشل في تحميل الصورة');"
-                    onload="console.log('تم تحميل الصورة بنجاح');">
+                        alt="شعار المدرسة" 
+                        class="header-logo-image"
+                        onerror="this.style.display='none'; console.log('فشل في تحميل الصورة');"
+                        onload="console.log('تم تحميل الصورة بنجاح');">
             <img src="https://lh3.googleusercontent.com/d/1ER6aW7lGipFE4oZ3LW0vftXyoT9Lmf1n" 
-                    alt="صورة المدرسة" 
-                    class="header-logo-image"
-                    onerror="this.style.display='none'; console.log('فشل في تحميل الصورة');"
-                    onload="console.log('تم تحميل الصورة بنجاح');">
+                        alt="صورة المدرسة" 
+                        class="header-logo-image"
+                        onerror="this.style.display='none'; console.log('فشل في تحميل الصورة');"
+                        onload="console.log('تم تحميل الصورة بنجاح');">
         </div>
         
         <h1 class="main-title">الطابور المدرسي</h1>
-        <p class="subtitle">انضباط يعكس وعيًا ونظام يصنع الأجيال</p>
+        <p class="subtitle" id="motivationalSubtitle">انضباط يعكس وعيًا ونظام يصنع الأجيال</p>
         
         <div class="header-info">
             <div class="info-card glass-morphism">
@@ -497,19 +499,19 @@
                         <h3 style="color: white; text-align: center; margin-bottom: 2rem;">طباعة الشهادات</h3>
                         
                         <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-                            <button class="nav-button" onclick="printDailyCertificate()">🌟 شهادة نجمة اليوم</button>
-                            <button class="nav-button" onclick="printQueueCertificate()">⭐ شهادة نجم الطابور</button>
-                            <button class="nav-button" onclick="printMonthlyCertificate()">🏆 شهادة نجمة الشهر</button>
-                            <button class="nav-button" onclick="printAttendanceCertificate()">📋 شهادة الحضور</button>
+                            <!-- الدوال تستدعي دالة createStarCertificate الجديدة -->
+                            <button class="nav-button" onclick="createStarCertificate('starOfDay')">🌟 شهادة نجمة اليوم</button>
+                            <button class="nav-button" onclick="createStarCertificate('dailyClass')">⭐ شهادة نجم الطابور</button>
+                            <button class="nav-button" onclick="createStarCertificate('starOfMonth')">🏆 شهادة نجمة الشهر</button>
+                            <button class="nav-button" onclick="createStarCertificate('queueStarMonth')">👑 شهادة نجم الطابور للشهر</button>
+                            <button class="nav-button" onclick="createStarCertificate('attendance')">📋 شهادة الحضور</button>
                         </div>
 
                         <div class="glass-morphism" style="padding: 2rem;">
-                            <h4 style="color: white; margin-bottom: 1rem;">معاينة الشهادة</h4>
-                            <div id="certificatePreview" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 400px;">
-                                <p>اختر نوع الشهادة لمعاينتها</p>
-                            </div>
-                            <div style="text-align: center; margin-top: 1rem;">
-                                <button class="nav-button" onclick="printCertificate()">🖨️ طباعة الشهادة</button>
+                            <h4 style="color: white; margin-bottom: 1rem;">معاينة الشهادة (انقر على زر الشهادة للتصدير)</h4>
+                            <!-- هنا سيتم عرض محتوى الشهادة الديناميكي -->
+                            <div id="certificatePreviewContainer" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 400px; position: relative;">
+                                <p id="certificatePlaceholder">اختر نوع الشهادة لمعاينتها (سيتم تصديرها كـ PDF مباشرة)</p>
                             </div>
                         </div>
                     </div>
@@ -565,8 +567,12 @@
 
                         <div class="glass-morphism" style="padding: 2rem;">
                             <h4 style="color: white; margin-bottom: 1rem;">👁️ معاينة التقرير</h4>
-                            <div id="reportPreview" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 300px; max-height: 500px; overflow-y: auto;">
-                                <p>اختر نوع التقرير لمعاينته</p>
+                            <div id="reportPreviewContainer" style="background: white; padding: 2rem; border-radius: 15px; text-align: center; color: #333; min-height: 300px; max-height: 500px; overflow-y: auto;">
+                                <p id="reportPlaceholder">اختر نوع التقرير لمعاينته</p>
+                                <!-- هنا سيتم عرض محتوى التقرير المخفي -->
+                                <div id="reportToExport" style="display:none; padding:1rem; border:2px solid #333; background:white; max-width:900px; margin:auto;">
+                                    <!-- محتوى التقرير (جدول HTML) يُملأ تلقائيًا -->
+                                </div>
                             </div>
                             <div style="text-align: center; margin-top: 1rem;">
                                 <button class="nav-button" onclick="printReport()">🖨️ طباعة التقرير</button>
@@ -594,6 +600,7 @@
         </section>
     </main>
 
+    <!-- النوافذ المنبثقة (MODALS) -->
     <div id="teacherModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -747,7 +754,9 @@
                     class: t.Class,
                     status: t.Status || 'not-recorded', 
                     timestamp: t.Timestamp || null,
-                    notes: t.Notes || ''
+                    notes: t.Notes || '',
+                    // إضافة نقاط شهرية للمعلمات للمقارنة (افتراض 0 إذا لم تتوفر في الشيت)
+                    monthlyPoints: Number(t.MonthlyPoints) || 0 
                 }));
                 classes = data.classes.map(c => ({
                     name: c.ClassName, 
@@ -792,17 +801,7 @@
                     body: JSON.stringify(fullPayload)
                 });
                 
-                // ⭐️ إرجاع الرد لتمكين دالة resetAllAttendance من انتظار النتيجة
-                if (!response.ok) {
-                    throw new Error(`Server responded with status: ${response.status}`);
-                }
-                const result = await response.text();
-                try {
-                    // محاولة تحليل JSON إذا كان الرد يحتوي على JSON
-                    return JSON.parse(result);
-                } catch (e) {
-                    return { status: 'success', message: 'Sync successful (No JSON response)' };
-                }
+                return { status: 'success', message: 'Sync request sent.' }; 
 
             } catch (error) {
                 console.error(`❌ فشل مزامنة التغيير (${action}):`, error);
@@ -811,7 +810,6 @@
         }
 
         function loadDataFromSheets() {
-            // ⭐️ يتم استدعاء loadDataFromSheet مباشرة
             loadDataFromSheet();
         }
 
@@ -824,30 +822,23 @@
             return statusMap[status] || 'لم يتم التسجيل'; 
         }
 
-        // ⭐️ الدالة المصححة لزيادة النقاط (مع تحديث فوري)
         function updatePointsWithSave(classIndex, criteria, change) {
             const classItem = classes[classIndex];
             if (!classItem) return;
             
             const currentValue = Number(classItem[criteria]) || 0; 
-            
             const newValue = Math.max(0, currentValue + change); 
             
             // تحديث القيم في المصفوفة المحلية
             classItem[criteria] = newValue;
             classItem.totalPoints = classItem.quiet + classItem.speed + classItem.volume + classItem.cleanliness;
-            classItem.dailyPoints = classItem.totalPoints;
+            classItem.dailyPoints = classItem.totalPoints; 
 
-            renderClasses(); // تحديث الواجهة فوراً
-            updateStarSummaries(); // تحديث النجوم محلياً فوراً
+            renderClasses(); 
+            updateStarSummaries(); 
 
-            // 1. إرسال تحديثات النقاط الرئيسية إلى الشيت
             syncToSheet('updatePoints', { className: classItem.name, criteria: criteria, newValue: newValue });
-            // 2. ⭐️ تحديث البيانات من الخادم في الخلفية بعد ثانية واحدة (للتزامن)
             setTimeout(loadDataFromSheet, 1000); 
-
-            const criteriaNames = { 'Quiet': 'الهدوء', 'Speed': 'السرعة', 'Volume': 'الصوت', 'Cleanliness': 'النظافة' };
-            alert(`تم تحديث ${criteriaNames[criteria]} لـ ${classItem.name}: ${newValue}`);
         }
 
         function updateAttendanceWithSave(teacherId, status) {
@@ -858,7 +849,7 @@
             teacher.status = status;
             teacher.timestamp = timestamp;
             
-            renderTeachers(); // تحديث الواجهة لتطبيق اللون الجديد فوراً
+            renderTeachers(); 
             updateStats();
             
             syncToSheet('updateAttendance', { 
@@ -868,8 +859,7 @@
                 timestamp: timestamp 
             });
             
-            setTimeout(loadDataFromSheet, 1000); // تحديث فوري للنجوم والإحصائيات
-            alert(`تم تحديث حضور ${teacher.name} إلى: ${getStatusText(status)}`);
+            setTimeout(loadDataFromSheet, 1000); 
         }
 
         function resetTeacher(teacherId) {
@@ -892,74 +882,74 @@
             }
         }
         
-        // ⭐️ الدالة اليدوية للأرشفة والتصفير (للتجربة)
         async function resetAllAttendance() {
             if (confirm('⚠️ هل أنت متأكد من أرشفة سجل حضور اليوم وبدء يوم جديد؟\n\nستتم أرشفة الحضور الحالي ومسح جميع الحالات.')) {
                 
-                const response = await syncToSheet('archiveAndReset', { id: 0 }); // id: 0 هو قيمة وهمية لتشغيل الدالة
+                const response = await syncToSheet('archiveAndReset', { id: 0 }); 
                 
                 if (response.status === 'success') {
-                    alert('✅ تم أرشفة حضور اليوم بنجاح وإعادة تعيينه لليوم الجديد.');
-                    loadDataFromSheet(); // تحديث الواجهة لعرض السجل الممسوح
+                    setTimeout(loadDataFromSheet, 2000); 
+                    alert('✅ تم إرسال طلب أرشفة حضور اليوم بنجاح. سيتم تحديث الصفحة خلال ثوانٍ.');
                 } else {
-                    alert(`❌ فشل في الأرشفة: ${response.message || 'خطأ غير معروف.'}\nتأكد من وجود ورقة AttendanceHistory.`);
+                    alert(`❌ فشل في إرسال طلب الأرشفة: ${response.message || 'خطأ غير معروف.'}\nتأكد من إعداد Apps Script بشكل صحيح.`);
                 }
             }
         }
 
-        // ⭐️ دالة تفعيل النجوم التلقائية
+        // ⭐️ دالة تفعيل النجوم التلقائية (محدثة بالكامل)
         function updateStarSummaries() {
-            // 1. ⭐ نجم الطابور (الأعلى نقاط اليوم)
-            const topDailyClass = classes.reduce((max, current) => 
-                current.dailyPoints > max.dailyPoints ? current : max
-            );
-            document.getElementById('queueStar').textContent = (topDailyClass && topDailyClass.dailyPoints > 0) ? topDailyClass.name : 'لم يتم الاختيار بعد';
-
-            // 2. 👑 نجم الطابور للشهر (الأعلى نقاط الشهر)
-            const topMonthlyClass = classes.reduce((max, current) => 
-                current.monthlyPoints > max.monthlyPoints ? current : max
-            );
-            document.getElementById('queueStarMonth').textContent = (topMonthlyClass && topMonthlyClass.monthlyPoints > 0) ? topMonthlyClass.name : 'لم يتم الاختيار بعد';
-            
-            // 3. 🌟 نجمة اليوم (أول معلمة تسجل حضورها)
+            // نجم اليوم: أول معلمة تسجل حضورها
             const firstPresentTeacher = teachers
                 .filter(t => t.status === 'present' && t.timestamp)
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
 
-            document.getElementById('starOfDay').textContent = firstPresentTeacher 
-                ? `${firstPresentTeacher.name} (${firstPresentTeacher.class})` 
+            document.getElementById('starOfDay').textContent = firstPresentTeacher
+                ? `${firstPresentTeacher.name} (${firstPresentTeacher.class})`
                 : 'لم يتم الاختيار بعد';
-        }
 
+            // نجم الشهر (معلمة): أعلى نقاط شهرية (افتراضياً)
+            const topMonthlyTeacher = teachers.reduce((max, t) => (t.monthlyPoints > (max.monthlyPoints || 0) ? t : max), { monthlyPoints: -1 });
+            document.getElementById('starOfMonth').textContent = (topMonthlyTeacher.monthlyPoints > 0) ? `${topMonthlyTeacher.name} (${topMonthlyTeacher.class})` : 'لم يتم الاختيار بعد';
+
+
+            // نجم الطابور (يومي): الصف الأعلى نقاط يومية
+            const topDailyClass = classes.reduce((max, c) => (c.dailyPoints > (max.dailyPoints || 0) ? c : max), { dailyPoints: -1 });
+            document.getElementById('queueStar').textContent = (topDailyClass.dailyPoints > 0) ? topDailyClass.name : 'لم يتم الاختيار بعد';
+            
+             // نجم الطابور للشهر (الصف): أعلى نقاط شهرية (افتراضياً)
+            const topMonthlyClass = classes.reduce((max, c) => (c.monthlyPoints > (max.monthlyPoints || 0) ? c : max), { monthlyPoints: -1 });
+            document.getElementById('queueStarMonth').textContent = (topMonthlyClass.monthlyPoints > 0) ? topMonthlyClass.name : 'لم يتم الاختيار بعد';
+        }
+        
         // =======================================================
-        // 4. الدوال المساعدة (العرض والتحقق والتقارير)
+        // 4. الدوال المساعدة (العرض والتحقق)
         // =======================================================
         
         function updateStats() {
             const present = teachers.filter(t => t.status === 'present').length;
             const absent = teachers.filter(t => t.status === 'absent').length;
+            const late = teachers.filter(t => t.status === 'late').length;
+            const excused = teachers.filter(t => t.status === 'excused').length;
             const notRecorded = teachers.filter(t => t.status === 'not-recorded').length;
             document.getElementById('presentCount').textContent = present;
-            document.getElementById('absentCount').textContent = absent;
+            document.getElementById('absentCount').textContent = absent + late + excused; 
             document.getElementById('notRecordedCount').textContent = notRecorded;
             document.getElementById('totalCount').textContent = teachers.length;
             const recordedTeachers = teachers.filter(t => t.status !== 'not-recorded' && t.timestamp);
             const log = document.getElementById('attendanceLog');
-            log.innerHTML = recordedTeachers.length === 0 ? 'لا توجد تسجيلات حضور اليوم' : recordedTeachers.map(teacher => `<div style="margin: 0.5rem 0; padding: 0.5rem; background: rgba(255,255,255,0.1); border-radius: 8px;">${teacher.name} - ${getStatusText(teacher.status)} - ${teacher.timestamp}</div>`).join('');
+            log.innerHTML = recordedTeachers.length === 0 ? 'لا توجد تسجيلات حضور اليوم' : recordedTeachers.map(teacher => `<div style="margin: 0.5rem 0; padding: 0.5rem; background: rgba(255,255,255,0.1); border-radius: 8px;">${teacher.name} - ${getStatusText(teacher.status)} - ${teacher.timestamp.split(',')[1].trim()}</div>`).join('');
         }
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+            document.getElementById('currentDateTime').textContent = now.toLocaleDateString('ar-SA', options);
         }
 
-        // ⭐️ دالة عرض المعلمات المحدثة لتطبيق الألوان
         function renderTeachers() { 
             const grid = document.getElementById('teachersGrid');
             if (!grid) return;
             
             grid.innerHTML = teachers.map(teacher => {
-                // تحديد فئة CSS بناءً على حالة الحضور لتطبيق اللون
                 const statusClass = `status-${teacher.status}`;
 
                 return `
@@ -970,17 +960,17 @@
                         <div class="teacher-class">${teacher.class}</div>
                         <div class="attendance-status">
                             <button class="status-btn present ${teacher.status === 'present' ? 'active' : ''}" 
-                                    onclick="updateAttendanceWithSave(${teacher.id}, 'present')">حاضرة</button>
+                                        onclick="updateAttendanceWithSave(${teacher.id}, 'present')">حاضرة</button>
                             <button class="status-btn absent ${teacher.status === 'absent' ? 'active' : ''}" 
-                                    onclick="updateAttendanceWithSave(${teacher.id}, 'absent')">غائبة</button>
+                                        onclick="updateAttendanceWithSave(${teacher.id}, 'absent')">غائبة</button>
                             <button class="status-btn late ${teacher.status === 'late' ? 'active' : ''}" 
-                                    onclick="updateAttendanceWithSave(${teacher.id}, 'late')">متأخرة</button>
+                                        onclick="updateAttendanceWithSave(${teacher.id}, 'late')">متأخرة</button>
                             <button class="status-btn excused ${teacher.status === 'excused' ? 'active' : ''}" 
-                                    onclick="updateAttendanceWithSave(${teacher.id}, 'excused')">بعذر</button>
+                                        onclick="updateAttendanceWithSave(${teacher.id}, 'excused')">بعذر</button>
                         </div>
                         <div style="text-align: center; color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">
                             <strong>الحالة:</strong> ${getStatusText(teacher.status)} 
-                            ${teacher.timestamp ? `(${teacher.timestamp})` : ''}
+                            ${teacher.timestamp ? `(${teacher.timestamp.split(',')[1].trim()})` : ''}
                         </div>
                         <div class="teacher-actions">
                             <button class="action-btn" onclick="openTeacherModal(${teacher.id})">
@@ -989,7 +979,7 @@
                             <button class="action-btn" onclick="resetTeacher(${teacher.id})">
                                 🔄 إعادة تعيين
                             </button>
-                            <button class="action-btn" onclick="openCameraModal(${teacher.id})">
+                            <button class="action-btn" onclick="openCameraModal(${teacher.id}, '${teacher.name}', '${teacher.class}')">
                                 📸 صورة
                             </button>
                         </div>
@@ -999,38 +989,35 @@
             document.getElementById('teachersGrid').innerHTML = teachers.length === 0 ? '<div class="glass-morphism loading" style="padding: 3rem; text-align: center; color: white; grid-column: 1 / -1;">لا توجد بيانات معلمات للتحميل.</div>' : grid.innerHTML;
         }
 
-        // ⭐️ دالة عرض الصفوف المحدثة لتطبيق تمييز الصف الفائز
         function renderClasses() { 
             const grid = document.getElementById('classesGrid');
             if (!grid) return;
 
-            // تحديد الصف الحاصل على أعلى نقاط يومية
             const topDailyClass = classes.reduce((max, current) => 
                 current.dailyPoints > max.dailyPoints ? current : max, { dailyPoints: -1 }
             );
 
             grid.innerHTML = classes.map((classItem, index) => {
-                // إضافة فئة winner إذا كان هذا الصف هو الأعلى نقاط يومياً
                 const winnerClass = (classItem.name === topDailyClass.name && topDailyClass.dailyPoints > 0) ? 'queue-star-winner' : '';
 
                 return `
-                    <div class="class-card glass-morphism ${winnerClass}">
+                    <div class="class-card glass-morphism ${winnerClass}" onclick="openClassModal(${index})" style="cursor: pointer;">
                         <div class="class-name">${classItem.name}</div>
                         <div class="class-points">
                             ${classItem.dailyPoints} 
                             <span style="font-size: 1rem; opacity: 0.8;">(إجمالي اليوم: ${classItem.totalPoints})</span>
                         </div>
-                        <div style="text-align: center; color: white; margin-bottom: 1rem;">
+                        <div style="text-align: center; color: white; margin-bottom: 1.5rem;">
                             نقاط الشهر: <strong>${classItem.monthlyPoints}</strong>
                         </div>
                         <div class="criteria-controls">
-                            ${renderCriteriaRow(index, 'Quiet', 'الهدوء')}
-                            ${renderCriteriaRow(index, 'Speed', 'السرعة')}
-                            ${renderCriteriaRow(index, 'Volume', 'الصوت')}
-                            ${renderCriteriaRow(index, 'Cleanliness', 'النظافة')}
+                            ${renderCriteriaRow(index, 'quiet', 'الهدوء')}
+                            ${renderCriteriaRow(index, 'speed', 'السرعة')}
+                            ${renderCriteriaRow(index, 'volume', 'الصوت')}
+                            ${renderCriteriaRow(index, 'cleanliness', 'النظافة')}
                         </div>
                         <div style="text-align: center; margin-top: 1.5rem;">
-                            <button class="nav-button" style="background: #2196f3;" onclick="openClassModal(${index})">
+                             <button class="nav-button" style="background: #2196f3;" onclick="event.stopPropagation(); openClassModal(${index});">
                                 ✏️ تعديل الصف
                             </button>
                         </div>
@@ -1047,9 +1034,9 @@
                 <div class="criteria-row">
                     <div class="criteria-name">${name}</div>
                     <div class="criteria-controls-btn">
-                        <button class="point-btn minus" onclick="updatePointsWithSave(${classIndex}, '${criteria}', -1)">-</button>
+                        <button class="point-btn minus" onclick="event.stopPropagation(); updatePointsWithSave(${classIndex}, '${criteria}', -1)">-</button>
                         <div class="criteria-points">${points}</div>
-                        <button class="point-btn plus" onclick="updatePointsWithSave(${classIndex}, '${criteria}', 1)">+</button>
+                        <button class="point-btn plus" onclick="event.stopPropagation(); updatePointsWithSave(${classIndex}, '${criteria}', 1)">+</button>
                     </div>
                 </div>
             `;
@@ -1058,21 +1045,27 @@
              const teacherSelects = ['starOfDaySelect', 'starOfMonthSelect'];
              const classSelects = ['queueStarSelect', 'queueStarMonthSelect'];
 
-             // ملء قوائم المعلمات
              teacherSelects.forEach(selectId => {
                  const select = document.getElementById(selectId);
                  if (select) {
                      select.innerHTML = '<option value="">اختر المعلمة</option>' +
                          teachers.map(t => `<option value="${t.name} (${t.class})">${t.name} (${t.class})</option>`).join('');
+                     
+                     if (selectId === 'starOfMonthSelect' && document.getElementById('starOfMonth').textContent !== 'لم يتم الاختيار بعد') {
+                         select.value = document.getElementById('starOfMonth').textContent;
+                     }
                  }
              });
 
-             // ملء قوائم الصفوف
              classSelects.forEach(selectId => {
                  const select = document.getElementById(selectId);
                  if (select) {
                      select.innerHTML = '<option value="">اختر الصف</option>' +
                          classes.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+                     
+                     if (selectId === 'queueStarMonthSelect' && document.getElementById('queueStarMonth').textContent !== 'لم يتم الاختيار بعد') {
+                         select.value = document.getElementById('queueStarMonth').textContent;
+                     }
                  }
              });
         }
@@ -1086,6 +1079,28 @@
                 `;
             }
         }
+        function renderTeachersManagementList() {
+            const list = document.getElementById('teachersManagementList');
+            if (!list) return;
+
+            list.innerHTML = `
+                <div style="font-weight: bold; display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 2px solid rgba(255,255,255,0.3); color: white;">
+                    <span>الاسم (ID)</span>
+                    <span>الصف</span>
+                    <span>الإجراءات</span>
+                </div>
+                ${teachers.map(t => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px dashed rgba(255,255,255,0.1); color: white;">
+                        <span>${t.name} (ID: ${t.id})</span>
+                        <span>${t.class}</span>
+                        <div>
+                            <button class="action-btn" onclick="openTeacherModal(${t.id})" style="background: #2196f3;">✏️</button>
+                            <button class="action-btn" onclick="deleteTeacher(${t.id})" style="background: #f44336;">🗑️</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
         function checkSystemPassword() {
             const input = document.getElementById('systemPassword');
             if (input.value === systemPassword) {
@@ -1094,45 +1109,897 @@
                 renderTeachersManagementList();
                 updateStarSelects();
                 updateDataManagement();
+                document.getElementById('motivationalText').value = motivationalQuote; 
             } else {
                 alert('كلمة المرور غير صحيحة');
                 input.value = '';
             }
         }
+        function updateSystemPassword() {
+            const newPass = document.getElementById('newSystemPassword').value;
+            if (newPass.length > 0) {
+                systemPassword = newPass;
+                alert('✅ تم تحديث كلمة مرور النظام بنجاح!');
+                document.getElementById('newSystemPassword').value = '';
+            } else {
+                alert('❌ يرجى إدخال كلمة مرور جديدة.');
+            }
+        }
+        function updateMotivationalText() {
+             const newText = document.getElementById('motivationalText').value;
+            if (newText.length > 0) {
+                motivationalQuote = newText;
+                document.getElementById('motivationalSubtitle').textContent = newText;
+                alert('✅ تم تحديث العبارة التحفيزية بنجاح!');
+            } else {
+                alert('❌ يرجى إدخال عبارة تحفيزية.');
+            }
+        }
+        function showAddTeacherForm() {
+            document.getElementById('addTeacherForm').classList.add('active');
+        }
+        function hideAddTeacherForm() {
+            document.getElementById('addTeacherForm').classList.remove('active');
+        }
+        function addNewTeacher() {
+            const name = document.getElementById('newTeacherName').value.trim();
+            const className = document.getElementById('newTeacherClass').value.trim();
+
+            if (!name || !className) {
+                alert('يرجى إدخال اسم المعلمة والصف.');
+                return;
+            }
+            alert('🚫 تنبيه: تم إضافة المعلمة محلياً فقط. للحصول على ID صحيح ومزامنة دائمة، يرجى إضافتها في Google Sheet.');
+
+            const newId = Math.max(...teachers.map(t => t.id), 0) + 1;
+            const newTeacher = {
+                id: newId,
+                name: name,
+                class: className,
+                status: 'not-recorded',
+                timestamp: null,
+                notes: '',
+                monthlyPoints: 0 // نقطة شهرية افتراضية
+            };
+            teachers.push(newTeacher);
+            renderTeachers();
+            renderTeachersManagementList();
+            updateStats();
+            updateStarSelects();
+            updateDataManagement();
+            
+            syncToSheet('addTeacher', newTeacher);
+
+            document.getElementById('newTeacherName').value = '';
+            document.getElementById('newTeacherClass').value = '';
+            hideAddTeacherForm();
+        }
+        function deleteTeacher(teacherId) { 
+            if (confirm('هل أنت متأكد من حذف هذه المعلمة؟ سيتم حذفها محلياً فقط. للحذف الدائم، يجب حذفها من Google Sheet.')) {
+                teachers = teachers.filter(t => t.id !== teacherId);
+                renderTeachers();
+                renderTeachersManagementList();
+                updateStats();
+                updateStarSummaries(); // تحديث النجوم بعد الحذف
+                updateStarSelects();
+                updateDataManagement();
+                syncToSheet('deleteTeacher', { id: teacherId });
+                alert('✅ تم حذف المعلمة محلياً. يرجى حذفها من Google Sheet أيضاً.');
+            }
+        }
+        function saveTeacherChanges() {
+            const teacher = teachers.find(t => t.id === currentEditingTeacherId);
+            if (!teacher) return;
+
+            teacher.name = document.getElementById('editTeacherName').value.trim();
+            teacher.class = document.getElementById('editTeacherClass').value.trim();
+            teacher.notes = document.getElementById('editTeacherNotes').value.trim();
+
+            renderTeachers();
+            renderTeachersManagementList();
+            updateStarSelects();
+            closeTeacherModal();
+
+            syncToSheet('updateTeacher', { 
+                id: teacher.id, 
+                name: teacher.name, 
+                class: teacher.class, 
+                notes: teacher.notes 
+            });
+            alert('✅ تم حفظ التغييرات. يرجى المزامنة مع الشيت للتأكد من تحديث الاسم والصف بشكل دائم.');
+        }
+        function saveClassChanges() {
+            const classItem = classes[currentEditingClassIndex];
+            if (!classItem) return;
+
+            classItem.name = document.getElementById('editClassName').value.trim();
+            classItem.notes = document.getElementById('editClassNotes').value.trim();
+
+            renderClasses();
+            closeClassModal();
+
+            syncToSheet('updateClass', { 
+                className: classItem.name, 
+                notes: classItem.notes 
+            });
+            alert('✅ تم حفظ تغييرات الصف.');
+        }
+        function addAllDailyToMonthly() {
+             if (!confirm('هل أنت متأكد من إضافة نقاط اليوم إلى نقاط الشهر لجميع الصفوف؟')) return;
+
+            classes.forEach(c => {
+                c.monthlyPoints += c.dailyPoints;
+            });
+            renderClasses();
+            updateStarSummaries();
+
+            syncToSheet('addAllDailyToMonthly', { id: 0 });
+            setTimeout(loadDataFromSheet, 2000);
+            alert('✅ تم إضافة نقاط اليوم إلى الشهر. سيتم تحديث الصفحة قريباً.');
+        }
+
+        function resetAllDailyPoints() {
+            if (!confirm('هل أنت متأكد من تصفير جميع نقاط اليوم (الهدوء، السرعة، الصوت، النظافة، الإجمالي) لجميع الصفوف؟')) return;
+
+            classes.forEach(c => {
+                c.dailyPoints = 0;
+                c.totalPoints = 0;
+                c.quiet = 0;
+                c.speed = 0;
+                c.volume = 0;
+                c.cleanliness = 0;
+            });
+            renderClasses();
+            updateStarSummaries();
+
+            syncToSheet('resetAllDailyPoints', { id: 0 });
+            setTimeout(loadDataFromSheet, 2000);
+            alert('✅ تم تصفير جميع نقاط اليوم. سيتم تحديث الصفحة قريباً.');
+        }
+
+        function resetAllMonthlyPoints() {
+            if (!confirm('⚠️ هل أنت متأكد من تصفير جميع نقاط الشهر لجميع الصفوف؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+            
+            classes.forEach(c => {
+                c.monthlyPoints = 0;
+            });
+            renderClasses();
+            updateStarSummaries();
+            
+            syncToSheet('resetAllMonthlyPoints', { id: 0 });
+            setTimeout(loadDataFromSheet, 2000);
+            alert('✅ تم تصفير جميع نقاط الشهر. سيتم تحديث الصفحة قريباً.');
+        }
+
+        function resetAllPoints() {
+            if (!confirm('⚠️ هل أنت متأكد من تصفير جميع النقاط (اليوم والشهر) لجميع الصفوف؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+            
+            classes.forEach(c => {
+                c.dailyPoints = 0;
+                c.totalPoints = 0;
+                c.monthlyPoints = 0;
+                c.quiet = 0;
+                c.speed = 0;
+                c.volume = 0;
+                c.cleanliness = 0;
+            });
+            renderClasses();
+            updateStarSummaries();
+            
+            syncToSheet('resetAllPoints', { id: 0 });
+            setTimeout(loadDataFromSheet, 2000);
+            alert('✅ تم تصفير جميع النقاط. سيتم تحديث الصفحة قريباً.');
+        }
+        
+        function updateDailyStars() {
+            updateStarSummaries(); 
+            alert('✅ تم تحديث ملخص النجوم اليومية بناءً على البيانات الحالية.');
+        }
+
+        function updateMonthlyStars() {
+            const starOfMonth = document.getElementById('starOfMonthSelect').value;
+            const queueStarMonth = document.getElementById('queueStarMonthSelect').value;
+
+            document.getElementById('starOfMonth').textContent = starOfMonth || 'لم يتم الاختيار بعد';
+            document.getElementById('queueStarMonth').textContent = queueStarMonth || 'لم يتم الاختيار بعد';
+
+            syncToSheet('updateMonthlyStars', { starOfMonth: starOfMonth, queueStarMonth: queueStarMonth });
+            alert('✅ تم تحديث نجوم الشهر بنجاح.');
+        }
+
+        // ===================================================
+        // 5. وظائف الشهادات (المدمجة والمنقحة)
+        // ===================================================
+
+        // ⭐️ دالة لحفظ الشهادة كـ PDF (تم دمجها من التحديث الأخير)
+        async function saveCertificatePDF(containerId, fileName) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                alert('❌ لم يتم العثور على عنصر الشهادة.');
+                return;
+            }
+
+            // التأكد من تحميل أي صور
+            const images = container.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = img.onerror = resolve; });
+            }));
+
+            try {
+                // إنشاء canvas
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    useCORS: true, 
+                    scrollY: -window.scrollY,
+                    logging: true
+                });
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(fileName);
+                alert('✅ تم حفظ الشهادة بنجاح');
+            } catch (err) {
+                console.error(err);
+                alert('❌ حدث خطأ أثناء حفظ الشهادة');
+            }
+        }
+
+
+        // ⭐️ دالة مُعدّلة لإنشاء الشهادة في الذاكرة مع المعاينة والحفظ الفوري
+        async function generateCertificatePreview({ name, icon, isClass = false, starType = 'شكر وتقدير' }) {
+            // إزالة أي شهادة موجودة سابقة
+            const existing = document.getElementById('certificatePreview');
+            if (existing) existing.remove();
+
+            const date = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // 1. إنشاء العنصر المؤقت (للعرض والحفظ)
+            const certificateContainer = document.createElement('div');
+            certificateContainer.id = 'certificatePreview';
+            certificateContainer.style.width = '800px';
+            certificateContainer.style.padding = '3rem';
+            certificateContainer.style.background = 'white';
+            certificateContainer.style.textAlign = 'center';
+            certificateContainer.style.border = '1px solid #ccc';
+            certificateContainer.style.position = 'relative';
+            certificateContainer.style.margin = '2rem auto'; 
+            certificateContainer.style.fontFamily = 'Tajawal, sans-serif';
+            certificateContainer.style.direction = 'rtl';
+            certificateContainer.style.color = '#333';
+            
+            const headerLogoHtml = document.querySelector('#siteHeaderLogo')?.outerHTML || '';
+            
+            let certificateText = '';
+            if (isClass) {
+                certificateText = `تقديراً لانضباطه وأدائه المتميز كنجم الطابور المدرسي`;
+            } else {
+                certificateText = `تقديراً لجهودها وأدائها المتميز كـ ${starType}`;
+            }
+            
+            // بناء محتوى الشهادة
+            const certificateContentHTML = `
+                <div class="certificate-header">${headerLogoHtml}</div>
+                <h2 style="margin: 1rem 0; color: #ab47bc;">شهادة ${starType}</h2>
+                <h3>تمنح ${isClass ? 'لصف' : 'للمعلمة'}: <strong style="color: #ff6b9d;">${name}</strong></h3>
+                <p style="font-size: 1.2rem;">${certificateText}</p>
+                <div style="font-size: 3rem; margin: 1rem 0;">${icon || '🌟'}</div>
+                <p style="margin-top: 2rem;">المدرسة: أم مالك الأنصارية للبنات</p>
+                <p style="margin-top: 3rem; font-weight: bold;">مديرة المدرسة</p>
+                <p style="font-size: 0.9rem; color: #666;">حررت في: ${date}</p>
+            `;
+
+            certificateContainer.innerHTML = certificateContentHTML;
+            document.body.appendChild(certificateContainer); 
+
+            // 2. معاينة الشهادة في الواجهة
+            const previewContainer = document.getElementById('certificatePreviewContainer');
+            if (previewContainer) {
+                // عرض المحتوى في منطقة المعاينة (بدون زر الحفظ الذي سيُضاف لاحقاً)
+                previewContainer.innerHTML = certificateContentHTML; 
+                
+                // إضافة زر الحفظ وربطه بالدالة الجديدة
+                 previewContainer.innerHTML += `<div style="margin-top:1rem;"><button id="exportCertificateBtn" class="nav-button" style="background: #28a745;">📥 حفظ PDF الآن</button></div>`;
+                
+                document.getElementById('certificatePlaceholder').style.display = 'none';
+
+                 // ربط زر الحفظ بالدالة الجديدة
+                document.getElementById('exportCertificateBtn').onclick = () => {
+                    const fileName = `${name}_${starType.replace(/\s/g, '_')}_${date}.pdf`;
+                    // نستخدم ID العنصر المؤقت الذي أنشأناه في الـ body
+                    saveCertificatePDF('certificatePreview', fileName); 
+                };
+            }
+            
+            // 3. إزالة الشهادة المؤقتة من الـ body بعد 3 ثوانٍ (لتجنب تراكم العناصر)
+             setTimeout(() => {
+                 if (document.getElementById('certificatePreview')) {
+                     document.getElementById('certificatePreview').remove();
+                 }
+             }, 3000);
+            
+            return certificateContainer;
+        }
+
+        // ⭐️ دالة موحدة لإنشاء الشهادة بناءً على النوع
+        function createStarCertificate(type) {
+             let name, icon, isClass, starType;
+
+             if (type === 'dailyClass') {
+                 const topDailyClass = classes.reduce((max, c) => (c.dailyPoints > (max.dailyPoints || 0) ? c : max), {});
+                 if (!topDailyClass.name || topDailyClass.dailyPoints <= 0) return alert('لا يوجد صف مؤهل لنجم الطابور اليوم.');
+                 name = topDailyClass.name;
+                 icon = '⭐';
+                 isClass = true;
+                 starType = 'نجم الطابور اليومي';
+             } else if (type === 'starOfDay') {
+                 const firstPresentTeacher = teachers
+                     .filter(t => t.status === 'present' && t.timestamp)
+                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
+                 if (!firstPresentTeacher) return alert('لا يوجد معلمة مؤهلة لنجم اليوم (يجب أن تسجل حضورها أولاً).');
+                 name = firstPresentTeacher.name;
+                 icon = '🌟';
+                 isClass = false;
+                 starType = 'نجمة اليوم';
+             } else if (type === 'starOfMonth') {
+                 const selectedStar = document.getElementById('starOfMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجمة الشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar.substring(0, selectedStar.indexOf('(')).trim();
+                 icon = '🏆';
+                 isClass = false;
+                 starType = 'نجمة الشهر';
+             } else if (type === 'queueStarMonth') {
+                 const selectedStar = document.getElementById('queueStarMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجم الطابور للشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar;
+                 icon = '👑';
+                 isClass = true;
+                 starType = 'نجم الطابور للشهر';
+             } else if (type === 'attendance') {
+                 name = 'جميع المعلمات المتميزات';
+                 icon = '📋';
+                 isClass = false;
+                 starType = 'تقدير للحضور المميز';
+             } else {
+                 return alert('نوع الشهادة غير صحيح.');
+             }
+             
+             generateCertificatePreview({ name, icon, isClass, starType });
+        }
+        
+        // دالة الطباعة بالمتصفح (للتراجع في حال لم يُرضي التصدير المباشر)
+        function printCertificate() {
+             alert('يرجى اختيار نوع الشهادة أولاً. سيتم تصديرها كـ PDF مباشرة بمجرد الاختيار.');
+        }
+
+        // ===================================================
+        // 6. وظائف التقارير (لم تتغير)
+        // ===================================================
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير النجوم (محدثة للتصدير المباشر)
+        function generateAndExportStarsReport(format, type = 'daily') {
+            const reportData = classes.map(c => ({
+                'الصف': c.name,
+                'نقاط الهدوء': c.quiet,
+                'نقاط السرعة': c.speed,
+                'نقاط الصوت': c.volume,
+                'نقاط النظافة': c.cleanliness,
+                'إجمالي اليوم': c.dailyPoints,
+                'إجمالي الشهر': c.monthlyPoints,
+                'ملاحظات': c.notes
+            }));
+            
+            const reportTitle = `تقرير نجوم الطابور (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `QueueStars_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            displayReport(reportData, reportTitle, 'stars');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير الحضور (محدثة للتصدير المباشر)
+        function generateAndExportAttendanceReport(format, type = 'daily') {
+            const reportData = teachers.map(t => ({
+                'ID': t.id,
+                'الاسم': t.name,
+                'الصف': t.class,
+                'حالة الحضور': getStatusText(t.status),
+                'وقت التسجيل': t.timestamp || 'لا يوجد',
+                'ملاحظات': t.notes
+            }));
+            
+            const reportTitle = `تقرير حضور المعلمات (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `Attendance_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+
+            displayReport(reportData, reportTitle, 'attendance');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+
+        async function exportReportByFormat(format, data, title, fileName) {
+            const reportEl = document.getElementById('reportToExport');
+            displayReport(data, title, 'export'); 
+            
+            if (format === 'excel') {
+                 exportToExcel(data, fileName);
+            } else if (format === 'pdf') {
+                 await exportToPDF('reportToExport', fileName);
+            } else if (format === 'image') {
+                 await exportToImage('reportToExport', fileName);
+            }
+        }
+        
+        function generateAndExportDailyAttendance(format) { generateAndExportAttendanceReport(format, 'daily'); }
+        function generateAndExportWeeklyAttendance(format) { generateAndExportAttendanceReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyAttendance(format) { generateAndExportAttendanceReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+
+        function generateAndExportDailyStars(format) { generateAndExportStarsReport(format, 'daily'); }
+        function generateAndExportWeeklyStars(format) { generateAndExportStarsReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyStars(format) { generateAndExportStarsReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+        
+        function exportCompleteReport(format) {
+             const allData = {
+                'Attendance': teachers.map(t => ({
+                    'ID': t.id,
+                    'الاسم': t.name,
+                    'الصف': t.class,
+                    'حالة الحضور': getStatusText(t.status),
+                    'وقت التسجيل': t.timestamp || 'لا يوجد',
+                    'ملاحظات': t.notes
+                })),
+                'QueueStars': classes.map(c => ({
+                    'الصف': c.name,
+                    'نقاط اليوم': c.dailyPoints,
+                    'نقاط الشهر': c.monthlyPoints,
+                    'نقاط الهدوء': c.quiet,
+                    'نقاط السرعة': c.speed,
+                    'نقاط الصوت': c.volume,
+                    'نقاط النظافة': c.cleanliness,
+                    'ملاحظات': c.notes
+                }))
+            };
+            const reportTitle = `التقرير الشامل - ${new Date().toLocaleDateString('ar-SA')}`;
+            const fileName = `Comprehensive_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            if (format === 'excel') {
+                exportMultipleSheetsToExcel(allData, fileName);
+            } else {
+                alert('لا يمكن عرض التقرير الشامل (PDF/Image) على شكل معاينة. سيتم تصدير نسخة Excel فقط.');
+            }
+        }
+
+        function displayReport(data, title, type) {
+            const previewContainer = document.getElementById('reportPreviewContainer');
+            const preview = document.getElementById('reportToExport');
+            document.getElementById('reportPlaceholder').style.display = 'none';
+
+            let tableHtml = `<div class="report-preview-container" style="padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right;">
+                <div class="report-header">
+                    <h2 class="report-title">${title}</h2>
+                    <p class="report-date">تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}</p>
+                </div>
+                <table border="1" id="reportTable" style="width:100%; border-collapse:collapse; text-align:center; font-size: 0.9rem;">
+                    <thead><tr>`;
+            
+            const headers = Object.keys(data[0] || {});
+            headers.forEach(header => {
+                tableHtml += `<th style="padding: 0.5rem; background: #ab47bc; color: white;">${header}</th>`;
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            data.forEach(row => {
+                tableHtml += `<tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<td style="padding: 0.5rem;">${row[header]}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            
+            preview.innerHTML = tableHtml;
+            preview.style.display = 'block';
+            previewContainer.scrollTop = 0; 
+        }
+
+        function exportToExcel(data, fileName) {
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'البيانات');
+            XLSX.writeFile(wb, `${fileName}.xlsx`);
+            alert(`✅ تم تصدير ${fileName}.xlsx بنجاح.`);
+        }
+        
+        function exportMultipleSheetsToExcel(data, fileName) {
+             const wb = XLSX.utils.book_new();
+             for (const sheetName in data) {
+                 const ws = XLSX.utils.json_to_sheet(data[sheetName]);
+                 XLSX.utils.book_append_sheet(wb, ws, sheetName);
+             }
+             XLSX.writeFile(wb, `${fileName}.xlsx`);
+             alert(`✅ تم تصدير ${fileName}.xlsx بصفحات متعددة بنجاح.`);
+        }
+
+        async function exportToPDF(elementId, fileName) {
+            const element = document.getElementById(elementId);
+             if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+             }
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 200; 
+                const pageHeight = 290;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+                pdf.save(`${fileName}.pdf`);
+                alert(`✅ تم تصدير ${fileName}.pdf بنجاح.`);
+            }).catch(error => {
+                console.error("Error generating PDF:", error);
+                alert("❌ فشل في إنشاء ملف PDF. يرجى مراجعة الكونسول.");
+            });
+        }
+        
+        async function exportToImage(elementId, fileName) {
+            const element = document.getElementById(elementId);
+            if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+            }
+             await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${fileName}.png`;
+                    link.click();
+                    alert(`✅ تم تصدير ${fileName}.png بنجاح.`);
+                }, 'image/png');
+            });
+        }
+
+        function printReport() {
+            const preview = document.getElementById('reportToExport');
+             if (preview.style.display === 'none') {
+                alert('يرجى اختيار نوع التقرير لمعاينته أولاً.');
+                return;
+            }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>طباعة التقرير</title><style>.report-preview-container{ padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right; } table, th, td { border: 1px solid #ddd; border-collapse: collapse; padding: 8px; text-align: right; } th { background: #ab47bc; color: white; }</style></head><body style="direction:rtl; font-family: \'Tajawal\', sans-serif;">');
+            printWindow.document.write(preview.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        // ===================================================
+        // 7. وظائف النسخ الاحتياطي والكاميرا (لم تتغير)
+        // ===================================================
+        function exportSavedData() {
+            const dataToExport = {
+                teachers: teachers,
+                classes: classes,
+                systemPassword: systemPassword,
+                motivationalQuote: motivationalQuote
+            };
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `QueueSystem_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ تم تصدير النسخة الاحتياطية بنجاح.');
+        }
+
+        function importSavedData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!confirm('⚠️ هل أنت متأكد من استيراد البيانات؟ هذا سيحل محل البيانات الحالية. لن يؤثر على بيانات Google Sheet حتى تقوم بالمزامنة يدوياً.')) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        teachers = importedData.teachers || [];
+                        classes = importedData.classes || [];
+                        systemPassword = importedData.systemPassword || 'admin123';
+                        motivationalQuote = importedData.motivationalQuote || 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+
+                        renderTeachers();
+                        renderClasses();
+                        updateStats();
+                        updateStarSummaries();
+                        renderTeachersManagementList();
+                        updateDataManagement();
+                        document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                        document.getElementById('motivationalText').value = motivationalQuote;
+                        
+                        alert('✅ تم استيراد البيانات المحلية بنجاح! يرجى تحديث البيانات من الشيت إذا كنت تريد استعادة البيانات السحابية.');
+                    } catch (error) {
+                        alert(`❌ فشل في تحليل ملف JSON: ${error.message}`);
+                        console.error('Import error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllSavedData() {
+            if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات المحلية (المعلمات، الصفوف، النقاط، الإعدادات)؟ هذا لن يؤثر على بيانات Google Sheet، ويمكنك استعادتها منه لاحقاً.')) {
+                teachers = [];
+                classes = [];
+                systemPassword = 'admin123';
+                motivationalQuote = 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+                
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSummaries();
+                renderTeachersManagementList();
+                updateDataManagement();
+                document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                document.getElementById('motivationalText').value = motivationalQuote;
+                
+                alert('✅ تم مسح جميع البيانات المحلية. يرجى تحديث البيانات من الشيت لاستعادة البيانات السحابية.');
+            }
+        }
+        
+        function openCameraModal(teacherId, teacherName, className) {
+            currentCameraTeacherId = teacherId;
+            document.getElementById('overlayTeacherName').textContent = teacherName;
+            document.getElementById('overlayClassName').textContent = className;
+            document.getElementById('cameraModal').classList.add('active');
+            updateCameraDateTime();
+            
+            startCamera();
+        }
+
+        function closeCameraModal() {
+            stopCamera();
+            document.getElementById('cameraModal').classList.remove('active');
+            currentCameraTeacherId = null;
+        }
+
+        function updateCameraDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('overlayDateTime').textContent = now.toLocaleDateString('ar-SA', options);
+        }
+
+        async function getAvailableCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                availableCameras = devices.filter(device => device.kind === 'videoinput');
+                console.log('Available cameras:', availableCameras);
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
+                availableCameras = [];
+            }
+        }
+
+        async function startCamera(deviceId = null) {
+            const video = document.getElementById('cameraVideo');
+            const statusDiv = document.getElementById('cameraStatus');
+            
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = 'جاري التشغيل...';
+            
+            if (!availableCameras.length) await getAvailableCameras();
+
+            if (!availableCameras.length) {
+                statusDiv.innerHTML = '<span style="color: red;">❌ لم يتم العثور على كاميرات. تأكد من السماح بالوصول.</span>';
+                return;
+            }
+
+            const constraint = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'environment' }; 
+
+            try {
+                if (cameraStream) stopCamera();
+                
+                const constraints = {
+                    video: constraint
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    statusDiv.innerHTML = '<span style="color: green;">✅ الكاميرا قيد التشغيل.</span>';
+                    document.getElementById('startCameraBtn').style.display = 'none';
+                    document.getElementById('captureBtn').style.display = 'inline-flex';
+                    document.getElementById('switchCameraBtn').style.display = availableCameras.length > 1 ? 'inline-flex' : 'none';
+                    document.getElementById('stopCameraBtn').style.display = 'inline-flex';
+                    
+                    const currentTrack = cameraStream.getVideoTracks()[0];
+                    const currentCamIndex = availableCameras.findIndex(d => d.deviceId === currentTrack.getSettings().deviceId);
+                    currentCameraIndex = currentCamIndex !== -1 ? currentCamIndex : 0;
+                };
+
+                setInterval(updateCameraDateTime, 1000); 
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                statusDiv.innerHTML = '<span style="color: red;">❌ خطأ في الوصول للكاميرا. تأكد من السماح بالوصول.</span>';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+        
+        function switchCamera() {
+            if (availableCameras.length <= 1) {
+                alert('لا توجد كاميرات أخرى للتبديل إليها.');
+                return;
+            }
+            
+            stopCamera(); 
+            
+            currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+            const nextCameraId = availableCameras[currentCameraIndex].deviceId;
+            
+            startCamera(nextCameraId); 
+        }
+
+        function stopCamera() {
+            const video = document.getElementById('cameraVideo');
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                cameraStream = null;
+                document.getElementById('cameraStatus').innerHTML = 'الكاميرا متوقفة.';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const overlay = document.getElementById('photoOverlay');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // إضافة الـ Overlay كنص على الصورة
+            ctx.font = "24px 'Tajawal', sans-serif";
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+            ctx.fillRect(10, canvas.height - 100, canvas.width - 20, 80); 
+            
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'right';
+            const teacherName = document.getElementById('overlayTeacherName').textContent;
+            const className = document.getElementById('overlayClassName').textContent;
+            const dateTime = document.getElementById('overlayDateTime').textContent;
+            
+            ctx.fillText(teacherName, canvas.width - 20, canvas.height - 75);
+            ctx.font = "20px 'Tajawal', sans-serif";
+            ctx.fillText(className, canvas.width - 20, canvas.height - 50);
+            ctx.font = "16px 'Tajawal', sans-serif";
+            ctx.fillText(dateTime, canvas.width - 20, canvas.height - 25);
+
+
+            const imageDataURL = canvas.toDataURL('image/png');
+            
+            // حفظ الصورة
+            const photoName = `${document.getElementById('overlayTeacherName').textContent}_${new Date().getTime()}.png`;
+            capturedPhotosData.push({ dataURL: imageDataURL, name: photoName });
+            
+            displayCapturedPhotos();
+            document.getElementById('cameraStatus').innerHTML = `<span style="color: #ff6b9d;">📸 تم التقاط وحفظ صورة ${photoName}.</span>`;
+        }
+
+        function displayCapturedPhotos() {
+            const grid = document.getElementById('photosGrid');
+            grid.innerHTML = capturedPhotosData.map((photo, index) => `
+                <div style="position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;">
+                    <img src="${photo.dataURL}" style="width: 100%; height: auto; display: block;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 0.7rem; padding: 3px; text-align: center;">
+                        ${photo.name.split('_')[0]}
+                    </div>
+                    <button onclick="deletePhoto(${index})" style="position: absolute; bottom: 0; right: 0; background: #f44336; color: white; border: none; padding: 5px; cursor: pointer; border-radius: 5px 0 0 0;">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+            
+            document.getElementById('capturedPhotos').style.display = capturedPhotosData.length > 0 ? 'block' : 'none';
+            document.getElementById('downloadAllBtn').style.display = capturedPhotosData.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        function deletePhoto(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
+                capturedPhotosData.splice(index, 1);
+                displayCapturedPhotos();
+            }
+        }
+
+        function downloadAllPhotos() {
+            if (capturedPhotosData.length === 0) {
+                alert('لا توجد صور لتحميلها.');
+                return;
+            }
+
+            alert('سيتم بدء تحميل الصور الآن. قد تحتاج لتأكيد تحميل كل ملف على حدة.');
+
+            capturedPhotosData.forEach((photo, index) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = photo.dataURL;
+                    a.download = photo.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, index * 500); 
+            });
+        }
+        
         function showTab(tabName, btn) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); btn.classList.add('active'); }
-        function showSection(sectionName) { document.querySelectorAll('.section').forEach(section => section.classList.remove('active')); document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); document.getElementById(sectionName).classList.add('active'); document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active'); }
-        function closeTeacherModal() { document.getElementById('teacherModal').classList.remove('active'); currentEditingTeacherId = null; }
-        function openTeacherModal(teacherId) { const teacher = teachers.find(t => t.id === teacherId); if (!teacher) return; currentEditingTeacherId = teacherId; document.getElementById('editTeacherName').value = teacher.name; document.getElementById('editTeacherClass').value = teacher.class; document.getElementById('editTeacherNotes').value = teacher.notes || ''; document.getElementById('teacherModal').classList.add('active'); }
-        function openClassModal(classIndex) { const classItem = classes[classIndex]; if (!classItem) return; currentEditingClassIndex = classIndex; document.getElementById('editClassName').value = classItem.name; document.getElementById('editClassNotes').value = classItem.notes || ''; document.getElementById('classModal').classList.add('active'); }
-        function closeClassModal() { document.getElementById('classModal').classList.remove('active'); currentEditingClassIndex = null; }
-        function resetTeacher(teacherId) { /* ... */ }
-        function showTeacherDetails(teacherId) { /* ... */ }
-        function resetAllMonthlyPoints() { /* ... */ }
-        function resetAllPoints() { /* ... */ }
-        function setAsStarClass(className) { /* ... */ }
-        function updateDailyStars() { /* ... */ }
-        function updateMonthlyStars() { /* ... */ }
-        function printDailyCertificate() { /* ... */ }
-        function printQueueCertificate() { /* ... */ }
-        function printMonthlyCertificate() { /* ... */ }
-        function printAttendanceCertificate() { /* ... */ }
-        function generateCertificate(type, name, icon, isClass = true) { /* ... */ }
-        function generateAttendanceCertificate(presentTeachers) { /* ... */ }
-        function printCertificate() { /* ... */ }
-        function generateAndExportWeeklyAttendance(format) { generateAndExportDailyAttendance(format); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
-        function generateAndExportMonthlyAttendance(format) { generateAndExportDailyAttendance(format); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
-        function generateAndExportWeeklyStars(format) { generateAndExportDailyStars(format); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
-        function generateAndExportMonthlyStars(format) { generateAndExportDailyStars(format); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
-        function addNewTeacher() { alert('🚫 التزامن: يرجى إضافة المعلمات الجديدة مباشرة في ورقة "Teachers".'); }
-        function deleteTeacher(teacherId) { alert('🚫 التزامن: حذف المعلمات يتم يدوياً في ورقة "Teachers".'); }
-        function editTeacher(teacherId) { alert('🚫 التزامن: يفضل تعديل الاسم والصف يدوياً في Google Sheet.'); }
-        function saveTeacherChanges() { /*... (الكود الأصلي) ...*/ }
-        function saveClassChanges() { /*... (الكود الأصلي) ...*/ }
-        function addAllDailyToMonthly() { /*... (الكود الأصلي) ...*/ }
-        function resetDailyPoints() { /*... (الكود الأصلي) ...*/ }
-        function resetMonthlyPoints() { /*... (الكود الأصلي) ...*/ }
-        function resetClassPoints() { /*... (الكود الأصلي) ...*/ }
-        function resetAllDailyPoints() { /*... (الكود الأصلي) ...*/ }
+        function showSection(sectionName) { document.querySelectorAll('.section').forEach(section => section.classList.remove('active')); document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active'); document.getElementById(sectionName).classList.add('active'); }
+
+        // ===================================================
+        // 8. وظائف الجدولة والتهيئة (المدمجة)
+        // ===================================================
+
+        // ⭐️ دالة مسح الحضور اليومي فقط (للتشغيل التلقائي عند منتصف الليل)
+        function resetDailyAttendance() {
+             if (!confirm('⚠️ تنبيه: هل تريد إعادة تعيين حالات حضور المعلمات لهذا اليوم يدوياً؟')) return;
+            
+             teachers.forEach(t => {
+                 t.status = 'not-recorded';
+                 t.timestamp = '';
+             });
+
+             renderTeachers(); 
+             updateDailyStars(); 
+             updateStats();
+             
+             syncToSheet('resetAllAttendanceStatus', { id: 0 }); 
+
+             alert('✅ تم مسح سجل الحضور اليومي بنجاح (سيتم إعادة تحميله من الشيت إذا تم تحديثه هناك).');
+             loadDataFromSheet();
+        }
+
+        // ⭐️ ضبط التشغيل التلقائي عند منتصف الليل
+        function scheduleDailyReset() {
+            const now = new Date();
+            const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const msUntilMidnight = nextMidnight - now;
+
+            console.log(`⏰ سيتم جدولة إعادة تعيين الحضور عند منتصف الليل (${nextMidnight}).`);
+
+            setTimeout(() => {
+                 alert('🔔 تنبيه: يجب أرشفة سجل الحضور الآن لبدء يوم جديد (زر "أرشفة ومسح سجل الحضور" في الإدارة).');
+                 
+                 scheduleDailyReset(); // إعادة جدولة اليوم التالي
+            }, msUntilMidnight);
+        }
 
         document.addEventListener('DOMContentLoaded', async function() {
             const apiLinkDisplay = document.getElementById('apiLinkDisplay');
@@ -1144,13 +2011,1445 @@
             
             if (dataLoaded) {
                 updateDateTime();
-                setInterval(updateDateTime, 60000);
+                setInterval(updateDateTime, 60000); 
                 
                 if (document.getElementById('dataManagementInfo')) {
                     updateDataManagement();
                 }
             }
             
+            const motivationalTextElement = document.getElementById('motivationalText');
+            if(motivationalTextElement) {
+                motivationalTextElement.value = motivationalQuote;
+            }
+            
+            // ⭐️ بدء الجدولة التلقائية للحضور
+            scheduleDailyReset();
+
+            console.log('✅ تم تحميل النظام مع محاولة مزامنة البيانات.');
+        });
+
+        // ===================================================
+        // 9. وظائف الشهادات والحفظ (المدمجة والمنقحة)
+        // ===================================================
+
+        // ⭐️ دالة لحفظ الشهادة كـ PDF 
+        async function saveCertificatePDF(containerId, fileName) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                alert('❌ لم يتم العثور على عنصر الشهادة.');
+                return;
+            }
+
+            // التأكد من تحميل أي صور
+            const images = container.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = img.onerror = resolve; });
+            }));
+
+            try {
+                // إنشاء canvas
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    useCORS: true, 
+                    scrollY: -window.scrollY,
+                    logging: true
+                });
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(fileName);
+                alert('✅ تم حفظ الشهادة بنجاح');
+            } catch (err) {
+                console.error(err);
+                alert('❌ حدث خطأ أثناء حفظ الشهادة');
+            }
+        }
+
+
+        // ⭐️ دالة مُعدّلة لإنشاء الشهادة في الذاكرة مع المعاينة والحفظ الفوري
+        async function generateCertificatePreview({ name, icon, isClass = false, starType = 'شكر وتقدير' }) {
+            // 1. إزالة أي شهادة موجودة سابقة في الـ body
+            const existing = document.getElementById('certificatePreview');
+            if (existing) existing.remove();
+
+            const date = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // 2. إنشاء العنصر المؤقت (للعرض والحفظ)
+            const certificateContainer = document.createElement('div');
+            certificateContainer.id = 'certificatePreview';
+            certificateContainer.style.width = '800px';
+            certificateContainer.style.padding = '3rem';
+            certificateContainer.style.background = 'white';
+            certificateContainer.style.textAlign = 'center';
+            certificateContainer.style.border = '5px solid #ff6b9d'; // نمط جمالي
+            certificateContainer.style.position = 'absolute'; // وضعه خارج الشاشة للحفظ
+            certificateContainer.style.top = '-9999px';
+            certificateContainer.style.margin = '0';
+            certificateContainer.style.fontFamily = 'Tajawal, sans-serif';
+            certificateContainer.style.direction = 'rtl';
+            certificateContainer.style.color = '#333';
+            
+            const headerLogoHtml = document.querySelector('#siteHeaderLogo')?.outerHTML || '';
+            
+            let certificateText = isClass ? `تقديراً لانضباطه وأدائه المتميز كنجم الطابور المدرسي` : `تقديراً لجهودها وأدائها المتميز كـ ${starType}`;
+            
+            // بناء محتوى الشهادة (مع زر حفظ مؤقت داخل العنصر للحفظ)
+            const certificateContentHTML = `
+                <div class="certificate-header">${headerLogoHtml}</div>
+                <h2 style="margin: 1rem 0; color: #ab47bc;">شهادة ${starType}</h2>
+                <h3>تمنح ${isClass ? 'لصف' : 'للمعلمة'}: <strong style="color: #ff6b9d;">${name}</strong></h3>
+                <p style="font-size: 1.2rem;">${certificateText}</p>
+                <div style="font-size: 3rem; margin: 1rem 0;">${icon || '🌟'}</div>
+                <p style="margin-top: 2rem;">المدرسة: أم مالك الأنصارية للبنات</p>
+                <p style="margin-top: 3rem; font-weight: bold;">مديرة المدرسة</p>
+                <p style="font-size: 0.9rem; color: #666;">حررت في: ${date}</p>
+            `;
+
+            certificateContainer.innerHTML = certificateContentHTML;
+            document.body.appendChild(certificateContainer); 
+
+            // 3. معاينة الشهادة في الواجهة
+            const previewContainer = document.getElementById('certificatePreviewContainer');
+            if (previewContainer) {
+                // عرض المحتوى في منطقة المعاينة (بدون زر الحفظ داخل المعاينة الفعلية)
+                previewContainer.innerHTML = certificateContentHTML; 
+                
+                // إضافة زر الحفظ وربطه بالدالة الجديدة
+                 previewContainer.innerHTML += `<div style="margin-top:1rem;"><button id="exportCertificateBtn" class="nav-button" style="background: #28a745;">📥 حفظ PDF الآن</button></div>`;
+                
+                document.getElementById('certificatePlaceholder').style.display = 'none';
+
+                 // ربط زر الحفظ بالدالة الجديدة
+                document.getElementById('exportCertificateBtn').onclick = () => {
+                    const fileName = `${name}_${starType.replace(/\s/g, '_')}_${date}.pdf`;
+                    // حفظ الشهادة باستخدام العنصر المخفي في الـ body
+                    saveCertificatePDF('certificatePreview', fileName); 
+                };
+            }
+            
+            // 4. لا نحتاج لإزالة العنصر المؤقت هنا، سيتم استخدامه في دالة الحفظ
+            
+            return certificateContainer;
+        }
+
+        // ⭐️ دالة موحدة لإنشاء الشهادة بناءً على النوع
+        function createStarCertificate(type) {
+             let name, icon, isClass, starType;
+
+             if (type === 'dailyClass') {
+                 const topDailyClass = classes.reduce((max, c) => (c.dailyPoints > (max.dailyPoints || 0) ? c : max), {});
+                 if (!topDailyClass.name || topDailyClass.dailyPoints <= 0) return alert('لا يوجد صف مؤهل لنجم الطابور اليوم.');
+                 name = topDailyClass.name;
+                 icon = '⭐';
+                 isClass = true;
+                 starType = 'نجم الطابور اليومي';
+             } else if (type === 'starOfDay') {
+                 const firstPresentTeacher = teachers
+                     .filter(t => t.status === 'present' && t.timestamp)
+                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
+                 if (!firstPresentTeacher) return alert('لا يوجد معلمة مؤهلة لنجم اليوم (يجب أن تسجل حضورها أولاً).');
+                 name = firstPresentTeacher.name;
+                 icon = '🌟';
+                 isClass = false;
+                 starType = 'نجمة اليوم';
+             } else if (type === 'starOfMonth') {
+                 const selectedStar = document.getElementById('starOfMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجمة الشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar.substring(0, selectedStar.indexOf('(')).trim();
+                 icon = '🏆';
+                 isClass = false;
+                 starType = 'نجمة الشهر';
+             } else if (type === 'queueStarMonth') {
+                 const selectedStar = document.getElementById('queueStarMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجم الطابور للشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar;
+                 icon = '👑';
+                 isClass = true;
+                 starType = 'نجم الطابور للشهر';
+             } else if (type === 'attendance') {
+                 name = 'جميع المعلمات المتميزات';
+                 icon = '📋';
+                 isClass = false;
+                 starType = 'تقدير للحضور المميز';
+             } else {
+                 return alert('نوع الشهادة غير صحيح.');
+             }
+             
+             generateCertificatePreview({ name, icon, isClass, starType });
+        }
+        
+        // دالة الطباعة بالمتصفح (للتراجع في حال لم يُرضي التصدير المباشر)
+        function printCertificate() {
+             alert('يرجى اختيار نوع الشهادة أولاً. سيتم تصديرها كـ PDF مباشرة بمجرد الاختيار.');
+        }
+
+        // ===================================================
+        // 6. وظائف التقارير (لم تتغير)
+        // ===================================================
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير النجوم (محدثة للتصدير المباشر)
+        function generateAndExportStarsReport(format, type = 'daily') {
+            const reportData = classes.map(c => ({
+                'الصف': c.name,
+                'نقاط الهدوء': c.quiet,
+                'نقاط السرعة': c.speed,
+                'نقاط الصوت': c.volume,
+                'نقاط النظافة': c.cleanliness,
+                'إجمالي اليوم': c.dailyPoints,
+                'إجمالي الشهر': c.monthlyPoints,
+                'ملاحظات': c.notes
+            }));
+            
+            const reportTitle = `تقرير نجوم الطابور (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `QueueStars_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            displayReport(reportData, reportTitle, 'stars');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير الحضور (محدثة للتصدير المباشر)
+        function generateAndExportAttendanceReport(format, type = 'daily') {
+            const reportData = teachers.map(t => ({
+                'ID': t.id,
+                'الاسم': t.name,
+                'الصف': t.class,
+                'حالة الحضور': getStatusText(t.status),
+                'وقت التسجيل': t.timestamp || 'لا يوجد',
+                'ملاحظات': t.notes
+            }));
+            
+            const reportTitle = `تقرير حضور المعلمات (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `Attendance_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+
+            displayReport(reportData, reportTitle, 'attendance');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+
+        async function exportReportByFormat(format, data, title, fileName) {
+            const reportEl = document.getElementById('reportToExport');
+            displayReport(data, title, 'export'); 
+            
+            if (format === 'excel') {
+                 exportToExcel(data, fileName);
+            } else if (format === 'pdf') {
+                 await exportToPDF('reportToExport', fileName);
+            } else if (format === 'image') {
+                 await exportToImage('reportToExport', fileName);
+            }
+        }
+        
+        function generateAndExportDailyAttendance(format) { generateAndExportAttendanceReport(format, 'daily'); }
+        function generateAndExportWeeklyAttendance(format) { generateAndExportAttendanceReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyAttendance(format) { generateAndExportAttendanceReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+
+        function generateAndExportDailyStars(format) { generateAndExportStarsReport(format, 'daily'); }
+        function generateAndExportWeeklyStars(format) { generateAndExportStarsReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyStars(format) { generateAndExportStarsReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+        
+        function exportCompleteReport(format) {
+             const allData = {
+                'Attendance': teachers.map(t => ({
+                    'ID': t.id,
+                    'الاسم': t.name,
+                    'الصف': t.class,
+                    'حالة الحضور': getStatusText(t.status),
+                    'وقت التسجيل': t.timestamp || 'لا يوجد',
+                    'ملاحظات': t.notes
+                })),
+                'QueueStars': classes.map(c => ({
+                    'الصف': c.name,
+                    'نقاط اليوم': c.dailyPoints,
+                    'نقاط الشهر': c.monthlyPoints,
+                    'نقاط الهدوء': c.quiet,
+                    'نقاط السرعة': c.speed,
+                    'نقاط الصوت': c.volume,
+                    'نقاط النظافة': c.cleanliness,
+                    'ملاحظات': c.notes
+                }))
+            };
+            const reportTitle = `التقرير الشامل - ${new Date().toLocaleDateString('ar-SA')}`;
+            const fileName = `Comprehensive_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            if (format === 'excel') {
+                exportMultipleSheetsToExcel(allData, fileName);
+            } else {
+                alert('لا يمكن عرض التقرير الشامل (PDF/Image) على شكل معاينة. سيتم تصدير نسخة Excel فقط.');
+            }
+        }
+
+        function displayReport(data, title, type) {
+            const previewContainer = document.getElementById('reportPreviewContainer');
+            const preview = document.getElementById('reportToExport');
+            document.getElementById('reportPlaceholder').style.display = 'none';
+
+            let tableHtml = `<div class="report-preview-container" style="padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right;">
+                <div class="report-header">
+                    <h2 class="report-title">${title}</h2>
+                    <p class="report-date">تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}</p>
+                </div>
+                <table border="1" id="reportTable" style="width:100%; border-collapse:collapse; text-align:center; font-size: 0.9rem;">
+                    <thead><tr>`;
+            
+            const headers = Object.keys(data[0] || {});
+            headers.forEach(header => {
+                tableHtml += `<th style="padding: 0.5rem; background: #ab47bc; color: white;">${header}</th>`;
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            data.forEach(row => {
+                tableHtml += `<tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<td style="padding: 0.5rem;">${row[header]}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            
+            preview.innerHTML = tableHtml;
+            preview.style.display = 'block';
+            previewContainer.scrollTop = 0; 
+        }
+
+        function exportToExcel(data, fileName) {
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'البيانات');
+            XLSX.writeFile(wb, `${fileName}.xlsx`);
+            alert(`✅ تم تصدير ${fileName}.xlsx بنجاح.`);
+        }
+        
+        function exportMultipleSheetsToExcel(data, fileName) {
+             const wb = XLSX.utils.book_new();
+             for (const sheetName in data) {
+                 const ws = XLSX.utils.json_to_sheet(data[sheetName]);
+                 XLSX.utils.book_append_sheet(wb, ws, sheetName);
+             }
+             XLSX.writeFile(wb, `${fileName}.xlsx`);
+             alert(`✅ تم تصدير ${fileName}.xlsx بصفحات متعددة بنجاح.`);
+        }
+
+        async function exportToPDF(elementId, fileName) {
+            const element = document.getElementById(elementId);
+             if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+             }
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 200; 
+                const pageHeight = 290;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+                pdf.save(`${fileName}.pdf`);
+                alert(`✅ تم تصدير ${fileName}.pdf بنجاح.`);
+            }).catch(error => {
+                console.error("Error generating PDF:", error);
+                alert("❌ فشل في إنشاء ملف PDF. يرجى مراجعة الكونسول.");
+            });
+        }
+        
+        async function exportToImage(elementId, fileName) {
+            const element = document.getElementById(elementId);
+            if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+            }
+             await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${fileName}.png`;
+                    link.click();
+                    alert(`✅ تم تصدير ${fileName}.png بنجاح.`);
+                }, 'image/png');
+            });
+        }
+
+        function printReport() {
+            const preview = document.getElementById('reportToExport');
+             if (preview.style.display === 'none') {
+                alert('يرجى اختيار نوع التقرير لمعاينته أولاً.');
+                return;
+            }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>طباعة التقرير</title><style>.report-preview-container{ padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right; } table, th, td { border: 1px solid #ddd; border-collapse: collapse; padding: 8px; text-align: right; } th { background: #ab47bc; color: white; }</style></head><body style="direction:rtl; font-family: \'Tajawal\', sans-serif;">');
+            printWindow.document.write(preview.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        // ===================================================
+        // 7. وظائف النسخ الاحتياطي والكاميرا (لم تتغير)
+        // ===================================================
+        function exportSavedData() {
+            const dataToExport = {
+                teachers: teachers,
+                classes: classes,
+                systemPassword: systemPassword,
+                motivationalQuote: motivationalQuote
+            };
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `QueueSystem_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ تم تصدير النسخة الاحتياطية بنجاح.');
+        }
+
+        function importSavedData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!confirm('⚠️ هل أنت متأكد من استيراد البيانات؟ هذا سيحل محل البيانات الحالية. لن يؤثر على بيانات Google Sheet حتى تقوم بالمزامنة يدوياً.')) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        teachers = importedData.teachers || [];
+                        classes = importedData.classes || [];
+                        systemPassword = importedData.systemPassword || 'admin123';
+                        motivationalQuote = importedData.motivationalQuote || 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+
+                        renderTeachers();
+                        renderClasses();
+                        updateStats();
+                        updateStarSummaries();
+                        renderTeachersManagementList();
+                        updateDataManagement();
+                        document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                        document.getElementById('motivationalText').value = motivationalQuote;
+                        
+                        alert('✅ تم استيراد البيانات المحلية بنجاح! يرجى تحديث البيانات من الشيت إذا كنت تريد استعادة البيانات السحابية.');
+                    } catch (error) {
+                        alert(`❌ فشل في تحليل ملف JSON: ${error.message}`);
+                        console.error('Import error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllSavedData() {
+            if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات المحلية (المعلمات، الصفوف، النقاط، الإعدادات)؟ هذا لن يؤثر على بيانات Google Sheet، ويمكنك استعادتها منه لاحقاً.')) {
+                teachers = [];
+                classes = [];
+                systemPassword = 'admin123';
+                motivationalQuote = 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+                
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSummaries();
+                renderTeachersManagementList();
+                updateDataManagement();
+                document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                document.getElementById('motivationalText').value = motivationalQuote;
+                
+                alert('✅ تم مسح جميع البيانات المحلية. يرجى تحديث البيانات من الشيت لاستعادة البيانات السحابية.');
+            }
+        }
+        
+        function openCameraModal(teacherId, teacherName, className) {
+            currentCameraTeacherId = teacherId;
+            document.getElementById('overlayTeacherName').textContent = teacherName;
+            document.getElementById('overlayClassName').textContent = className;
+            document.getElementById('cameraModal').classList.add('active');
+            updateCameraDateTime();
+            
+            startCamera();
+        }
+
+        function closeCameraModal() {
+            stopCamera();
+            document.getElementById('cameraModal').classList.remove('active');
+            currentCameraTeacherId = null;
+        }
+
+        function updateCameraDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('overlayDateTime').textContent = now.toLocaleDateString('ar-SA', options);
+        }
+
+        async function getAvailableCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                availableCameras = devices.filter(device => device.kind === 'videoinput');
+                console.log('Available cameras:', availableCameras);
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
+                availableCameras = [];
+            }
+        }
+
+        async function startCamera(deviceId = null) {
+            const video = document.getElementById('cameraVideo');
+            const statusDiv = document.getElementById('cameraStatus');
+            
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = 'جاري التشغيل...';
+            
+            if (!availableCameras.length) await getAvailableCameras();
+
+            if (!availableCameras.length) {
+                statusDiv.innerHTML = '<span style="color: red;">❌ لم يتم العثور على كاميرات. تأكد من السماح بالوصول.</span>';
+                return;
+            }
+
+            const constraint = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'environment' }; 
+
+            try {
+                if (cameraStream) stopCamera();
+                
+                const constraints = {
+                    video: constraint
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    statusDiv.innerHTML = '<span style="color: green;">✅ الكاميرا قيد التشغيل.</span>';
+                    document.getElementById('startCameraBtn').style.display = 'none';
+                    document.getElementById('captureBtn').style.display = 'inline-flex';
+                    document.getElementById('switchCameraBtn').style.display = availableCameras.length > 1 ? 'inline-flex' : 'none';
+                    document.getElementById('stopCameraBtn').style.display = 'inline-flex';
+                    
+                    const currentTrack = cameraStream.getVideoTracks()[0];
+                    const currentCamIndex = availableCameras.findIndex(d => d.deviceId === currentTrack.getSettings().deviceId);
+                    currentCameraIndex = currentCamIndex !== -1 ? currentCamIndex : 0;
+                };
+
+                setInterval(updateCameraDateTime, 1000); 
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                statusDiv.innerHTML = '<span style="color: red;">❌ خطأ في الوصول للكاميرا. تأكد من السماح بالوصول.</span>';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+        
+        function switchCamera() {
+            if (availableCameras.length <= 1) {
+                alert('لا توجد كاميرات أخرى للتبديل إليها.');
+                return;
+            }
+            
+            stopCamera(); 
+            
+            currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+            const nextCameraId = availableCameras[currentCameraIndex].deviceId;
+            
+            startCamera(nextCameraId); 
+        }
+
+        function stopCamera() {
+            const video = document.getElementById('cameraVideo');
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                cameraStream = null;
+                document.getElementById('cameraStatus').innerHTML = 'الكاميرا متوقفة.';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const overlay = document.getElementById('photoOverlay');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // إضافة الـ Overlay كنص على الصورة
+            ctx.font = "24px 'Tajawal', sans-serif";
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+            ctx.fillRect(10, canvas.height - 100, canvas.width - 20, 80); 
+            
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'right';
+            const teacherName = document.getElementById('overlayTeacherName').textContent;
+            const className = document.getElementById('overlayClassName').textContent;
+            const dateTime = document.getElementById('overlayDateTime').textContent;
+            
+            ctx.fillText(teacherName, canvas.width - 20, canvas.height - 75);
+            ctx.font = "20px 'Tajawal', sans-serif";
+            ctx.fillText(className, canvas.width - 20, canvas.height - 50);
+            ctx.font = "16px 'Tajawal', sans-serif";
+            ctx.fillText(dateTime, canvas.width - 20, canvas.height - 25);
+
+
+            const imageDataURL = canvas.toDataURL('image/png');
+            
+            // حفظ الصورة
+            const photoName = `${document.getElementById('overlayTeacherName').textContent}_${new Date().getTime()}.png`;
+            capturedPhotosData.push({ dataURL: imageDataURL, name: photoName });
+            
+            displayCapturedPhotos();
+            document.getElementById('cameraStatus').innerHTML = `<span style="color: #ff6b9d;">📸 تم التقاط وحفظ صورة ${photoName}.</span>`;
+        }
+
+        function displayCapturedPhotos() {
+            const grid = document.getElementById('photosGrid');
+            grid.innerHTML = capturedPhotosData.map((photo, index) => `
+                <div style="position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;">
+                    <img src="${photo.dataURL}" style="width: 100%; height: auto; display: block;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 0.7rem; padding: 3px; text-align: center;">
+                        ${photo.name.split('_')[0]}
+                    </div>
+                    <button onclick="deletePhoto(${index})" style="position: absolute; bottom: 0; right: 0; background: #f44336; color: white; border: none; padding: 5px; cursor: pointer; border-radius: 5px 0 0 0;">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+            
+            document.getElementById('capturedPhotos').style.display = capturedPhotosData.length > 0 ? 'block' : 'none';
+            document.getElementById('downloadAllBtn').style.display = capturedPhotosData.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        function deletePhoto(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
+                capturedPhotosData.splice(index, 1);
+                displayCapturedPhotos();
+            }
+        }
+
+        function downloadAllPhotos() {
+            if (capturedPhotosData.length === 0) {
+                alert('لا توجد صور لتحميلها.');
+                return;
+            }
+
+            alert('سيتم بدء تحميل الصور الآن. قد تحتاج لتأكيد تحميل كل ملف على حدة.');
+
+            capturedPhotosData.forEach((photo, index) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = photo.dataURL;
+                    a.download = photo.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, index * 500); 
+            });
+        }
+        
+        function showTab(tabName, btn) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); btn.classList.add('active'); }
+        function showSection(sectionName) { document.querySelectorAll('.section').forEach(section => section.classList.remove('active')); document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active'); document.getElementById(sectionName).classList.add('active'); }
+
+        // ===================================================
+        // 8. وظائف الجدولة والتهيئة (المدمجة)
+        // ===================================================
+
+        // ⭐️ دالة مسح الحضور اليومي فقط (للتشغيل التلقائي عند منتصف الليل)
+        function resetDailyAttendance() {
+             if (!confirm('⚠️ تنبيه: هل تريد إعادة تعيين حالات حضور المعلمات لهذا اليوم يدوياً؟')) return;
+            
+             teachers.forEach(t => {
+                 t.status = 'not-recorded';
+                 t.timestamp = '';
+             });
+
+             renderTeachers(); 
+             updateDailyStars(); 
+             updateStats();
+             
+             syncToSheet('resetAllAttendanceStatus', { id: 0 }); 
+
+             alert('✅ تم مسح سجل الحضور اليومي بنجاح (سيتم إعادة تحميله من الشيت إذا تم تحديثه هناك).');
+             loadDataFromSheet();
+        }
+
+        // ⭐️ ضبط التشغيل التلقائي عند منتصف الليل
+        function scheduleDailyReset() {
+            const now = new Date();
+            const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const msUntilMidnight = nextMidnight - now;
+
+            console.log(`⏰ سيتم جدولة إعادة تعيين الحضور عند منتصف الليل (${nextMidnight}).`);
+
+            setTimeout(() => {
+                 alert('🔔 تنبيه: يجب أرشفة سجل الحضور الآن لبدء يوم جديد (زر "أرشفة ومسح سجل الحضور" في الإدارة).');
+                 
+                 scheduleDailyReset(); // إعادة جدولة اليوم التالي
+            }, msUntilMidnight);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const apiLinkDisplay = document.getElementById('apiLinkDisplay');
+            if (apiLinkDisplay) {
+                apiLinkDisplay.textContent = SHEET_API_URL;
+            }
+            
+            const dataLoaded = await loadDataFromSheet();
+            
+            if (dataLoaded) {
+                updateDateTime();
+                setInterval(updateDateTime, 60000); 
+                
+                if (document.getElementById('dataManagementInfo')) {
+                    updateDataManagement();
+                }
+            }
+            
+            const motivationalTextElement = document.getElementById('motivationalText');
+            if(motivationalTextElement) {
+                motivationalTextElement.value = motivationalQuote;
+            }
+            
+            // ⭐️ بدء الجدولة التلقائية للحضور
+            scheduleDailyReset();
+
+            console.log('✅ تم تحميل النظام مع محاولة مزامنة البيانات.');
+        });
+
+        // ===================================================
+        // 9. وظائف الشهادات والحفظ (المدمجة والمنقحة)
+        // ===================================================
+
+        // ⭐️ دالة لحفظ الشهادة كـ PDF 
+        async function saveCertificatePDF(containerId, fileName) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                alert('❌ لم يتم العثور على عنصر الشهادة.');
+                return;
+            }
+
+            // التأكد من تحميل أي صور
+            const images = container.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => { img.onload = img.onerror = resolve; });
+            }));
+
+            try {
+                // إنشاء canvas
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    useCORS: true, 
+                    scrollY: -window.scrollY,
+                    logging: true
+                });
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(fileName);
+                alert('✅ تم حفظ الشهادة بنجاح');
+            } catch (err) {
+                console.error(err);
+                alert('❌ حدث خطأ أثناء حفظ الشهادة');
+            }
+        }
+
+
+        // ⭐️ دالة مُعدّلة لإنشاء الشهادة في الذاكرة مع المعاينة والحفظ الفوري
+        async function generateCertificatePreview({ name, icon, isClass = false, starType = 'شكر وتقدير' }) {
+            // 1. إزالة أي شهادة موجودة سابقة في الـ body
+            const existing = document.getElementById('certificatePreview');
+            if (existing) existing.remove();
+
+            const date = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // 2. إنشاء العنصر المؤقت (للعرض والحفظ)
+            const certificateContainer = document.createElement('div');
+            certificateContainer.id = 'certificatePreview';
+            certificateContainer.style.width = '800px';
+            certificateContainer.style.padding = '3rem';
+            certificateContainer.style.background = 'white';
+            certificateContainer.style.textAlign = 'center';
+            certificateContainer.style.border = '5px solid #ff6b9d'; // نمط جمالي
+            certificateContainer.style.position = 'absolute'; // وضعه خارج الشاشة للحفظ
+            certificateContainer.style.top = '-9999px';
+            certificateContainer.style.margin = '0';
+            certificateContainer.style.fontFamily = 'Tajawal, sans-serif';
+            certificateContainer.style.direction = 'rtl';
+            certificateContainer.style.color = '#333';
+            
+            const headerLogoHtml = document.querySelector('#siteHeaderLogo')?.outerHTML || '';
+            
+            let certificateText = isClass ? `تقديراً لانضباطه وأدائه المتميز كنجم الطابور المدرسي` : `تقديراً لجهودها وأدائها المتميز كـ ${starType}`;
+            
+            // بناء محتوى الشهادة
+            const certificateContentHTML = `
+                <div class="certificate-header">${headerLogoHtml}</div>
+                <h2 style="margin: 1rem 0; color: #ab47bc;">شهادة ${starType}</h2>
+                <h3>تمنح ${isClass ? 'لصف' : 'للمعلمة'}: <strong style="color: #ff6b9d;">${name}</strong></h3>
+                <p style="font-size: 1.2rem;">${certificateText}</p>
+                <div style="font-size: 3rem; margin: 1rem 0;">${icon || '🌟'}</div>
+                <p style="margin-top: 2rem;">المدرسة: أم مالك الأنصارية للبنات</p>
+                <p style="margin-top: 3rem; font-weight: bold;">مديرة المدرسة</p>
+                <p style="font-size: 0.9rem; color: #666;">حررت في: ${date}</p>
+            `;
+
+            certificateContainer.innerHTML = certificateContentHTML;
+            document.body.appendChild(certificateContainer); 
+
+            // 3. معاينة الشهادة في الواجهة
+            const previewContainer = document.getElementById('certificatePreviewContainer');
+            if (previewContainer) {
+                // عرض المحتوى في منطقة المعاينة (بدون زر الحفظ داخل المعاينة الفعلية)
+                previewContainer.innerHTML = certificateContentHTML; 
+                
+                // إضافة زر الحفظ وربطه بالدالة الجديدة
+                 previewContainer.innerHTML += `<div style="margin-top:1rem;"><button id="exportCertificateBtn" class="nav-button" style="background: #28a745;">📥 حفظ PDF الآن</button></div>`;
+                
+                document.getElementById('certificatePlaceholder').style.display = 'none';
+
+                 // ربط زر الحفظ بالدالة الجديدة
+                document.getElementById('exportCertificateBtn').onclick = () => {
+                    const fileName = `${name}_${starType.replace(/\s/g, '_')}_${date}.pdf`;
+                    // حفظ الشهادة باستخدام العنصر المخفي في الـ body
+                    saveCertificatePDF('certificatePreview', fileName); 
+                };
+            }
+            
+            return certificateContainer;
+        }
+
+        // ⭐️ دالة موحدة لإنشاء الشهادة بناءً على النوع
+        function createStarCertificate(type) {
+             let name, icon, isClass, starType;
+
+             if (type === 'dailyClass') {
+                 const topDailyClass = classes.reduce((max, c) => (c.dailyPoints > (max.dailyPoints || 0) ? c : max), {});
+                 if (!topDailyClass.name || topDailyClass.dailyPoints <= 0) return alert('لا يوجد صف مؤهل لنجم الطابور اليوم.');
+                 name = topDailyClass.name;
+                 icon = '⭐';
+                 isClass = true;
+                 starType = 'نجم الطابور اليومي';
+             } else if (type === 'starOfDay') {
+                 const firstPresentTeacher = teachers
+                     .filter(t => t.status === 'present' && t.timestamp)
+                     .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))[0];
+                 if (!firstPresentTeacher) return alert('لا يوجد معلمة مؤهلة لنجم اليوم (يجب أن تسجل حضورها أولاً).');
+                 name = firstPresentTeacher.name;
+                 icon = '🌟';
+                 isClass = false;
+                 starType = 'نجمة اليوم';
+             } else if (type === 'starOfMonth') {
+                 const selectedStar = document.getElementById('starOfMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجمة الشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar.substring(0, selectedStar.indexOf('(')).trim();
+                 icon = '🏆';
+                 isClass = false;
+                 starType = 'نجمة الشهر';
+             } else if (type === 'queueStarMonth') {
+                 const selectedStar = document.getElementById('queueStarMonthSelect').value;
+                 if (selectedStar === '' || selectedStar === 'لم يتم الاختيار بعد') return alert('يرجى اختيار نجم الطابور للشهر من قائمة "إدارة النجوم" أولاً.');
+                 name = selectedStar;
+                 icon = '👑';
+                 isClass = true;
+                 starType = 'نجم الطابور للشهر';
+             } else if (type === 'attendance') {
+                 name = 'جميع المعلمات المتميزات';
+                 icon = '📋';
+                 isClass = false;
+                 starType = 'تقدير للحضور المميز';
+             } else {
+                 return alert('نوع الشهادة غير صحيح.');
+             }
+             
+             generateCertificatePreview({ name, icon, isClass, starType });
+        }
+        
+        // دالة الطباعة بالمتصفح (للتراجع في حال لم يُرضي التصدير المباشر)
+        function printCertificate() {
+             alert('يرجى اختيار نوع الشهادة أولاً. سيتم تصديرها كـ PDF مباشرة بمجرد الاختيار.');
+        }
+
+        // ===================================================
+        // 6. وظائف التقارير (لم تتغير)
+        // ===================================================
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير النجوم (محدثة للتصدير المباشر)
+        function generateAndExportStarsReport(format, type = 'daily') {
+            const reportData = classes.map(c => ({
+                'الصف': c.name,
+                'نقاط الهدوء': c.quiet,
+                'نقاط السرعة': c.speed,
+                'نقاط الصوت': c.volume,
+                'نقاط النظافة': c.cleanliness,
+                'إجمالي اليوم': c.dailyPoints,
+                'إجمالي الشهر': c.monthlyPoints,
+                'ملاحظات': c.notes
+            }));
+            
+            const reportTitle = `تقرير نجوم الطابور (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `QueueStars_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            displayReport(reportData, reportTitle, 'stars');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+        
+        // ⭐️ دالة موحدة لتوليد وعرض وتصدير تقارير الحضور (محدثة للتصدير المباشر)
+        function generateAndExportAttendanceReport(format, type = 'daily') {
+            const reportData = teachers.map(t => ({
+                'ID': t.id,
+                'الاسم': t.name,
+                'الصف': t.class,
+                'حالة الحضور': getStatusText(t.status),
+                'وقت التسجيل': t.timestamp || 'لا يوجد',
+                'ملاحظات': t.notes
+            }));
+            
+            const reportTitle = `تقرير حضور المعلمات (${type === 'daily' ? 'يومي' : type === 'weekly' ? 'أسبوعي' : 'شهري'})`;
+            const fileName = `Attendance_${type}_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+
+            displayReport(reportData, reportTitle, 'attendance');
+            
+            if (format !== 'display') exportReportByFormat(format, reportData, reportTitle, fileName);
+        }
+
+        async function exportReportByFormat(format, data, title, fileName) {
+            const reportEl = document.getElementById('reportToExport');
+            displayReport(data, title, 'export'); 
+            
+            if (format === 'excel') {
+                 exportToExcel(data, fileName);
+            } else if (format === 'pdf') {
+                 await exportToPDF('reportToExport', fileName);
+            } else if (format === 'image') {
+                 await exportToImage('reportToExport', fileName);
+            }
+        }
+        
+        function generateAndExportDailyAttendance(format) { generateAndExportAttendanceReport(format, 'daily'); }
+        function generateAndExportWeeklyAttendance(format) { generateAndExportAttendanceReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyAttendance(format) { generateAndExportAttendanceReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+
+        function generateAndExportDailyStars(format) { generateAndExportStarsReport(format, 'daily'); }
+        function generateAndExportWeeklyStars(format) { generateAndExportStarsReport(format, 'weekly'); alert('عرض التقرير الأسبوعي يستخدم حالياً بيانات اليوم.'); }
+        function generateAndExportMonthlyStars(format) { generateAndExportStarsReport(format, 'monthly'); alert('عرض التقرير الشهري يستخدم حالياً بيانات اليوم.'); }
+        
+        function exportCompleteReport(format) {
+             const allData = {
+                'Attendance': teachers.map(t => ({
+                    'ID': t.id,
+                    'الاسم': t.name,
+                    'الصف': t.class,
+                    'حالة الحضور': getStatusText(t.status),
+                    'وقت التسجيل': t.timestamp || 'لا يوجد',
+                    'ملاحظات': t.notes
+                })),
+                'QueueStars': classes.map(c => ({
+                    'الصف': c.name,
+                    'نقاط اليوم': c.dailyPoints,
+                    'نقاط الشهر': c.monthlyPoints,
+                    'نقاط الهدوء': c.quiet,
+                    'نقاط السرعة': c.speed,
+                    'نقاط الصوت': c.volume,
+                    'نقاط النظافة': c.cleanliness,
+                    'ملاحظات': c.notes
+                }))
+            };
+            const reportTitle = `التقرير الشامل - ${new Date().toLocaleDateString('ar-SA')}`;
+            const fileName = `Comprehensive_Report_${new Date().toLocaleDateString('en-US').replace(/\//g, '-')}`;
+            
+            if (format === 'excel') {
+                exportMultipleSheetsToExcel(allData, fileName);
+            } else {
+                alert('لا يمكن عرض التقرير الشامل (PDF/Image) على شكل معاينة. سيتم تصدير نسخة Excel فقط.');
+            }
+        }
+
+        function displayReport(data, title, type) {
+            const previewContainer = document.getElementById('reportPreviewContainer');
+            const preview = document.getElementById('reportToExport');
+            document.getElementById('reportPlaceholder').style.display = 'none';
+
+            let tableHtml = `<div class="report-preview-container" style="padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right;">
+                <div class="report-header">
+                    <h2 class="report-title">${title}</h2>
+                    <p class="report-date">تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}</p>
+                </div>
+                <table border="1" id="reportTable" style="width:100%; border-collapse:collapse; text-align:center; font-size: 0.9rem;">
+                    <thead><tr>`;
+            
+            const headers = Object.keys(data[0] || {});
+            headers.forEach(header => {
+                tableHtml += `<th style="padding: 0.5rem; background: #ab47bc; color: white;">${header}</th>`;
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            data.forEach(row => {
+                tableHtml += `<tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<td style="padding: 0.5rem;">${row[header]}</td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+
+            tableHtml += `</tbody></table></div>`;
+            
+            preview.innerHTML = tableHtml;
+            preview.style.display = 'block';
+            previewContainer.scrollTop = 0; 
+        }
+
+        function exportToExcel(data, fileName) {
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'البيانات');
+            XLSX.writeFile(wb, `${fileName}.xlsx`);
+            alert(`✅ تم تصدير ${fileName}.xlsx بنجاح.`);
+        }
+        
+        function exportMultipleSheetsToExcel(data, fileName) {
+             const wb = XLSX.utils.book_new();
+             for (const sheetName in data) {
+                 const ws = XLSX.utils.json_to_sheet(data[sheetName]);
+                 XLSX.utils.book_append_sheet(wb, ws, sheetName);
+             }
+             XLSX.writeFile(wb, `${fileName}.xlsx`);
+             alert(`✅ تم تصدير ${fileName}.xlsx بصفحات متعددة بنجاح.`);
+        }
+
+        async function exportToPDF(elementId, fileName) {
+            const element = document.getElementById(elementId);
+             if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+             }
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 200; 
+                const pageHeight = 290;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
+                pdf.save(`${fileName}.pdf`);
+                alert(`✅ تم تصدير ${fileName}.pdf بنجاح.`);
+            }).catch(error => {
+                console.error("Error generating PDF:", error);
+                alert("❌ فشل في إنشاء ملف PDF. يرجى مراجعة الكونسول.");
+            });
+        }
+        
+        async function exportToImage(elementId, fileName) {
+            const element = document.getElementById(elementId);
+            if (!element || element.style.display === 'none') {
+                 alert('❌ يرجى عرض التقرير أولاً في المعاينة قبل التصدير.');
+                 return;
+            }
+             await new Promise(resolve => setTimeout(resolve, 200)); 
+
+            html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+                canvas.toBlob(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `${fileName}.png`;
+                    link.click();
+                    alert(`✅ تم تصدير ${fileName}.png بنجاح.`);
+                }, 'image/png');
+            });
+        }
+
+        function printReport() {
+            const preview = document.getElementById('reportToExport');
+             if (preview.style.display === 'none') {
+                alert('يرجى اختيار نوع التقرير لمعاينته أولاً.');
+                return;
+            }
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>طباعة التقرير</title><style>.report-preview-container{ padding: 2rem; border-radius: 15px; background: #fff; color: #333; text-align: right; } table, th, td { border: 1px solid #ddd; border-collapse: collapse; padding: 8px; text-align: right; } th { background: #ab47bc; color: white; }</style></head><body style="direction:rtl; font-family: \'Tajawal\', sans-serif;">');
+            printWindow.document.write(preview.innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        // ===================================================
+        // 7. وظائف النسخ الاحتياطي والكاميرا (لم تتغير)
+        // ===================================================
+        function exportSavedData() {
+            const dataToExport = {
+                teachers: teachers,
+                classes: classes,
+                systemPassword: systemPassword,
+                motivationalQuote: motivationalQuote
+            };
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `QueueSystem_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('✅ تم تصدير النسخة الاحتياطية بنجاح.');
+        }
+
+        function importSavedData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (!confirm('⚠️ هل أنت متأكد من استيراد البيانات؟ هذا سيحل محل البيانات الحالية. لن يؤثر على بيانات Google Sheet حتى تقوم بالمزامنة يدوياً.')) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        teachers = importedData.teachers || [];
+                        classes = importedData.classes || [];
+                        systemPassword = importedData.systemPassword || 'admin123';
+                        motivationalQuote = importedData.motivationalQuote || 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+
+                        renderTeachers();
+                        renderClasses();
+                        updateStats();
+                        updateStarSummaries();
+                        renderTeachersManagementList();
+                        updateDataManagement();
+                        document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                        document.getElementById('motivationalText').value = motivationalQuote;
+                        
+                        alert('✅ تم استيراد البيانات المحلية بنجاح! يرجى تحديث البيانات من الشيت إذا كنت تريد استعادة البيانات السحابية.');
+                    } catch (error) {
+                        alert(`❌ فشل في تحليل ملف JSON: ${error.message}`);
+                        console.error('Import error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function clearAllSavedData() {
+            if (confirm('⚠️ هل أنت متأكد من مسح جميع البيانات المحلية (المعلمات، الصفوف، النقاط، الإعدادات)؟ هذا لن يؤثر على بيانات Google Sheet، ويمكنك استعادتها منه لاحقاً.')) {
+                teachers = [];
+                classes = [];
+                systemPassword = 'admin123';
+                motivationalQuote = 'انضباط يعكس وعيًا ونظام يصنع الأجيال';
+                
+                renderTeachers();
+                renderClasses();
+                updateStats();
+                updateStarSummaries();
+                renderTeachersManagementList();
+                updateDataManagement();
+                document.getElementById('motivationalSubtitle').textContent = motivationalQuote;
+                document.getElementById('motivationalText').value = motivationalQuote;
+                
+                alert('✅ تم مسح جميع البيانات المحلية. يرجى تحديث البيانات من الشيت لاستعادة البيانات السحابية.');
+            }
+        }
+        
+        function openCameraModal(teacherId, teacherName, className) {
+            currentCameraTeacherId = teacherId;
+            document.getElementById('overlayTeacherName').textContent = teacherName;
+            document.getElementById('overlayClassName').textContent = className;
+            document.getElementById('cameraModal').classList.add('active');
+            updateCameraDateTime();
+            
+            startCamera();
+        }
+
+        function closeCameraModal() {
+            stopCamera();
+            document.getElementById('cameraModal').classList.remove('active');
+            currentCameraTeacherId = null;
+        }
+
+        function updateCameraDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('overlayDateTime').textContent = now.toLocaleDateString('ar-SA', options);
+        }
+
+        async function getAvailableCameras() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                availableCameras = devices.filter(device => device.kind === 'videoinput');
+                console.log('Available cameras:', availableCameras);
+            } catch (error) {
+                console.error('Error enumerating devices:', error);
+                availableCameras = [];
+            }
+        }
+
+        async function startCamera(deviceId = null) {
+            const video = document.getElementById('cameraVideo');
+            const statusDiv = document.getElementById('cameraStatus');
+            
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = 'جاري التشغيل...';
+            
+            if (!availableCameras.length) await getAvailableCameras();
+
+            if (!availableCameras.length) {
+                statusDiv.innerHTML = '<span style="color: red;">❌ لم يتم العثور على كاميرات. تأكد من السماح بالوصول.</span>';
+                return;
+            }
+
+            const constraint = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'environment' }; 
+
+            try {
+                if (cameraStream) stopCamera();
+                
+                const constraints = {
+                    video: constraint
+                };
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    statusDiv.innerHTML = '<span style="color: green;">✅ الكاميرا قيد التشغيل.</span>';
+                    document.getElementById('startCameraBtn').style.display = 'none';
+                    document.getElementById('captureBtn').style.display = 'inline-flex';
+                    document.getElementById('switchCameraBtn').style.display = availableCameras.length > 1 ? 'inline-flex' : 'none';
+                    document.getElementById('stopCameraBtn').style.display = 'inline-flex';
+                    
+                    const currentTrack = cameraStream.getVideoTracks()[0];
+                    const currentCamIndex = availableCameras.findIndex(d => d.deviceId === currentTrack.getSettings().deviceId);
+                    currentCameraIndex = currentCamIndex !== -1 ? currentCamIndex : 0;
+                };
+
+                setInterval(updateCameraDateTime, 1000); 
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                statusDiv.innerHTML = '<span style="color: red;">❌ خطأ في الوصول للكاميرا. تأكد من السماح بالوصول.</span>';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+        
+        function switchCamera() {
+            if (availableCameras.length <= 1) {
+                alert('لا توجد كاميرات أخرى للتبديل إليها.');
+                return;
+            }
+            
+            stopCamera(); 
+            
+            currentCameraIndex = (currentCameraIndex + 1) % availableCameras.length;
+            const nextCameraId = availableCameras[currentCameraIndex].deviceId;
+            
+            startCamera(nextCameraId); 
+        }
+
+        function stopCamera() {
+            const video = document.getElementById('cameraVideo');
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                cameraStream = null;
+                document.getElementById('cameraStatus').innerHTML = 'الكاميرا متوقفة.';
+                document.getElementById('startCameraBtn').style.display = 'inline-flex';
+                document.getElementById('captureBtn').style.display = 'none';
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'none';
+            }
+        }
+
+        function capturePhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const overlay = document.getElementById('photoOverlay');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // إضافة الـ Overlay كنص على الصورة
+            ctx.font = "24px 'Tajawal', sans-serif";
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; 
+            ctx.fillRect(10, canvas.height - 100, canvas.width - 20, 80); 
+            
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'right';
+            const teacherName = document.getElementById('overlayTeacherName').textContent;
+            const className = document.getElementById('overlayClassName').textContent;
+            const dateTime = document.getElementById('overlayDateTime').textContent;
+            
+            ctx.fillText(teacherName, canvas.width - 20, canvas.height - 75);
+            ctx.font = "20px 'Tajawal', sans-serif";
+            ctx.fillText(className, canvas.width - 20, canvas.height - 50);
+            ctx.font = "16px 'Tajawal', sans-serif";
+            ctx.fillText(dateTime, canvas.width - 20, canvas.height - 25);
+
+
+            const imageDataURL = canvas.toDataURL('image/png');
+            
+            // حفظ الصورة
+            const photoName = `${document.getElementById('overlayTeacherName').textContent}_${new Date().getTime()}.png`;
+            capturedPhotosData.push({ dataURL: imageDataURL, name: photoName });
+            
+            displayCapturedPhotos();
+            document.getElementById('cameraStatus').innerHTML = `<span style="color: #ff6b9d;">📸 تم التقاط وحفظ صورة ${photoName}.</span>`;
+        }
+
+        function displayCapturedPhotos() {
+            const grid = document.getElementById('photosGrid');
+            grid.innerHTML = capturedPhotosData.map((photo, index) => `
+                <div style="position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden;">
+                    <img src="${photo.dataURL}" style="width: 100%; height: auto; display: block;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.5); color: white; font-size: 0.7rem; padding: 3px; text-align: center;">
+                        ${photo.name.split('_')[0]}
+                    </div>
+                    <button onclick="deletePhoto(${index})" style="position: absolute; bottom: 0; right: 0; background: #f44336; color: white; border: none; padding: 5px; cursor: pointer; border-radius: 5px 0 0 0;">
+                        🗑️
+                    </button>
+                </div>
+            `).join('');
+            
+            document.getElementById('capturedPhotos').style.display = capturedPhotosData.length > 0 ? 'block' : 'none';
+            document.getElementById('downloadAllBtn').style.display = capturedPhotosData.length > 0 ? 'inline-flex' : 'none';
+        }
+
+        function deletePhoto(index) {
+            if (confirm('هل أنت متأكد من حذف هذه الصورة؟')) {
+                capturedPhotosData.splice(index, 1);
+                displayCapturedPhotos();
+            }
+        }
+
+        function downloadAllPhotos() {
+            if (capturedPhotosData.length === 0) {
+                alert('لا توجد صور لتحميلها.');
+                return;
+            }
+
+            alert('سيتم بدء تحميل الصور الآن. قد تحتاج لتأكيد تحميل كل ملف على حدة.');
+
+            capturedPhotosData.forEach((photo, index) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = photo.dataURL;
+                    a.download = photo.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, index * 500); 
+            });
+        }
+        
+        function showTab(tabName, btn) { document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(tabName).classList.add('active'); btn.classList.add('active'); }
+        function showSection(sectionName) { document.querySelectorAll('.section').forEach(section => section.classList.remove('active')); document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active')); document.querySelector(`[onclick="showSection('${sectionName}')"]`).classList.add('active'); document.getElementById(sectionName).classList.add('active'); }
+
+        // ===================================================
+        // 8. وظائف الجدولة والتهيئة (المدمجة)
+        // ===================================================
+
+        // ⭐️ دالة مسح الحضور اليومي فقط (للتشغيل التلقائي عند منتصف الليل)
+        function resetDailyAttendance() {
+             if (!confirm('⚠️ تنبيه: هل تريد إعادة تعيين حالات حضور المعلمات لهذا اليوم يدوياً؟')) return;
+            
+             teachers.forEach(t => {
+                 t.status = 'not-recorded';
+                 t.timestamp = '';
+             });
+
+             renderTeachers(); 
+             updateDailyStars(); 
+             updateStats();
+             
+             syncToSheet('resetAllAttendanceStatus', { id: 0 }); 
+
+             alert('✅ تم مسح سجل الحضور اليومي بنجاح (سيتم إعادة تحميله من الشيت إذا تم تحديثه هناك).');
+             loadDataFromSheet();
+        }
+
+        // ⭐️ ضبط التشغيل التلقائي عند منتصف الليل
+        function scheduleDailyReset() {
+            const now = new Date();
+            const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const msUntilMidnight = nextMidnight - now;
+
+            console.log(`⏰ سيتم جدولة إعادة تعيين الحضور عند منتصف الليل (${nextMidnight}).`);
+
+            setTimeout(() => {
+                 alert('🔔 تنبيه: يجب أرشفة سجل الحضور الآن لبدء يوم جديد (زر "أرشفة ومسح سجل الحضور" في الإدارة).');
+                 
+                 scheduleDailyReset(); // إعادة جدولة اليوم التالي
+            }, msUntilMidnight);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const apiLinkDisplay = document.getElementById('apiLinkDisplay');
+            if (apiLinkDisplay) {
+                apiLinkDisplay.textContent = SHEET_API_URL;
+            }
+            
+            const dataLoaded = await loadDataFromSheet();
+            
+            if (dataLoaded) {
+                updateDateTime();
+                setInterval(updateDateTime, 60000); 
+                
+                if (document.getElementById('dataManagementInfo')) {
+                    updateDataManagement();
+                }
+            }
+            
+            const motivationalTextElement = document.getElementById('motivationalText');
+            if(motivationalTextElement) {
+                motivationalTextElement.value = motivationalQuote;
+            }
+            
+            // ⭐️ بدء الجدولة التلقائية للحضور
+            scheduleDailyReset();
+
             console.log('✅ تم تحميل النظام مع محاولة مزامنة البيانات.');
         });
     </script>
